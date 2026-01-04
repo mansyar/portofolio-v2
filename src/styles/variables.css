@@ -1,0 +1,62 @@
+:root {
+  /* Primary Colors (Ubuntu-inspired) */
+  --color-ubuntu-orange: #e95420;
+  --color-ubuntu-purple: #772953;
+  --color-aubergine: #2c001e;
+  --color-warm-grey: #aea79f;
+
+  /* Terminal Colors */
+  --color-terminal-bg-dark: #300a24;
+  --color-terminal-bg-light: #ffffff;
+  --color-terminal-green: #4e9a06;
+  --color-terminal-red: #cc0000;
+  --color-terminal-yellow: #c4a000;
+  --color-terminal-cyan: #06989a;
+
+  /* Neutral Colors */
+  --color-text-primary-dark: #ffffff;
+  --color-text-primary-light: #2c001e;
+  --color-text-secondary: #aea79f;
+  --color-border: #5e2750;
+  --color-surface-dark: #3d0a2e;
+  --color-surface-light: #f5f5f5;
+
+  /* Fonts */
+  --font-mono:
+    "Ubuntu Mono", "JetBrains Mono", "Fira Code", "Consolas", monospace;
+
+  /* Font Sizes */
+  --font-size-display: 3rem; /* 48px */
+  --font-size-h1: 2.25rem; /* 36px */
+  --font-size-h2: 1.875rem; /* 30px */
+  --font-size-h3: 1.5rem; /* 24px */
+  --font-size-body: 1rem; /* 16px */
+  --font-size-small: 0.875rem; /* 14px */
+  --font-size-code: 0.9rem; /* 14.4px */
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Motion & Animation */
+  --transition-default: 150ms ease-out;
+  --transition-page: 300ms ease-in-out;
+  --transition-hover: 100ms ease;
+  --animation-blink-interval: 500ms;
+}
+
+/* Dark Mode Defaults */
+:root {
+  --color-bg: var(--color-terminal-bg-dark);
+  --color-text: var(--color-text-primary-dark);
+  --color-surface: var(--color-surface-dark);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: var(--color-terminal-bg-light);
+    --color-text: var(--color-text-primary-light);
+    --color-surface: var(--color-surface-light);
+  }
+}
