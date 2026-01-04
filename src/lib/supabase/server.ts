@@ -1,22 +1,23 @@
-import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
-import { getWebRequest } from '@tanstack/start/server'
+import { createServerClient, parseCookieHeader } from '@supabase/ssr'
+import { getRequestHeader, setCookie } from '@tanstack/react-start/server'
 import { Database } from './types'
 
 export function createSupabaseServerClient() {
-  const request = getWebRequest()!
-
   return createServerClient<Database>(
     process.env.PUBLIC_SUPABASE_URL!,
     process.env.PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
-          return parseCookieHeader(request.headers.get('Cookie') ?? '')
+          const cookieHeader = getRequestHeader('Cookie')
+          return parseCookieHeader(cookieHeader ?? '').map((c) => ({
+            name: c.name,
+            value: c.value ?? '',
+          }))
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            // Note: This relies on the framework picking up the modified headers or passing them through
-            request.headers.append('Set-Cookie', serializeCookieHeader(name, value, options))
+            setCookie(name, value, options)
           })
         },
       },
