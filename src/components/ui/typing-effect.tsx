@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import './typing-effect.css';
 
 interface TypingEffectProps {
   text: string;
@@ -15,37 +16,28 @@ export function TypingEffect({
   className = "", 
   cursorChar = "_" 
 }: TypingEffectProps) {
-  const [displayedText, setDisplayedText] = useState("");
-  const [isStarted, setIsStarted] = useState(false);
-
+  const containerRef = useRef<HTMLSpanElement>(null);
+  
+  // Calculate total animation duration
+  const totalDuration = text.length * speed;
+  
   useEffect(() => {
-    const startTimeout = setTimeout(() => {
-      setIsStarted(true);
-    }, startDelay);
-
-    return () => clearTimeout(startTimeout);
-  }, [startDelay]);
-
-  useEffect(() => {
-    if (!isStarted) return;
-
-    let currentIndex = 0;
-    const intervalId = setInterval(() => {
-      if (currentIndex <= text.length) {
-        setDisplayedText(text.slice(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(intervalId);
-      }
-    }, speed);
-
-    return () => clearInterval(intervalId);
-  }, [text, speed, isStarted]);
+    if (!containerRef.current) return;
+    
+    // Set CSS custom properties for animation timing
+    containerRef.current.style.setProperty('--typing-chars', String(text.length));
+    containerRef.current.style.setProperty('--typing-duration', `${totalDuration}ms`);
+    containerRef.current.style.setProperty('--typing-delay', `${startDelay}ms`);
+  }, [text.length, totalDuration, startDelay]);
 
   return (
-    <span className={className}>
-      {displayedText}
-      <span className="animate-pulse">{cursorChar}</span>
+    <span 
+      ref={containerRef}
+      className={`typing-effect ${className}`}
+      data-text={text}
+    >
+      <span className="typing-text">{text}</span>
+      <span className="typing-cursor">{cursorChar}</span>
     </span>
   );
 }

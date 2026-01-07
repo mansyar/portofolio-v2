@@ -1,0 +1,49 @@
+/* CSS-based typing effect for better LCP */
+.typing-effect {
+  display: inline;
+  position: relative;
+}
+
+.typing-text {
+  /* Text is always in DOM for SEO/LCP */
+  display: inline;
+  /* CSS animation to reveal text */
+  animation: typing-reveal var(--typing-duration, 1500ms) steps(var(--typing-chars, 15)) var(--typing-delay, 0ms) forwards;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+}
+
+.typing-cursor {
+  animation: blink 500ms step-end infinite;
+}
+
+@keyframes typing-reveal {
+  from {
+    max-width: 0;
+  }
+  to {
+    max-width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Ensure text shows immediately if JS fails or on print */
+@media print, (prefers-reduced-motion: reduce) {
+  .typing-text {
+    animation: none;
+    max-width: none;
+  }
+  
+  .typing-cursor {
+    display: none;
+  }
+}
