@@ -1,5 +1,5 @@
 ---
-description: Initialize the portfolio project with TanStack Start, Supabase, R2, and Docker
+description: Initialize the portfolio project with TanStack Start, Convex, R2, and Docker
 ---
 
 # Project Setup Workflow
@@ -10,7 +10,7 @@ This workflow initializes the complete portfolio project from scratch.
 
 - Node.js 20+ installed
 - pnpm installed (`npm install -g pnpm`)
-- Supabase account ready
+- Self-hosted Convex backend running (on Coolify)
 - Cloudflare account with R2 bucket created
 
 ---
@@ -32,7 +32,8 @@ Select options:
 ## Step 2: Install Core Dependencies
 
 ```bash
-pnpm add @supabase/supabase-js @tanstack/react-query sharp
+pnpm add convex @convex-dev/react-query @convex-dev/auth @auth/core
+pnpm add @tanstack/react-query sharp clsx
 pnpm add -D @types/node typescript eslint prettier
 ```
 
@@ -42,7 +43,7 @@ pnpm add -D @types/node typescript eslint prettier
 
 ```bash
 pnpm add @tiptap/react @tiptap/starter-kit @tiptap/extension-image @tiptap/extension-link @tiptap/extension-code-block-lowlight
-pnpm add lowlight
+pnpm add lowlight lucide-react
 ```
 
 ---
@@ -51,15 +52,17 @@ pnpm add lowlight
 
 Create the following directories:
 
-- `app/components/ui/`
-- `app/components/features/`
-- `app/components/layout/`
-- `app/components/editor/`
-- `app/hooks/`
-- `app/lib/supabase/`
-- `app/lib/r2/`
-- `app/styles/`
-- `app/types/`
+- `src/components/ui/`
+- `src/components/features/`
+- `src/components/layout/`
+- `src/components/editor/`
+- `src/hooks/`
+- `src/lib/convex/`
+- `src/lib/r2/`
+- `src/styles/`
+- `src/types/`
+- `convex/` (for Convex functions)
+- `convex/lib/` (for auth helpers)
 - `docker/`
 - `public/fonts/`
 - `public/images/`
@@ -71,26 +74,36 @@ Create the following directories:
 Create `.env.example` with the following content:
 
 ```env
-# App
+# =============================================================================
+# App Configuration
+# =============================================================================
 NODE_ENV=development
-PUBLIC_APP_URL=http://localhost:3000
+VITE_APP_URL=http://localhost:3000
 
-# Supabase
-PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# =============================================================================
+# Self-Hosted Convex (Required)
+# =============================================================================
+VITE_CONVEX_URL=https://convex.ansyar-world.top
+CONVEX_SELF_HOSTED_URL=https://convex.ansyar-world.top
+CONVEX_SELF_HOSTED_ADMIN_KEY=your-admin-key
 
-# Cloudflare R2
+# =============================================================================
+# Cloudflare R2 (Media Storage)
+# =============================================================================
 R2_ACCESS_KEY_ID=your-r2-access-key
 R2_SECRET_ACCESS_KEY=your-r2-secret-key
 R2_BUCKET_NAME=portfolio-media
 R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
-PUBLIC_R2_PUBLIC_URL=https://media.ansyar-world.top
+VITE_R2_PUBLIC_URL=https://media.ansyar-world.top
 
-# Auth
+# =============================================================================
+# Admin Authentication
+# =============================================================================
 ADMIN_EMAIL=your-email@example.com
 
-# Email (for contact form)
+# =============================================================================
+# Email Service (Resend)
+# =============================================================================
 RESEND_API_KEY=your-resend-key
 CONTACT_EMAIL=contact@ansyar-world.top
 ```
@@ -99,35 +112,85 @@ Copy to `.env.local` and fill in actual values.
 
 ---
 
-## Step 6: Set Up Supabase Schema
+## Step 6: Set Up Convex Schema
 
-Use the Supabase MCP tool to apply the database schema from `docs/PRD.md` Section 7.
+Create `convex/schema.ts` with the database schema from `docs/PRD.md` Section 7.
 
-```
-mcp_supabase-mcp-server_apply_migration
+Deploy to your self-hosted backend:
+
+```bash
+# turbo
+npx convex dev --once
 ```
 
 ---
 
-## Step 7: Create CSS Variables File
+## Step 7: Create Convex Client
 
-Create `app/styles/variables.css` with the Ubuntu Terminal design tokens from PRD Section 4.
+Create `src/lib/convex/client.ts`:
+
+```typescript
+import { ConvexReactClient } from "convex/react";
+import { ConvexQueryClient } from "@convex-dev/react-query";
+
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string;
+
+if (!convexUrl) {
+  throw new Error("Missing VITE_CONVEX_URL environment variable.");
+}
+
+export const convex = new ConvexReactClient(convexUrl);
+export const convexQueryClient = new ConvexQueryClient(convex);
+```
 
 ---
 
-## Step 8: Create Docker Configuration
+## Step 8: Create Auth Helpers
+
+Create `convex/lib/auth.ts`:
+
+```typescript
+import { QueryCtx, MutationCtx } from "../_generated/server";
+
+const ADMIN_EMAILS = process.env.ADMIN_EMAIL ? [process.env.ADMIN_EMAIL] : [];
+
+export async function requireAdmin(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+
+  if (!identity) {
+    throw new Error("Unauthorized: Not authenticated");
+  }
+
+  const email = identity.email;
+  if (!email || !ADMIN_EMAILS.includes(email)) {
+    throw new Error("Unauthorized: Not an admin");
+  }
+
+  return { email, subject: identity.subject };
+}
+```
+
+---
+
+## Step 9: Create CSS Variables File
+
+Create `src/styles/variables.css` with the Ubuntu Terminal design tokens from PRD Section 4.
+
+---
+
+## Step 10: Create Docker Configuration
 
 Create `docker/Dockerfile` and `docker/docker-compose.yml` using templates from PRD Section 10.
 
 ---
 
-## Step 9: Configure ESLint & Prettier
+## Step 11: Configure ESLint
 
-Create `.eslintrc.cjs` and `.prettierrc` with project preferences.
+Create `eslint.config.js` with TypeScript and React hooks support.
 
 ---
 
-## Step 10: Verify Setup
+## Step 12: Verify Setup
 
 ```bash
 # turbo
@@ -141,11 +204,13 @@ Open http://localhost:3000 to verify the app runs.
 ## Completion Checklist
 
 - [ ] TanStack Start initialized
-- [ ] All dependencies installed
+- [ ] Convex dependencies installed
 - [ ] Directory structure created
 - [ ] Environment variables configured
-- [ ] Supabase schema applied
+- [ ] Convex schema deployed
+- [ ] Convex client created
+- [ ] Auth helpers created
 - [ ] CSS variables defined
 - [ ] Docker files created
-- [ ] Linting configured
+- [ ] ESLint configured
 - [ ] Dev server runs successfully

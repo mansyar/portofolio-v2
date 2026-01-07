@@ -1,17 +1,61 @@
-import { createRouter } from '@tanstack/react-router'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRouter } from "@tanstack/react-router";
+import { ConvexProvider } from "convex/react";
+import { convex, convexQueryClient } from "./lib/convex/client";
+import { routeTree } from "./routeTree.gen";
 
-// Import the generated route tree
-import { routeTree } from './routeTree.gen'
-
-// Create a new router instance
+/**
+ * Creates the TanStack Router instance with Convex integration.
+ *
+ * Features:
+ * - Convex React Query integration for SSR
+ * - Automatic query deduplication
+ * - Real-time subscriptions via Convex
+ */
 export const getRouter = () => {
+  // Create QueryClient with Convex integration
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Use Convex's query key hashing for proper cache management
+        queryKeyHashFn: convexQueryClient.hashFn(),
+        // Use Convex's query function for data fetching
+        queryFn: convexQueryClient.queryFn(),
+        // Stale time for SSR - data is fresh from server
+        staleTime: 5 * 60 * 1000, // 5 minutes
+      },
+    },
+  });
+
+  // Connect Convex Query Client to React Query
+  convexQueryClient.connect(queryClient);
+
   const router = createRouter({
     routeTree,
-    context: {},
-
+    context: {
+      queryClient,
+    },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-  })
 
-  return router
+    // Wrap the router with Convex and Query providers
+    Wrap: function WrapComponent({ children }) {
+      return (
+        <ConvexProvider client={convex}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </ConvexProvider>
+      );
+    },
+  });
+
+  return router;
+};
+
+// Type declaration for router context
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: ReturnType<typeof getRouter>;
+  }
 }

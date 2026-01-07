@@ -1,0 +1,56 @@
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.input-label {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition: var(--transition-default);
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--color-ubuntu-orange);
+  box-shadow: 0 0 0 1px var(--color-ubuntu-orange);
+}
+
+.input-prompt {
+  color: var(--color-terminal-green);
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-bold);
+  animation: blink 2s infinite;
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  outline: none;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}

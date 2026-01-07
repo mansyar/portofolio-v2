@@ -1,10 +1,10 @@
 ---
-description: Create and apply Supabase database migrations with RLS policies
+description: Update Convex schema and deploy changes
 ---
 
-# Database Migration Workflow
+# Schema Migration Workflow
 
-This workflow creates and applies database migrations to Supabase using the MCP tools.
+This workflow updates the Convex schema and deploys changes to your self-hosted backend.
 
 ---
 
@@ -13,199 +13,191 @@ This workflow creates and applies database migrations to Supabase using the MCP 
 Determine what schema changes are needed:
 
 - New table
-- New columns on existing table
-- Indexes
-- RLS policies
-- Functions/triggers
+- New fields on existing table
+- New indexes
+- Modified validators
 
 ---
 
-## Step 2: Get Project ID
+## Step 2: Update Schema File
 
-List Supabase projects to get the project ID:
+Edit `convex/schema.ts`:
 
-```
-mcp_supabase-mcp-server_list_projects
-```
-
-Note the `id` field for your portfolio project.
-
----
-
-## Step 3: Review Existing Schema
-
-Check current tables:
-
-```
-mcp_supabase-mcp-server_list_tables with project_id
-```
-
-Check existing migrations:
-
-```
-mcp_supabase-mcp-server_list_migrations with project_id
-```
-
----
-
-## Step 4: Write Migration SQL
-
-Create the migration SQL following these conventions:
-
-### For New Tables
-
-```sql
--- Create table
-CREATE TABLE table_name (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  -- columns...
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Create indexes
-CREATE INDEX idx_table_name_column ON table_name(column);
-
--- Enable RLS
-ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
-
--- Public read policy (if applicable)
-CREATE POLICY "Public can read visible items" ON table_name
-  FOR SELECT USING (is_visible = true);
-
--- Admin write policy
-CREATE POLICY "Admin full access" ON table_name
-  FOR ALL USING (auth.jwt() ->> 'email' = current_setting('app.admin_email', true));
-```
-
-### For Altering Tables
-
-```sql
--- Add column
-ALTER TABLE table_name ADD COLUMN new_column VARCHAR(255);
-
--- Add constraint
-ALTER TABLE table_name ADD CONSTRAINT constraint_name CHECK (condition);
-```
-
----
-
-## Step 5: Apply Migration
-
-Use the Supabase MCP tool:
-
-```
-mcp_supabase-mcp-server_apply_migration
-  project_id: "your-project-id"
-  name: "descriptive_migration_name"
-  query: "SQL migration content"
-```
-
-Migration name should be snake_case and descriptive, e.g.:
-
-- `create_skills_table`
-- `add_featured_to_projects`
-- `create_blog_post_tags_junction`
-
----
-
-## Step 6: Run Security Advisor
-
-Check for security issues after applying migration:
-
-```
-mcp_supabase-mcp-server_get_advisors
-  project_id: "your-project-id"
-  type: "security"
-```
-
-Address any warnings, especially:
-
-- Missing RLS policies
-- Overly permissive policies
-- Exposed sensitive columns
-
----
-
-## Step 7: Run Performance Advisor
-
-Check for performance issues:
-
-```
-mcp_supabase-mcp-server_get_advisors
-  project_id: "your-project-id"
-  type: "performance"
-```
-
-Address any warnings about:
-
-- Missing indexes
-- Inefficient queries
-- Table bloat
-
----
-
-## Step 8: Generate TypeScript Types
-
-Update TypeScript types to match new schema:
-
-```
-mcp_supabase-mcp-server_generate_typescript_types
-  project_id: "your-project-id"
-```
-
-Copy the generated types to `app/lib/supabase/types.ts`.
-
----
-
-## Step 9: Update Application Types
-
-Update `app/types/index.ts` to export the new types:
+### Adding a New Table
 
 ```typescript
-// Re-export database types
-export type { Database } from "~/lib/supabase/types";
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
-// Create convenience type aliases
-export type Skill = Database["public"]["Tables"]["skills"]["Row"];
-export type Project = Database["public"]["Tables"]["projects"]["Row"];
-// ... etc
+export default defineSchema({
+  // ... existing tables
+
+  // New table
+  newTable: defineTable({
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    category: v.string(),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_category", ["category"])
+    .index("by_order", ["displayOrder"]),
+});
+```
+
+### Adding Fields to Existing Table
+
+```typescript
+// Just add the new field to the table definition
+existingTable: defineTable({
+  // ... existing fields
+  newField: v.optional(v.string()),  // Make optional for backwards compatibility
+})
+```
+
+### Adding an Index
+
+```typescript
+existingTable: defineTable({
+  // ... fields
+})
+  .index("existing_index", ["existingField"])
+  .index("new_index", ["newField"])  // Add new index
 ```
 
 ---
 
-## Step 10: Test Migration
+## Step 3: Deploy Schema Changes
 
-Verify the migration worked:
+Deploy to your self-hosted Convex backend:
 
+```bash
+# turbo
+npx convex dev --once
 ```
-mcp_supabase-mcp-server_execute_sql
-  project_id: "your-project-id"
-  query: "SELECT * FROM table_name LIMIT 5;"
+
+This will:
+1. Validate the schema
+2. Create new tables/indexes
+3. Regenerate TypeScript types in `convex/_generated/`
+
+---
+
+## Step 4: Verify Deployment
+
+Check the output for:
+- ✓ Schema changes applied
+- ✓ Indexes created
+- ✓ No errors
+
+Example success output:
+```
+✔ Added table indexes:
+  [+] newTable.by_slug   slug
+  [+] newTable.by_order  displayOrder
+✔ Convex functions ready!
 ```
 
 ---
 
-## Migration Checklist
+## Step 5: Create Queries/Mutations
 
-- [ ] Migration applied successfully
-- [ ] RLS policies created
-- [ ] Security advisor passed
-- [ ] Performance advisor passed
-- [ ] TypeScript types generated
-- [ ] Application types updated
-- [ ] Tested locally
+If you added a new table, create the corresponding API file:
+
+```typescript
+// convex/newTable.ts
+import { query, mutation } from "./_generated/server";
+import { v } from "convex/values";
+import { requireAdmin } from "./lib/auth";
+
+export const listVisible = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("newTable")
+      .withIndex("by_order")
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+  },
+});
+
+// ... add more queries/mutations as needed
+```
+
+---
+
+## Step 6: Run Quality Checks
+
+```bash
+# turbo
+pnpm type-check
+```
+
+Ensure TypeScript passes with the new schema types.
+
+---
+
+## Schema Best Practices
+
+### Field Naming
+- Use camelCase: `displayOrder`, `isVisible`, `createdAt`
+- Be descriptive: `thumbnailUrl` not `thumb`
+
+### Indexes
+- Add indexes for fields you query/filter by
+- Index order matters for compound indexes
+- Common patterns:
+  - `by_slug` for URL lookups
+  - `by_order` for sorting
+  - `by_category` for filtering
+
+### Optional Fields
+- Use `v.optional()` for nullable fields
+- New fields should usually be optional for backwards compatibility
+
+### Document References
+- Use `v.id("tableName")` for foreign key-like references
+- Example: `categoryId: v.id("blogCategories")`
+
+---
+
+## Common Validators
+
+```typescript
+v.string()                  // Required string
+v.optional(v.string())      // Optional string
+v.number()                  // Number
+v.boolean()                 // Boolean
+v.id("tableName")           // Document ID reference
+v.array(v.string())         // Array of strings
+v.array(v.id("tags"))       // Array of document IDs
+v.union(                    // Enum
+  v.literal("draft"),
+  v.literal("published")
+)
+v.any()                     // Any type (avoid if possible)
+```
 
 ---
 
 ## Rollback (if needed)
 
-If migration fails, create a reverse migration:
+Convex doesn't have traditional "down" migrations. To rollback:
 
-```
-mcp_supabase-mcp-server_apply_migration
-  name: "rollback_migration_name"
-  query: "DROP TABLE table_name; -- or ALTER TABLE to reverse changes"
-```
+1. Revert schema changes in `convex/schema.ts`
+2. Deploy again: `npx convex dev --once`
 
-> ⚠️ Be careful with rollbacks in production - they may cause data loss.
+> ⚠️ Removing fields/tables may cause data loss. Be careful in production.
+
+---
+
+## Checklist
+
+- [ ] Schema updated in `convex/schema.ts`
+- [ ] Indexes added for queried fields
+- [ ] `npx convex dev --once` succeeds
+- [ ] TypeScript types regenerated
+- [ ] `pnpm type-check` passes
+- [ ] Queries/mutations created for new tables

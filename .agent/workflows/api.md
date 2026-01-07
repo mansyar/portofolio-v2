@@ -1,360 +1,326 @@
 ---
-description: Create a TanStack Start server function (API route)
+description: Create a Convex query or mutation (API function)
 ---
 
-# Create API Route Workflow
+# Create Convex API Workflow
 
-This workflow creates a type-safe TanStack Start server function for API operations.
-
----
-
-## Step 1: Determine API Type
-
-| Type        | Use Case                    | Example                        |
-| ----------- | --------------------------- | ------------------------------ |
-| Public GET  | Fetch data for public pages | Get projects, blog posts       |
-| Public POST | Submit forms                | Contact form submission        |
-| Admin GET   | Fetch admin data            | Get all items including hidden |
-| Admin POST  | Create/update data          | CRUD operations                |
+This workflow creates a type-safe Convex query or mutation for data operations.
 
 ---
 
-## Step 2: Create Server Function
+## Step 1: Determine Function Type
 
-### Public GET API
+| Type     | Use Case                    | Example                        |
+| -------- | --------------------------- | ------------------------------ |
+| Query    | Read data (reactive)        | Get projects, blog posts       |
+| Mutation | Write data (create/update)  | CRUD operations                |
+| Action   | External API calls          | Send email, upload to R2       |
 
-Create or add to `app/routes/api/{entity}.ts`:
+---
 
-```tsx
-import { createServerFn } from "@tanstack/start";
-import { json } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
-import { z } from "zod";
+## Step 2: Create Convex Function File
 
-// Input validation schema (optional)
-const GetItemsInput = z.object({
-  category: z.string().optional(),
-  limit: z.number().min(1).max(100).default(10),
-  offset: z.number().min(0).default(0),
+Create or add to `convex/{entity}.ts`:
+
+### Public Query (Read-only, no auth required)
+
+```typescript
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+
+/**
+ * Get all visible items, ordered by displayOrder.
+ * Public: No authentication required.
+ */
+export const listVisible = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("items")
+      .withIndex("by_order")
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+  },
 });
 
-export const getItems = createServerFn(
-  "GET",
-  async (input?: z.infer<typeof GetItemsInput>) => {
-    // Parse and validate input
-    const params = GetItemsInput.parse(input ?? {});
+/**
+ * Get a single item by slug.
+ * Public: No authentication required.
+ */
+export const getBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    const item = await ctx.db
+      .query("items")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .first();
 
-    const supabase = createSupabaseServerClient();
-
-    let query = supabase
-      .from("items")
-      .select("*", { count: "exact" })
-      .eq("is_visible", true)
-      .order("display_order", { ascending: true })
-      .range(params.offset, params.offset + params.limit - 1);
-
-    if (params.category) {
-      query = query.eq("category", params.category);
+    if (!item) {
+      throw new Error("Item not found");
     }
 
-    const { data, error, count } = await query;
+    return item;
+  },
+});
 
-    if (error) {
-      throw new Error("Failed to fetch items");
-    }
-
-    return {
-      items: data,
-      total: count ?? 0,
-      hasMore: (count ?? 0) > params.offset + params.limit,
-    };
-  }
-);
-
-// Get single item by slug
-export const getItemBySlug = createServerFn("GET", async (slug: string) => {
-  if (!slug) {
-    throw new Error("Slug is required");
-  }
-
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("items")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_visible", true)
-    .single();
-
-  if (error || !data) {
-    throw new Error("Item not found");
-  }
-
-  return data;
+/**
+ * Get items by category.
+ */
+export const byCategory = query({
+  args: { category: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("items")
+      .withIndex("by_category", (q) => q.eq("category", args.category))
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+  },
 });
 ```
 
 ---
 
-### Public POST API (Form Submission)
+### Admin Query (Requires authentication)
 
-```tsx
-import { createServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
-import { z } from "zod";
+```typescript
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+import { requireAdmin } from "./lib/auth";
 
-// Validation schema
-const ContactFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(20, "Message must be at least 20 characters"),
+/**
+ * Get all items including hidden ones.
+ * Admin only.
+ */
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("items").withIndex("by_order").collect();
+  },
 });
 
-export const submitContactForm = createServerFn(
-  "POST",
-  async (formData: FormData) => {
-    // Parse form data
-    const rawData = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      subject: formData.get("subject"),
-      message: formData.get("message"),
-    };
-
-    // Validate
-    const result = ContactFormSchema.safeParse(rawData);
-
-    if (!result.success) {
-      return {
-        success: false,
-        errors: result.error.flatten().fieldErrors,
-      };
-    }
-
-    const supabase = createSupabaseServerClient();
-
-    // Insert into database
-    const { error } = await supabase
-      .from("contact_submissions")
-      .insert(result.data);
-
-    if (error) {
-      console.error("Contact form error:", error);
-      return {
-        success: false,
-        errors: { _form: ["Failed to submit. Please try again."] },
-      };
-    }
-
-    // TODO: Send email notification via Resend
-
-    return { success: true };
-  }
-);
+/**
+ * Get a single item by ID.
+ * Admin only.
+ */
+export const getById = query({
+  args: { id: v.id("items") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.get(args.id);
+  },
+});
 ```
 
 ---
 
-### Admin API (Protected)
+### Admin Mutation (Create/Update/Delete)
 
-```tsx
-import { createServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
-import { redirect } from "@tanstack/react-router";
-import { z } from "zod";
+```typescript
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
+import { requireAdmin } from "./lib/auth";
 
-// Helper to check admin auth
-async function requireAdmin() {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+/**
+ * Create a new item.
+ * Admin only.
+ */
+export const create = mutation({
+  args: {
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    category: v.string(),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
-    throw redirect({ to: "/admin/login" });
-  }
+    // Check for duplicate slug
+    const existing = await ctx.db
+      .query("items")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
 
-  return user;
-}
-
-// Admin: Get all items (including hidden)
-export const adminGetItems = createServerFn("GET", async () => {
-  await requireAdmin();
-
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("items")
-    .select("*")
-    .order("display_order", { ascending: true });
-
-  if (error) throw new Error("Failed to fetch items");
-
-  return data;
-});
-
-// Admin: Create item
-const CreateItemSchema = z.object({
-  name: z.string().min(1),
-  slug: z.string().min(1),
-  description: z.string().optional(),
-  is_visible: z.boolean().default(true),
-});
-
-export const adminCreateItem = createServerFn(
-  "POST",
-  async (input: z.infer<typeof CreateItemSchema>) => {
-    await requireAdmin();
-
-    const data = CreateItemSchema.parse(input);
-    const supabase = createSupabaseServerClient();
-
-    const { data: created, error } = await supabase
-      .from("items")
-      .insert(data)
-      .select()
-      .single();
-
-    if (error) {
-      if (error.code === "23505") {
-        throw new Error("An item with this slug already exists");
-      }
-      throw new Error("Failed to create item");
+    if (existing) {
+      throw new Error("An item with this slug already exists");
     }
 
-    return created;
-  }
-);
-
-// Admin: Update item
-export const adminUpdateItem = createServerFn(
-  "POST",
-  async ({
-    id,
-    data,
-  }: {
-    id: string;
-    data: Partial<z.infer<typeof CreateItemSchema>>;
-  }) => {
-    await requireAdmin();
-
-    const supabase = createSupabaseServerClient();
-
-    const { data: updated, error } = await supabase
-      .from("items")
-      .update({ ...data, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw new Error("Failed to update item");
-
-    return updated;
-  }
-);
-
-// Admin: Delete item
-export const adminDeleteItem = createServerFn("POST", async (id: string) => {
-  await requireAdmin();
-
-  const supabase = createSupabaseServerClient();
-
-  const { error } = await supabase.from("items").delete().eq("id", id);
-
-  if (error) throw new Error("Failed to delete item");
-
-  return { success: true };
+    return await ctx.db.insert("items", args);
+  },
 });
 
-// Admin: Reorder items
-export const adminReorderItems = createServerFn(
-  "POST",
-  async (orderedIds: string[]) => {
-    await requireAdmin();
+/**
+ * Update an existing item.
+ * Admin only.
+ */
+export const update = mutation({
+  args: {
+    id: v.id("items"),
+    name: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    description: v.optional(v.string()),
+    category: v.optional(v.string()),
+    displayOrder: v.optional(v.number()),
+    isVisible: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
 
-    const supabase = createSupabaseServerClient();
+    const { id, ...updates } = args;
 
-    // Update display_order for each item
-    const updates = orderedIds.map((id, index) =>
-      supabase.from("items").update({ display_order: index }).eq("id", id)
+    // Remove undefined values
+    const cleanUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([, v]) => v !== undefined)
     );
 
-    await Promise.all(updates);
+    if (Object.keys(cleanUpdates).length === 0) {
+      return;
+    }
 
-    return { success: true };
-  }
-);
+    await ctx.db.patch(id, cleanUpdates);
+  },
+});
+
+/**
+ * Delete an item.
+ * Admin only.
+ */
+export const remove = mutation({
+  args: { id: v.id("items") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
+/**
+ * Reorder items by updating their displayOrder.
+ * Admin only.
+ */
+export const reorder = mutation({
+  args: { orderedIds: v.array(v.id("items")) },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    for (let i = 0; i < args.orderedIds.length; i++) {
+      await ctx.db.patch(args.orderedIds[i], { displayOrder: i });
+    }
+  },
+});
+
+/**
+ * Toggle visibility of an item.
+ * Admin only.
+ */
+export const toggleVisibility = mutation({
+  args: { id: v.id("items") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    const item = await ctx.db.get(args.id);
+    if (!item) throw new Error("Item not found");
+
+    await ctx.db.patch(args.id, { isVisible: !item.isVisible });
+  },
+});
 ```
 
 ---
 
-## Step 3: Use Server Functions in Components
+## Step 3: Use in React Components
+
+### Using Queries (SSR + Reactive)
 
 ```tsx
-import { useServerFn } from '@tanstack/start';
-import { getItems, submitContactForm } from '~/routes/api/items';
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../convex/_generated/api";
 
-function MyComponent() {
-  const getItemsFn = useServerFn(getItems);
-  const submitFormFn = useServerFn(submitContactForm);
+export function ItemsPage() {
+  // SSR-compatible, auto-updates when data changes
+  const { data: items } = useSuspenseQuery(
+    convexQuery(api.items.listVisible, {})
+  );
 
-  const handleSubmit = async (formData: FormData) => {
-    const result = await submitFormFn(formData);
-    if (result.success) {
-      // Handle success
-    } else {
-      // Handle errors
+  return (
+    <div>
+      {items.map((item) => (
+        <div key={item._id}>{item.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Using Mutations
+
+```tsx
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
+export function CreateItemButton() {
+  const createItem = useMutation(api.items.create);
+
+  const handleCreate = async () => {
+    try {
+      await createItem({
+        name: "New Item",
+        slug: "new-item",
+        category: "general",
+        displayOrder: 0,
+        isVisible: true,
+      });
+    } catch (error) {
+      console.error("Failed to create:", error);
     }
   };
 
-  return (/* ... */);
+  return <button onClick={handleCreate}>$ create item</button>;
 }
 ```
 
 ---
 
-## Step 4: Add Zod for Validation (if not installed)
+## Step 4: Deploy Functions
+
+After creating/modifying functions, deploy to your backend:
 
 ```bash
-pnpm add zod
+# turbo
+npx convex dev --once
 ```
+
+This also regenerates types in `convex/_generated/`.
 
 ---
 
-## Error Handling Best Practices
+## Validator Reference
+
+Common Convex validators:
 
 ```typescript
-// Create standardized error responses
-type ApiResponse<T> =
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string };
+import { v } from "convex/values";
 
-// Use in server functions
-export const myServerFn = createServerFn(
-  "POST",
-  async (input): Promise<ApiResponse<Data>> => {
-    try {
-      // ... operation
-      return { success: true, data: result };
-    } catch (error) {
-      console.error("Operation failed:", error);
-      return {
-        success: false,
-        error: "Operation failed",
-        code: "OPERATION_FAILED",
-      };
-    }
-  }
-);
+v.string()              // string
+v.number()              // number
+v.boolean()             // boolean
+v.id("tableName")       // document ID reference
+v.array(v.string())     // array of strings
+v.optional(v.string())  // optional string
+v.union(v.literal("a"), v.literal("b"))  // enum
+v.any()                 // any value (use sparingly)
 ```
 
 ---
 
 ## Checklist
 
-- [ ] Input validation with Zod
-- [ ] Proper error handling
-- [ ] Admin routes protected
-- [ ] TypeScript types exported
-- [ ] Tested locally
+- [ ] Function created with proper args validation
+- [ ] Admin functions use `requireAdmin(ctx)`
+- [ ] Indexes used for efficient queries
+- [ ] `npx convex dev --once` deployed successfully
+- [ ] Types regenerated in `convex/_generated/`
+- [ ] Tested in component

@@ -4,45 +4,31 @@ description: Create a protected admin/CMS page with authentication and CRUD oper
 
 # Create Admin Page Workflow
 
-This workflow creates a protected admin page with authentication guards and content management functionality.
+This workflow creates a protected admin page with Convex Auth and content management functionality.
 
 ---
 
 ## Step 1: Verify Admin Layout Exists
 
-Ensure `app/routes/admin/_layout.tsx` exists with authentication protection:
+Ensure `src/routes/admin/_layout.tsx` exists with authentication protection:
 
 ```tsx
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../../convex/_generated/api";
 import { AdminSidebar } from "~/components/layout/admin-sidebar";
 
-const checkAuth = createServerFn("GET", async () => {
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw redirect({ to: "/admin/login" });
-  }
-
-  // Check if user email is whitelisted
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (user.email !== adminEmail) {
-    throw redirect({ to: "/" });
-  }
-
-  return { user };
-});
-
 export const Route = createFileRoute("/admin/_layout")({
-  beforeLoad: () => checkAuth(),
+  beforeLoad: async ({ context }) => {
+    // Auth check happens via Convex query
+    // If not authenticated, redirect to login
+  },
   component: AdminLayout,
 });
 
 function AdminLayout() {
+  // Optionally verify auth status here
   return (
     <div className="admin-layout">
       <AdminSidebar />
@@ -58,111 +44,65 @@ function AdminLayout() {
 
 ## Step 2: Create Admin Page Route
 
-Create `app/routes/admin/{entity}.tsx`:
+Create `src/routes/admin/{entity}.tsx`:
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn, useServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 
-// Fetch all items
-const getItems = createServerFn("GET", async () => {
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("your_table")
-    .select("*")
-    .order("display_order", { ascending: true });
-
-  if (error) throw error;
-  return data;
-});
-
-// Create item
-const createItem = createServerFn("POST", async (formData: FormData) => {
-  const supabase = createSupabaseServerClient();
-
-  const item = {
-    name: formData.get("name") as string,
-    // ... other fields
-  };
-
-  const { data, error } = await supabase
-    .from("your_table")
-    .insert(item)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-});
-
-// Update item
-const updateItem = createServerFn(
-  "POST",
-  async ({ id, data }: { id: string; data: Partial<Item> }) => {
-    const supabase = createSupabaseServerClient();
-
-    const { data: updated, error } = await supabase
-      .from("your_table")
-      .update(data)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return updated;
-  }
-);
-
-// Delete item
-const deleteItem = createServerFn("POST", async (id: string) => {
-  const supabase = createSupabaseServerClient();
-
-  const { error } = await supabase.from("your_table").delete().eq("id", id);
-
-  if (error) throw error;
-  return { success: true };
-});
-
 export const Route = createFileRoute("/admin/entity")({
-  loader: () => getItems(),
   component: AdminEntityPage,
 });
 
 function AdminEntityPage() {
-  const items = Route.useLoaderData();
+  // Fetch all items (admin query)
+  const { data: items } = useSuspenseQuery(
+    convexQuery(api.items.listAll, {})
+  );
+
+  // Mutations
+  const createItem = useMutation(api.items.create);
+  const updateItem = useMutation(api.items.update);
+  const deleteItem = useMutation(api.items.remove);
+  const toggleVisibility = useMutation(api.items.toggleVisibility);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const createItemFn = useServerFn(createItem);
-  const updateItemFn = useServerFn(updateItem);
-  const deleteItemFn = useServerFn(deleteItem);
-
-  const handleCreate = async (formData: FormData) => {
+  const handleCreate = async (data: ItemInput) => {
     try {
-      await createItemFn(formData);
-      // Refresh data or update local state
+      await createItem(data);
       setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to create:", error);
     }
   };
 
+  const handleDelete = async (id: Id<"items">) => {
+    if (!confirm("Are you sure?")) return;
+    try {
+      await deleteItem({ id });
+    } catch (error) {
+      console.error("Failed to delete:", error);
+    }
+  };
+
   return (
     <div className="admin-page admin-page--entity">
       <header className="admin-page__header">
-        <h1>Manage Entity</h1>
+        <h1>~/admin/entity</h1>
         <button
           className="button button--primary"
           onClick={() => setIsModalOpen(true)}
         >
-          Add New
+          $ add new
         </button>
       </header>
 
       <div className="admin-page__content">
-        {/* Table or grid of items */}
         <table className="admin-table">
           <thead>
             <tr>
@@ -173,12 +113,19 @@ function AdminEntityPage() {
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id}>
+              <tr key={item._id}>
                 <td>{item.name}</td>
-                <td>{item.is_visible ? "Visible" : "Hidden"}</td>
                 <td>
-                  <button onClick={() => handleEdit(item)}>Edit</button>
-                  <button onClick={() => handleDelete(item.id)}>Delete</button>
+                  <button
+                    onClick={() => toggleVisibility({ id: item._id })}
+                    className={item.isVisible ? "status--visible" : "status--hidden"}
+                  >
+                    {item.isVisible ? "visible" : "hidden"}
+                  </button>
+                </td>
+                <td>
+                  <button onClick={() => handleEdit(item)}>edit</button>
+                  <button onClick={() => handleDelete(item._id)}>delete</button>
                 </td>
               </tr>
             ))}
@@ -204,38 +151,49 @@ function AdminEntityPage() {
 Create a form component for the entity:
 
 ```tsx
+import { useState } from "react";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+
+type Item = Doc<"items">;
+type ItemInput = Omit<Item, "_id" | "_creationTime">;
+
 interface EntityFormProps {
-  initialData?: Partial<Entity>;
-  onSubmit: (formData: FormData) => Promise<void>;
+  initialData?: Item;
+  onSubmit: (data: ItemInput) => Promise<void>;
   onCancel: () => void;
 }
 
-function EntityForm({ initialData, onSubmit, onCancel }: EntityFormProps) {
+export function EntityForm({ initialData, onSubmit, onCancel }: EntityFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrors({});
 
     const formData = new FormData(e.currentTarget);
 
-    // Client-side validation
-    const validationErrors: Record<string, string> = {};
-    if (!formData.get("name")) {
-      validationErrors.name = "Name is required";
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    // Validate
+    const name = formData.get("name") as string;
+    if (!name) {
+      setErrors({ name: "Name is required" });
       setIsSubmitting(false);
       return;
     }
 
     try {
-      await onSubmit(formData);
+      await onSubmit({
+        name,
+        slug: formData.get("slug") as string,
+        description: formData.get("description") as string || undefined,
+        category: formData.get("category") as string,
+        displayOrder: Number(formData.get("displayOrder")) || 0,
+        isVisible: formData.get("isVisible") === "on",
+      });
     } catch (error) {
       console.error("Submission failed:", error);
+      setErrors({ _form: "Failed to save. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
@@ -244,7 +202,7 @@ function EntityForm({ initialData, onSubmit, onCancel }: EntityFormProps) {
   return (
     <form onSubmit={handleSubmit} className="entity-form">
       <div className="form-field">
-        <label htmlFor="name">Name</label>
+        <label htmlFor="name">&gt; name</label>
         <input
           type="text"
           id="name"
@@ -259,10 +217,10 @@ function EntityForm({ initialData, onSubmit, onCancel }: EntityFormProps) {
 
       <div className="form-actions">
         <button type="button" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
+          cancel
         </button>
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save"}
+          {isSubmitting ? "saving..." : "$ save"}
         </button>
       </div>
     </form>
@@ -272,9 +230,80 @@ function EntityForm({ initialData, onSubmit, onCancel }: EntityFormProps) {
 
 ---
 
-## Step 4: Add Admin Page Styles
+## Step 4: Ensure Convex Functions Exist
 
-Apply terminal-style admin theme:
+Make sure `convex/{entity}.ts` has admin queries and mutations:
+
+```typescript
+// convex/items.ts
+import { query, mutation } from "./_generated/server";
+import { v } from "convex/values";
+import { requireAdmin } from "./lib/auth";
+
+// Admin: Get all items
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("items").withIndex("by_order").collect();
+  },
+});
+
+// Admin: Create
+export const create = mutation({
+  args: {
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    category: v.string(),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.insert("items", args);
+  },
+});
+
+// Admin: Update
+export const update = mutation({
+  args: {
+    id: v.id("items"),
+    // ... optional fields
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+  },
+});
+
+// Admin: Delete
+export const remove = mutation({
+  args: { id: v.id("items") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
+// Admin: Toggle visibility
+export const toggleVisibility = mutation({
+  args: { id: v.id("items") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const item = await ctx.db.get(args.id);
+    if (!item) throw new Error("Item not found");
+    await ctx.db.patch(args.id, { isVisible: !item.isVisible });
+  },
+});
+```
+
+---
+
+## Step 5: Add Admin Page Styles
+
+Apply terminal-style admin theme in `src/routes/admin/entity.css`:
 
 ```css
 .admin-page {
@@ -292,11 +321,6 @@ Apply terminal-style admin theme:
 
 .admin-page__header h1 {
   font-family: var(--font-mono);
-  color: var(--color-ubuntu-orange);
-}
-
-.admin-page__header h1::before {
-  content: "~/admin/ ";
   color: var(--color-terminal-green);
 }
 
@@ -321,30 +345,41 @@ Apply terminal-style admin theme:
 .admin-table tr:hover {
   background-color: var(--color-surface);
 }
+
+.status--visible {
+  color: var(--color-terminal-green);
+}
+
+.status--hidden {
+  color: var(--color-text-muted);
+}
 ```
 
 ---
 
-## Step 5: Add to Admin Sidebar
+## Step 6: Add to Admin Sidebar
 
-Update `app/components/layout/admin-sidebar.tsx` to include link to new admin page.
+Update `src/components/layout/admin-sidebar.tsx` to include link to new admin page.
 
 ---
 
-## Step 6: Verify
+## Step 7: Verify
 
-1. Log in as admin
+1. Log in as admin (email matches `ADMIN_EMAIL`)
 2. Navigate to the new admin page
-3. Test CRUD operations
-4. Verify validation works
-5. Check error handling
+3. Test CRUD operations:
+   - Create new item
+   - Edit existing item
+   - Toggle visibility
+   - Delete item
+4. Verify real-time updates (changes should appear immediately)
 
 ---
 
 ## Security Checklist
 
-- [ ] Route protected by authentication check
-- [ ] Email whitelisting enforced
-- [ ] Server-side validation on all mutations
-- [ ] RLS policies in place on Supabase table
+- [ ] All admin queries/mutations use `requireAdmin(ctx)`
+- [ ] Route is under `/admin/` path
+- [ ] `ADMIN_EMAIL` is set in environment
 - [ ] Error messages don't leak sensitive info
+- [ ] Convex Auth is configured

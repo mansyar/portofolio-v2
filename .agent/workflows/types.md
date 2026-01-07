@@ -1,241 +1,208 @@
 ---
-description: Generate Supabase TypeScript types and sync with project
+description: Regenerate Convex TypeScript types after schema changes
 ---
 
 # Generate Types Workflow
 
-This workflow generates TypeScript types from Supabase and syncs them with the project.
+This workflow regenerates TypeScript types from your Convex schema.
 
 ---
 
-## Step 1: Get Project ID
-
-List Supabase projects:
-
-```
-mcp_supabase-mcp-server_list_projects
-```
-
-Note the project ID.
-
----
-
-## Step 2: Generate Types from Supabase
-
-Use the Supabase MCP tool:
-
-```
-mcp_supabase-mcp-server_generate_typescript_types
-  project_id: "your-project-id"
-```
-
-This returns the TypeScript type definitions for all tables and views.
-
----
-
-## Step 3: Save Generated Types
-
-Save the output to `app/lib/supabase/database.types.ts`:
-
-```typescript
-// This file is auto-generated. Do not edit manually.
-// Generated from Supabase schema
-
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
-
-export interface Database {
-  public: {
-    Tables: {
-      skills: {
-        Row: {
-          id: string;
-          name: string;
-          category: string;
-          icon: string | null;
-          proficiency: number | null;
-          years_of_experience: number | null;
-          description: string | null;
-          display_order: number;
-          is_visible: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          // ... insert types
-        };
-        Update: {
-          // ... update types
-        };
-      };
-      // ... other tables
-    };
-    Views: {
-      // ...
-    };
-    Functions: {
-      // ...
-    };
-    Enums: {
-      // ...
-    };
-  };
-}
-```
-
----
-
-## Step 4: Create Type Aliases
-
-Create or update `app/types/index.ts` with convenient type aliases:
-
-```typescript
-import type { Database } from "~/lib/supabase/database.types";
-
-// Table row types
-export type Skill = Database["public"]["Tables"]["skills"]["Row"];
-export type SkillInsert = Database["public"]["Tables"]["skills"]["Insert"];
-export type SkillUpdate = Database["public"]["Tables"]["skills"]["Update"];
-
-export type Project = Database["public"]["Tables"]["projects"]["Row"];
-export type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
-export type ProjectUpdate = Database["public"]["Tables"]["projects"]["Update"];
-
-export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
-export type BlogPostInsert =
-  Database["public"]["Tables"]["blog_posts"]["Insert"];
-export type BlogPostUpdate =
-  Database["public"]["Tables"]["blog_posts"]["Update"];
-
-export type BlogCategory =
-  Database["public"]["Tables"]["blog_categories"]["Row"];
-export type BlogTag = Database["public"]["Tables"]["blog_tags"]["Row"];
-
-export type UsesItem = Database["public"]["Tables"]["uses_items"]["Row"];
-
-export type ResumeProfile =
-  Database["public"]["Tables"]["resume_profile"]["Row"];
-export type WorkExperience =
-  Database["public"]["Tables"]["work_experiences"]["Row"];
-export type Education = Database["public"]["Tables"]["education"]["Row"];
-export type Certification =
-  Database["public"]["Tables"]["certifications"]["Row"];
-
-export type ContactSubmission =
-  Database["public"]["Tables"]["contact_submissions"]["Row"];
-export type MediaFile = Database["public"]["Tables"]["media_files"]["Row"];
-export type SiteSetting = Database["public"]["Tables"]["site_settings"]["Row"];
-
-// Re-export database type for Supabase client
-export type { Database };
-```
-
----
-
-## Step 5: Update Supabase Client Types
-
-Ensure the Supabase client uses the types. Update `app/lib/supabase/client.ts`:
-
-```typescript
-import { createBrowserClient } from "@supabase/ssr";
-import type { Database } from "./database.types";
-
-export function createSupabaseClient() {
-  return createBrowserClient<Database>(
-    process.env.PUBLIC_SUPABASE_URL!,
-    process.env.PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
-```
-
-Update `app/lib/supabase/server.ts`:
-
-```typescript
-import { createServerClient } from "@supabase/ssr";
-import type { Database } from "./database.types";
-
-export function createSupabaseServerClient() {
-  return createServerClient<Database>(
-    process.env.PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        // cookie handling...
-      },
-    }
-  );
-}
-```
-
----
-
-## Step 6: Verify Types
-
-Run TypeScript to verify types work:
-
-```bash
-# turbo
-pnpm tsc --noEmit
-```
-
----
-
-## Step 7: Test Type Usage
-
-Verify types work in components:
-
-```typescript
-import type { Skill, Project } from "~/types";
-
-// Should have proper autocomplete and type checking
-const skill: Skill = {
-  id: "uuid",
-  name: "TypeScript",
-  category: "frontend",
-  // ... all fields should be type-checked
-};
-```
-
----
-
-## When to Regenerate Types
+## When to Run This
 
 Run this workflow after:
 
-- Creating new tables
-- Adding/removing columns
-- Changing column types
-- Modifying constraints
-- Adding new views or functions
+- Modifying `convex/schema.ts`
+- Adding new tables or fields
+- Changing field types
+- Adding new queries/mutations
 
 ---
 
-## Automation (Optional)
+## Step 1: Deploy and Generate Types
 
-Add a script to `package.json`:
+Run the Convex dev command:
 
-```json
-{
-  "scripts": {
-    "generate-types": "supabase gen types typescript --project-id your-project-id > app/lib/supabase/database.types.ts"
-  }
-}
+```bash
+# turbo
+npx convex dev --once
 ```
 
-Note: This requires the Supabase CLI installed and authenticated.
+This will:
+1. Validate your schema
+2. Deploy functions to your self-hosted backend
+3. Generate types in `convex/_generated/`
+
+---
+
+## Step 2: Verify Generated Types
+
+Check that types were generated:
+
+```
+convex/_generated/
+├── api.d.ts      # API function types
+├── api.js        # API exports
+├── dataModel.d.ts # Table/document types
+├── server.d.ts   # Server-side types
+└── server.js     # Server exports
+```
+
+---
+
+## Step 3: Using Generated Types
+
+### In Convex Functions
+
+```typescript
+// Types are automatically inferred from schema
+import { query, mutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const list = query({
+  args: {},
+  handler: async (ctx) => {
+    // ctx.db is fully typed
+    return await ctx.db.query("skills").collect();
+  },
+});
+```
+
+### In React Components
+
+```typescript
+import { api } from "../../convex/_generated/api";
+import { Doc, Id } from "../../convex/_generated/dataModel";
+
+// Document type for a table
+type Skill = Doc<"skills">;
+
+// ID type for a table
+type SkillId = Id<"skills">;
+
+// Using with queries
+const { data } = useSuspenseQuery(convexQuery(api.skills.listVisible, {}));
+// data is automatically typed as Skill[]
+```
+
+---
+
+## Step 4: Create Type Aliases (Optional)
+
+For convenience, create type aliases in `src/types/index.ts`:
+
+```typescript
+import type { Doc, Id } from "../../convex/_generated/dataModel";
+
+// Document types
+export type Skill = Doc<"skills">;
+export type Project = Doc<"projects">;
+export type BlogPost = Doc<"blogPosts">;
+export type BlogCategory = Doc<"blogCategories">;
+export type BlogTag = Doc<"blogTags">;
+export type UsesItem = Doc<"usesItems">;
+export type ResumeProfile = Doc<"resumeProfile">;
+export type WorkExperience = Doc<"workExperiences">;
+export type Education = Doc<"education">;
+export type Certification = Doc<"certifications">;
+export type ContactSubmission = Doc<"contactSubmissions">;
+export type MediaFile = Doc<"mediaFiles">;
+export type SiteSetting = Doc<"siteSettings">;
+
+// ID types
+export type SkillId = Id<"skills">;
+export type ProjectId = Id<"projects">;
+export type BlogPostId = Id<"blogPosts">;
+// ... etc
+
+// Re-export for convenience
+export type { Doc, Id } from "../../convex/_generated/dataModel";
+```
+
+---
+
+## Step 5: Verify Types Work
+
+Run TypeScript check:
+
+```bash
+# turbo
+pnpm type-check
+```
+
+Test autocomplete in your IDE by using the types.
+
+---
+
+## Common Type Patterns
+
+### Working with Document IDs
+
+```typescript
+import { Id } from "../../convex/_generated/dataModel";
+
+// Function that takes a skill ID
+function editSkill(id: Id<"skills">) {
+  // ...
+}
+
+// Converting string to ID (from URL params)
+const skillId = params.id as Id<"skills">;
+```
+
+### Working with Optional Fields
+
+```typescript
+type Skill = Doc<"skills">;
+
+// All fields from schema are properly typed
+const skill: Skill = {
+  _id: "...",
+  _creationTime: 123456,
+  name: "TypeScript",
+  category: "frontend",
+  proficiency: 90,
+  yearsOfExperience: 5,  // optional in schema
+  description: undefined, // optional fields can be undefined
+  displayOrder: 1,
+  isVisible: true,
+};
+```
+
+### Extracting Insert/Update Types
+
+```typescript
+import type { Doc } from "../../convex/_generated/dataModel";
+
+// Type for creating a new skill (without system fields)
+type SkillInput = Omit<Doc<"skills">, "_id" | "_creationTime">;
+
+// Type for updating a skill (all fields optional)
+type SkillUpdate = Partial<SkillInput>;
+```
+
+---
+
+## Troubleshooting
+
+### Types not updating?
+
+1. Make sure `npx convex dev --once` completed successfully
+2. Check for errors in the convex output
+3. Restart your TypeScript language server (VS Code: Cmd/Ctrl+Shift+P → "Restart TS Server")
+
+### Import errors?
+
+Make sure you're importing from the correct path:
+- Convex functions: `"./_generated/server"`
+- React components: `"../../convex/_generated/api"` (adjust path as needed)
 
 ---
 
 ## Checklist
 
-- [ ] Types generated from Supabase
-- [ ] Types saved to `app/lib/supabase/database.types.ts`
-- [ ] Type aliases created in `app/types/index.ts`
-- [ ] Supabase clients typed
-- [ ] TypeScript check passes
+- [ ] `npx convex dev --once` ran successfully
+- [ ] Types generated in `convex/_generated/`
+- [ ] `pnpm type-check` passes
 - [ ] IDE autocomplete working
+- [ ] Type aliases created (optional)

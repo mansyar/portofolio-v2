@@ -4,7 +4,7 @@ description: Create a new public page with SSR, SEO, and proper routing
 
 # Create Public Page Workflow
 
-This workflow creates a new public-facing page with server-side rendering, SEO optimization, and TanStack Start routing conventions.
+This workflow creates a new public-facing page with server-side rendering, SEO optimization, and TanStack Start + Convex integration.
 
 ---
 
@@ -14,44 +14,87 @@ Based on the page requirements:
 
 | Page Type   | File Location                 | Example              |
 | ----------- | ----------------------------- | -------------------- |
-| Static page | `app/routes/{name}.tsx`       | `about.tsx`          |
-| List page   | `app/routes/{name}/index.tsx` | `projects/index.tsx` |
-| Detail page | `app/routes/{name}/$slug.tsx` | `projects/$slug.tsx` |
+| Static page | `src/routes/{name}.tsx`       | `about.tsx`          |
+| List page   | `src/routes/{name}/index.tsx` | `projects/index.tsx` |
+| Detail page | `src/routes/{name}/$slug.tsx` | `projects/$slug.tsx` |
 
 ---
 
-## Step 2: Create Route File
+## Step 2: Create Convex Query (if fetching data)
 
-### For Static Pages
+Create or add to `convex/{entity}.ts`:
 
-Create `app/routes/{page-name}.tsx`:
+```typescript
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+
+/**
+ * Get all visible items for the public page.
+ */
+export const listVisible = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("items")
+      .withIndex("by_order")
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+  },
+});
+
+/**
+ * Get single item by slug.
+ */
+export const getBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    const item = await ctx.db
+      .query("items")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .first();
+
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    return item;
+  },
+});
+```
+
+Deploy the query:
+
+```bash
+# turbo
+npx convex dev --once
+```
+
+---
+
+## Step 3: Create Route File
+
+### For Static/List Pages
+
+Create `src/routes/{page-name}.tsx`:
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../convex/_generated/api";
 import { SEO } from "~/components/features/seo";
-
-// Server function for data loading
-const getData = createServerFn("GET", async () => {
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("your_table")
-    .select("*")
-    .eq("is_visible", true);
-
-  if (error) throw error;
-  return data;
-});
+import "./page-name.css";
 
 export const Route = createFileRoute("/page-name")({
-  loader: () => getData(),
   component: PageNamePage,
 });
 
 function PageNamePage() {
-  const data = Route.useLoaderData();
+  // Fetch data with SSR + real-time updates
+  const { data: items } = useSuspenseQuery(
+    convexQuery(api.items.listVisible, {})
+  );
 
   return (
     <>
@@ -61,7 +104,10 @@ function PageNamePage() {
         canonical="https://ansyar-world.top/page-name"
       />
 
-      <main className="page page--page-name">{/* Page content */}</main>
+      <main className="page page--page-name">
+        <h1>~/page-name</h1>
+        {/* Page content */}
+      </main>
     </>
   );
 }
@@ -69,49 +115,43 @@ function PageNamePage() {
 
 ### For Detail Pages with Dynamic Slug
 
-Create `app/routes/{name}/$slug.tsx`:
+Create `src/routes/{name}/$slug.tsx`:
 
 ```tsx
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { createSupabaseServerClient } from "~/lib/supabase/server";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../../convex/_generated/api";
 import { SEO } from "~/components/features/seo";
 
-const getItem = createServerFn("GET", async (slug: string) => {
-  const supabase = createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("your_table")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_visible", true)
-    .single();
-
-  if (error || !data) {
-    throw notFound();
-  }
-
-  return data;
-});
-
 export const Route = createFileRoute("/items/$slug")({
-  loader: ({ params }) => getItem(params.slug),
   component: ItemDetailPage,
 });
 
 function ItemDetailPage() {
-  const item = Route.useLoaderData();
+  const { slug } = Route.useParams();
+
+  const { data: item } = useSuspenseQuery(
+    convexQuery(api.items.getBySlug, { slug })
+  );
+
+  if (!item) {
+    throw notFound();
+  }
 
   return (
     <>
       <SEO
         title={`${item.title} | Ansyar's Portfolio`}
-        description={item.short_description}
+        description={item.shortDescription || ""}
         canonical={`https://ansyar-world.top/items/${item.slug}`}
-        ogImage={item.thumbnail_url}
+        ogImage={item.thumbnailUrl}
       />
 
-      <main className="page page--item-detail">{/* Detail content */}</main>
+      <main className="page page--item-detail">
+        <h1>{item.title}</h1>
+        {/* Detail content */}
+      </main>
     </>
   );
 }
@@ -119,9 +159,9 @@ function ItemDetailPage() {
 
 ---
 
-## Step 3: Create SEO Component (if not exists)
+## Step 4: Create SEO Component (if not exists)
 
-Create `app/components/features/seo.tsx`:
+Create `src/components/features/seo.tsx`:
 
 ```tsx
 interface SEOProps {
@@ -178,9 +218,9 @@ export function SEO({
 
 ---
 
-## Step 4: Add Page Styles
+## Step 5: Add Page Styles
 
-Create or update CSS for the page following Ubuntu Terminal design:
+Create or update `src/routes/page-name.css` following Ubuntu Terminal design:
 
 ```css
 .page--page-name {
@@ -204,13 +244,13 @@ Create or update CSS for the page following Ubuntu Terminal design:
 
 ---
 
-## Step 5: Add to Navigation (if applicable)
+## Step 6: Add to Navigation (if applicable)
 
-Update `app/components/layout/navigation.tsx` to include the new page link.
+Update `src/components/layout/navigation.tsx` to include the new page link.
 
 ---
 
-## Step 6: Verify Page
+## Step 7: Verify Page
 
 ```bash
 # turbo
@@ -220,7 +260,8 @@ pnpm dev
 1. Navigate to the new page
 2. Check SEO meta tags in browser dev tools
 3. Verify data loading works
-4. Test responsive design
+4. Test real-time updates (modify data in Convex dashboard)
+5. Test responsive design
 
 ---
 
@@ -234,3 +275,30 @@ pnpm dev
 - [ ] Proper heading hierarchy (single H1)
 - [ ] Semantic HTML landmarks
 - [ ] Alt text for images
+
+---
+
+## Data Fetching Patterns
+
+### SSR + Real-time (Recommended)
+
+```tsx
+const { data } = useSuspenseQuery(
+  convexQuery(api.items.listVisible, {})
+);
+```
+
+- Data is fetched on server for SSR
+- Automatically updates when data changes
+- Best for most use cases
+
+### Client-only (SPA Mode)
+
+```tsx
+const { data } = useQuery(
+  convexQuery(api.items.listVisible, {})
+);
+```
+
+- Data fetched on client only
+- Use when SSR is not needed

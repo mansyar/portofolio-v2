@@ -48,15 +48,15 @@
 
 /* Dark Mode Defaults */
 :root {
-  --color-bg: var(--color-terminal-bg-dark);
-  --color-text: var(--color-text-primary-dark);
+  --color-bg-primary: var(--color-terminal-bg-dark);
+  --color-text-primary: var(--color-text-primary-dark);
   --color-surface: var(--color-surface-dark);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --color-bg: var(--color-terminal-bg-light);
-    --color-text: var(--color-text-primary-light);
+    --color-bg-primary: var(--color-terminal-bg-light);
+    --color-text-primary: var(--color-text-primary-light);
     --color-surface: var(--color-surface-light);
   }
 }

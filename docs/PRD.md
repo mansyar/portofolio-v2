@@ -7,7 +7,8 @@
 **Author:** Mezy Ansyar  
 **Role:** DevOps Engineer & Web Developer  
 **Created:** January 4, 2026  
-**Status:** Planning
+**Updated:** January 7, 2026  
+**Status:** Planning (Tech Stack Migration)
 
 ---
 
@@ -48,11 +49,12 @@ A fully-featured portfolio website with a custom-built CMS, designed to showcase
 
 ### Backend & Database
 
-| Technology            | Purpose                                  |
-| --------------------- | ---------------------------------------- |
-| **Supabase**          | PostgreSQL database + Row Level Security |
-| **Supabase Auth**     | Magic link authentication for CMS        |
-| **Supabase Realtime** | Optional: real-time updates              |
+| Technology                   | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| **Convex (Self-Hosted)**     | Reactive database + serverless functions     |
+| **Convex Auth**              | Magic link + password authentication for CMS |
+| **Convex Realtime**          | Built-in real-time subscriptions             |
+| **PostgreSQL**               | Convex backend storage (on Coolify)          |
 
 ### Storage & Media
 
@@ -499,12 +501,12 @@ interface Certification {
 
 #### 6.2.1 Authentication
 
-| Feature          | Implementation                              |
-| ---------------- | ------------------------------------------- |
-| **Method**       | Magic Link (passwordless) via Supabase Auth |
-| **Whitelisting** | Only allowed email(s) can access            |
-| **Session**      | JWT with refresh tokens                     |
-| **Protection**   | All `/admin/*` routes protected             |
+| Feature          | Implementation                                |
+| ---------------- | --------------------------------------------- |
+| **Method**       | Magic Link + Password via Convex Auth         |
+| **Whitelisting** | Only allowed email(s) can access              |
+| **Session**      | Convex Auth sessions with secure tokens       |
+| **Protection**   | All `/admin/*` routes protected               |
 
 #### 6.2.2 Dashboard (`/admin/dashboard`)
 
@@ -611,266 +613,216 @@ interface Certification {
 
 ## 7. Database Schema
 
-### Supabase Tables
+### Convex Schema (TypeScript)
 
-```sql
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+Convex uses a TypeScript-based schema definition. The schema is defined in `convex/schema.ts`.
 
--- Skills
-CREATE TABLE skills (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL,
-  category VARCHAR(50) NOT NULL,
-  icon VARCHAR(255),
-  proficiency INTEGER CHECK (proficiency >= 0 AND proficiency <= 100),
-  years_of_experience DECIMAL(3,1),
-  description TEXT,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+> **Note:** Convex automatically provides `_id` and `_creationTime` fields for all documents.
+> Authorization is handled at the function level (in queries/mutations), not with RLS policies.
 
--- Projects
-CREATE TABLE projects (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  short_description VARCHAR(500),
-  full_description TEXT,
-  thumbnail_url VARCHAR(500),
-  images TEXT[], -- Array of URLs
-  tech_stack TEXT[],
-  live_demo_url VARCHAR(500),
-  github_url VARCHAR(500),
-  is_featured BOOLEAN DEFAULT false,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+```typescript
+// convex/schema.ts
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
--- Blog Categories
-CREATE TABLE blog_categories (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(100) NOT NULL,
-  slug VARCHAR(100) UNIQUE NOT NULL,
-  description TEXT,
-  display_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+export default defineSchema({
+  // Auth tables (managed by Convex Auth)
+  ...authTables,
 
--- Blog Tags
-CREATE TABLE blog_tags (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(50) NOT NULL,
-  slug VARCHAR(50) UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Skills
+  skills: defineTable({
+    name: v.string(),
+    category: v.union(
+      v.literal("devops"),
+      v.literal("backend"),
+      v.literal("frontend"),
+      v.literal("tools")
+    ),
+    icon: v.optional(v.string()),
+    proficiency: v.number(), // 0-100
+    yearsOfExperience: v.optional(v.number()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  })
+    .index("by_category", ["category"])
+    .index("by_order", ["displayOrder"]),
 
--- Blog Posts
-CREATE TABLE blog_posts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  excerpt TEXT,
-  content TEXT NOT NULL,
-  cover_image_url VARCHAR(500),
-  category_id UUID REFERENCES blog_categories(id),
-  status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
-  reading_time INTEGER, -- minutes
-  published_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Projects
+  projects: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    shortDescription: v.optional(v.string()),
+    fullDescription: v.optional(v.string()),
+    thumbnailUrl: v.optional(v.string()),
+    images: v.array(v.string()),
+    techStack: v.array(v.string()),
+    liveDemoUrl: v.optional(v.string()),
+    githubUrl: v.optional(v.string()),
+    isFeatured: v.boolean(),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_featured", ["isFeatured"])
+    .index("by_order", ["displayOrder"]),
 
--- Blog Post Tags (junction table)
-CREATE TABLE blog_post_tags (
-  post_id UUID REFERENCES blog_posts(id) ON DELETE CASCADE,
-  tag_id UUID REFERENCES blog_tags(id) ON DELETE CASCADE,
-  PRIMARY KEY (post_id, tag_id)
-);
+  // Blog Categories
+  blogCategories: defineTable({
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_order", ["displayOrder"]),
 
--- Uses Items
-CREATE TABLE uses_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  category VARCHAR(100) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  url VARCHAR(500),
-  image_url VARCHAR(500),
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Blog Tags
+  blogTags: defineTable({
+    name: v.string(),
+    slug: v.string(),
+  }).index("by_slug", ["slug"]),
 
--- Resume Profile
-CREATE TABLE resume_profile (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  full_name VARCHAR(255) NOT NULL,
-  title VARCHAR(255),
-  email VARCHAR(255),
-  phone VARCHAR(50),
-  location VARCHAR(255),
-  summary TEXT,
-  linkedin_url VARCHAR(500),
-  github_url VARCHAR(500),
-  website_url VARCHAR(500),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Blog Posts
+  blogPosts: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    content: v.string(),
+    coverImageUrl: v.optional(v.string()),
+    categoryId: v.optional(v.id("blogCategories")),
+    tagIds: v.array(v.id("blogTags")),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    readingTime: v.optional(v.number()),
+    publishedAt: v.optional(v.number()), // timestamp
+  })
+    .index("by_slug", ["slug"])
+    .index("by_status", ["status"])
+    .index("by_published", ["publishedAt"])
+    .index("by_category", ["categoryId"]),
 
--- Work Experience
-CREATE TABLE work_experiences (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  company VARCHAR(255) NOT NULL,
-  role VARCHAR(255) NOT NULL,
-  location VARCHAR(255),
-  start_date DATE NOT NULL,
-  end_date DATE, -- NULL = current position
-  description TEXT,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Uses Items
+  usesItems: defineTable({
+    category: v.string(),
+    name: v.string(),
+    description: v.optional(v.string()),
+    url: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  })
+    .index("by_category", ["category"])
+    .index("by_order", ["displayOrder"]),
 
--- Education
-CREATE TABLE education (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  institution VARCHAR(255) NOT NULL,
-  degree VARCHAR(255) NOT NULL,
-  field VARCHAR(255),
-  start_date DATE NOT NULL,
-  end_date DATE,
-  description TEXT,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Resume Profile (singleton pattern)
+  resumeProfile: defineTable({
+    fullName: v.string(),
+    title: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    location: v.optional(v.string()),
+    summary: v.optional(v.string()),
+    linkedinUrl: v.optional(v.string()),
+    githubUrl: v.optional(v.string()),
+    websiteUrl: v.optional(v.string()),
+  }),
 
--- Certifications
-CREATE TABLE certifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  issuer VARCHAR(255) NOT NULL,
-  issue_date DATE NOT NULL,
-  expiry_date DATE,
-  credential_url VARCHAR(500),
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Work Experiences
+  workExperiences: defineTable({
+    company: v.string(),
+    role: v.string(),
+    location: v.optional(v.string()),
+    startDate: v.string(), // ISO date
+    endDate: v.optional(v.string()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  }).index("by_order", ["displayOrder"]),
 
--- Contact Submissions
-CREATE TABLE contact_submissions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  subject VARCHAR(255) NOT NULL,
-  message TEXT NOT NULL,
-  is_read BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Education
+  education: defineTable({
+    institution: v.string(),
+    degree: v.string(),
+    field: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.optional(v.string()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  }).index("by_order", ["displayOrder"]),
 
--- Site Settings (key-value store)
-CREATE TABLE site_settings (
-  key VARCHAR(100) PRIMARY KEY,
-  value JSONB NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Certifications
+  certifications: defineTable({
+    name: v.string(),
+    issuer: v.string(),
+    issueDate: v.string(),
+    expiryDate: v.optional(v.string()),
+    credentialUrl: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  }).index("by_order", ["displayOrder"]),
 
--- Media Files (metadata only, actual files in R2)
-CREATE TABLE media_files (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  filename VARCHAR(255) NOT NULL,
-  original_filename VARCHAR(255) NOT NULL,
-  mime_type VARCHAR(100) NOT NULL,
-  size INTEGER NOT NULL, -- bytes
-  url VARCHAR(500) NOT NULL,
-  alt_text VARCHAR(255),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+  // Contact Submissions
+  contactSubmissions: defineTable({
+    name: v.string(),
+    email: v.string(),
+    subject: v.string(),
+    message: v.string(),
+    isRead: v.boolean(),
+  }).index("by_read", ["isRead"]),
 
--- Indexes for performance
-CREATE INDEX idx_projects_slug ON projects(slug);
-CREATE INDEX idx_projects_featured ON projects(is_featured) WHERE is_featured = true;
-CREATE INDEX idx_blog_posts_slug ON blog_posts(slug);
-CREATE INDEX idx_blog_posts_status ON blog_posts(status);
-CREATE INDEX idx_blog_posts_published ON blog_posts(published_at DESC) WHERE status = 'published';
-CREATE INDEX idx_skills_category ON skills(category);
+  // Site Settings (key-value)
+  siteSettings: defineTable({
+    key: v.string(),
+    value: v.any(),
+  }).index("by_key", ["key"]),
 
--- Row Level Security (RLS)
-ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE blog_categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE blog_tags ENABLE ROW LEVEL SECURITY;
-ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE blog_post_tags ENABLE ROW LEVEL SECURITY;
-ALTER TABLE uses_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE resume_profile ENABLE ROW LEVEL SECURITY;
-ALTER TABLE work_experiences ENABLE ROW LEVEL SECURITY;
-ALTER TABLE education ENABLE ROW LEVEL SECURITY;
-ALTER TABLE certifications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE media_files ENABLE ROW LEVEL SECURITY;
+  // Media Files (metadata, files in R2)
+  mediaFiles: defineTable({
+    filename: v.string(),
+    originalFilename: v.string(),
+    mimeType: v.string(),
+    size: v.number(),
+    url: v.string(),
+    altText: v.optional(v.string()),
+  }),
+});
+```
 
--- Public read policies (for public content)
-CREATE POLICY "Public can read visible skills" ON skills
-  FOR SELECT USING (is_visible = true);
+### Authorization Pattern
 
-CREATE POLICY "Public can read visible projects" ON projects
-  FOR SELECT USING (is_visible = true);
+Instead of RLS policies, Convex uses function-level authorization:
 
-CREATE POLICY "Public can read categories" ON blog_categories
-  FOR SELECT USING (true);
+```typescript
+// convex/lib/auth.ts
+import { QueryCtx, MutationCtx } from "./_generated/server";
 
-CREATE POLICY "Public can read tags" ON blog_tags
-  FOR SELECT USING (true);
+const ADMIN_EMAILS = [process.env.ADMIN_EMAIL];
 
-CREATE POLICY "Public can read published posts" ON blog_posts
-  FOR SELECT USING (status = 'published');
+export async function requireAdmin(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Unauthorized: Not authenticated");
+  }
+  if (!ADMIN_EMAILS.includes(identity.email ?? "")) {
+    throw new Error("Unauthorized: Not an admin");
+  }
+  return identity;
+}
+```
 
-CREATE POLICY "Public can read post tags" ON blog_post_tags
-  FOR SELECT USING (true);
+Usage in mutations:
 
-CREATE POLICY "Public can read visible uses" ON uses_items
-  FOR SELECT USING (is_visible = true);
-
-CREATE POLICY "Public can read resume profile" ON resume_profile
-  FOR SELECT USING (true);
-
-CREATE POLICY "Public can read visible experiences" ON work_experiences
-  FOR SELECT USING (is_visible = true);
-
-CREATE POLICY "Public can read visible education" ON education
-  FOR SELECT USING (is_visible = true);
-
-CREATE POLICY "Public can read visible certs" ON certifications
-  FOR SELECT USING (is_visible = true);
-
-CREATE POLICY "Public can submit contact" ON contact_submissions
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Public can read media" ON media_files
-  FOR SELECT USING (true);
-
--- Admin policies (for authenticated admin)
--- Note: Replace 'your-email@example.com' with actual admin email
-CREATE POLICY "Admin full access to skills" ON skills
-  FOR ALL USING (auth.jwt() ->> 'email' = 'your-email@example.com');
-
-CREATE POLICY "Admin full access to projects" ON projects
-  FOR ALL USING (auth.jwt() ->> 'email' = 'your-email@example.com');
-
-CREATE POLICY "Admin full access to blog_posts" ON blog_posts
-  FOR ALL USING (auth.jwt() ->> 'email' = 'your-email@example.com');
-
--- Add similar policies for other tables...
+```typescript
+// convex/skills.ts
+export const create = mutation({
+  args: { /* ... */ },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx); // Throws if not admin
+    return await ctx.db.insert("skills", args);
+  },
+});
 ```
 
 ---
@@ -978,10 +930,8 @@ portofolio-v2/
 │   │   ├── use-auth.ts
 │   │   └── use-media-query.ts
 │   ├── lib/
-│   │   ├── supabase/
-│   │   │   ├── client.ts
-│   │   │   ├── server.ts
-│   │   │   └── types.ts
+│   │   ├── convex/
+│   │   │   └── client.ts           # Convex client setup
 │   │   ├── r2/
 │   │   │   └── client.ts
 │   │   ├── utils.ts
@@ -992,7 +942,7 @@ portofolio-v2/
 │   │   └── components/
 │   ├── types/
 │   │   └── index.ts
-│   └── router.tsx                  # Router configuration
+│   └── router.tsx                  # Router + Convex provider
 ├── public/
 │   ├── fonts/
 │   ├── images/
@@ -1015,33 +965,41 @@ portofolio-v2/
 ## 10. Deployment Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        COOLIFY                               │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │                    Docker                            │    │
-│  │  ┌─────────────────────────────────────────────┐    │    │
-│  │  │         TanStack Start App                   │    │    │
-│  │  │         (Node.js Container)                  │    │    │
-│  │  │         Port: 3000                           │    │    │
-│  │  └─────────────────────────────────────────────┘    │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                           │                                  │
-│                    Nginx Reverse Proxy                       │
-│                    (Coolify managed)                         │
-│                           │                                  │
-│               ┌───────────┴───────────┐                     │
-│               │   ansyar-world.top    │                     │
-│               │   (SSL via Let's Encrypt)                   │
-│               └───────────────────────┘                     │
-└─────────────────────────────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        ▼                   ▼                   ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│   Supabase    │   │ Cloudflare R2 │   │   Email       │
-│   (Database)  │   │   (Media)     │   │   Service     │
-│   (Auth)      │   │               │   │   (Resend?)   │
-└───────────────┘   └───────────────┘   └───────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                             COOLIFY                                   │
+│  ┌──────────────────────────────────────────────────────────────┐    │
+│  │                         Docker                                │    │
+│  │                                                               │    │
+│  │  ┌─────────────────────┐    ┌─────────────────────┐          │    │
+│  │  │  TanStack Start     │◄───│  Convex Backend     │          │    │
+│  │  │  (Frontend + SSR)   │    │  (Self-Hosted)      │          │    │
+│  │  │  Port: 3000         │    │  Port: 3210         │          │    │
+│  │  └─────────────────────┘    └──────────┬──────────┘          │    │
+│  │                                        │                      │    │
+│  │  ┌─────────────────────┐    ┌──────────▼──────────┐          │    │
+│  │  │  Convex Dashboard   │    │     PostgreSQL      │          │    │
+│  │  │  (Optional UI)      │    │  (Convex Storage)   │          │    │
+│  │  │  Port: 6791         │    │  Port: 5432         │          │    │
+│  │  └─────────────────────┘    └─────────────────────┘          │    │
+│  │                                                               │    │
+│  └──────────────────────────────────────────────────────────────┘    │
+│                                │                                      │
+│                    Nginx Reverse Proxy (Coolify managed)              │
+│                                │                                      │
+│          ┌─────────────────────┼─────────────────────┐               │
+│          │                     │                     │               │
+│   ansyar-world.top    convex.ansyar-world.top    (internal)         │
+│   (Frontend)          (Convex Backend)           (PostgreSQL)        │
+│   SSL ✓               SSL ✓                                          │
+│                                                                       │
+└──────────────────────────────────────────────────────────────────────┘
+                                │
+                ┌───────────────┼───────────────┐
+                ▼                               ▼
+        ┌───────────────┐               ┌───────────────┐
+        │ Cloudflare R2 │               │   Resend      │
+        │   (Media)     │               │   (Email)     │
+        └───────────────┘               └───────────────┘
 ```
 
 ### Docker Configuration
@@ -1088,24 +1046,24 @@ CMD ["node", ".output/server/index.mjs"]
 
 # App
 NODE_ENV=production
-PUBLIC_APP_URL=https://ansyar-world.top
+VITE_APP_URL=https://ansyar-world.top
 
-# Supabase
-PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# Self-Hosted Convex
+VITE_CONVEX_URL=https://convex.ansyar-world.top
+CONVEX_SELF_HOSTED_URL=https://convex.ansyar-world.top
+CONVEX_SELF_HOSTED_ADMIN_KEY=your-admin-key
 
-# Cloudflare R2
+# Cloudflare R2 (for media storage)
 R2_ACCESS_KEY_ID=your-r2-access-key
 R2_SECRET_ACCESS_KEY=your-r2-secret-key
 R2_BUCKET_NAME=portfolio-media
 R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
-PUBLIC_R2_PUBLIC_URL=https://media.ansyar-world.top
+VITE_R2_PUBLIC_URL=https://media.ansyar-world.top
 
-# Auth
+# Auth (admin whitelist)
 ADMIN_EMAIL=your-email@example.com
 
-# Email (for contact form)
+# Email (for contact form + magic links)
 RESEND_API_KEY=your-resend-key
 CONTACT_EMAIL=contact@ansyar-world.top
 ```
@@ -1129,7 +1087,28 @@ CONTACT_EMAIL=contact@ansyar-world.top
 ## 13. References
 
 - [TanStack Start Documentation](https://tanstack.com/start)
-- [Supabase Documentation](https://supabase.com/docs)
+- [Convex Documentation](https://docs.convex.dev/)
+- [Convex Self-Hosting Guide](https://github.com/get-convex/convex-backend)
+- [Convex Auth](https://labs.convex.dev/auth)
+- [Convex + TanStack Start](https://docs.convex.dev/client/tanstack/tanstack-start)
 - [Cloudflare R2 Documentation](https://developers.cloudflare.com/r2/)
 - [Coolify Documentation](https://coolify.io/docs)
 - [Ubuntu Brand Guidelines](https://design.ubuntu.com/)
+
+---
+
+## 14. Migration Notes
+
+> See [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) for detailed migration steps from Supabase to Convex.
+
+### Key Changes (January 7, 2026)
+
+| Component | Before | After |
+|-----------|--------|-------|
+| Database | Supabase (PostgreSQL) | Convex (Self-hosted) |
+| Auth | Supabase Auth | Convex Auth |
+| Realtime | Supabase Realtime | Convex (built-in) |
+| Type Gen | `supabase gen types` | Automatic |
+| RLS | PostgreSQL policies | Function-level auth |
+| API | Server functions | Convex queries/mutations |
+| Storage | R2 | R2 (unchanged) |
