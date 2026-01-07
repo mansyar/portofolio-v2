@@ -10,20 +10,23 @@ import { BlogCard } from '../components/ui/blog-card'
 import { TypingEffect } from '../components/ui/typing-effect'
 import { ArrowRight } from 'lucide-react'
 import { TerminalWindow, CodeBlock } from '../components/ui/terminal-window'
+import { useMediaQuery } from '../hooks/use-media-query'
+import type { RouterContext } from './__root'
 
 export const Route = createFileRoute('/')({
   component: App,
-  loader: async ({ context }) => {
-    // Prefetch data for SSR
+  loader: async ({ context }: { context: RouterContext }) => {
+    // Prefetch critical data
     await Promise.all([
-      context.queryClient.ensureQueryData(convexQuery(api.projects.listFeatured, {})),
-      context.queryClient.ensureQueryData(convexQuery(api.skills.listVisible, {})),
-      context.queryClient.ensureQueryData(convexQuery(api.blog.listRecent, { limit: 3 })),
+      context.queryClient.prefetchQuery(convexQuery(api.projects.listFeatured, {})),
+      context.queryClient.prefetchQuery(convexQuery(api.skills.listVisible, {})),
+      context.queryClient.prefetchQuery(convexQuery(api.blog.listRecent, { limit: 3 })),
     ])
-  }
+  },
 })
 
 function App() {
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
   const { data: skills } = useSuspenseQuery(convexQuery(api.skills.listVisible, {}))
   const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
   const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
@@ -43,7 +46,7 @@ function App() {
             <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
               Full-Stack Developer <br />
               <span className="text-(--color-ubuntu-orange)">
-                & <TypingEffect text="DevOps Engineer" speed={100} startDelay={1000} />
+                & <TypingEffect text="DevOps Engineer" speed={100} startDelay={200} />
               </span>
             </h1>
             
@@ -66,30 +69,33 @@ function App() {
             </div>
             </div>
             
-            {/* Terminal Illustration */}
-            <div className="hidden perspective-1000 lg:block">
-              <div className="relative transform transition-transform duration-500 hover:rotate-1">
-                 <TerminalWindow title="ansyar@portfolio:~/about" className="shadow-2xl">
-                   <div className="mb-4 flex items-center gap-2 text-(--color-terminal-green)">
-                     <span>$</span>
-                     <TypingEffect text="cat me.ts" speed={50} />
-                   </div>
-                   <CodeBlock 
-                     code={`interface Developer {
+            {/* Terminal Illustration - Desktop Only */}
+            {isDesktop && (
+              <div className="hidden perspective-1000 lg:block">
+                <div className="relative transform transition-transform duration-500 hover:rotate-1">
+                  <TerminalWindow title="ansyar@portfolio:~/about" className="shadow-2xl">
+                    <div className="mb-4 flex items-center gap-2 text-(--color-terminal-green)">
+                      <span>$</span>
+                      <TypingEffect text="cat me.ts" speed={50} />
+                    </div>
+                    <CodeBlock 
+                      code={`interface Developer {
   name: "Ansyar";
   role: "Full Stack Developer";
   stack: ["React", "Convex", "DevOps"];
   passion: "Building great software";
   status: "Online";
 }`} 
-                   />
-                   <div className="mt-4 flex items-center gap-2 text-(--color-terminal-green)">
-                     <span>$</span>
-                     <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
-                   </div>
-                 </TerminalWindow>
+                    />
+                    <div className="mt-4 flex items-center gap-2 text-(--color-terminal-green)">
+                      <span>$</span>
+                      <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
+                    </div>
+                  </TerminalWindow>
+                </div>
               </div>
-            </div>
+            )}
+            
           </div>
         </div>
       </section>

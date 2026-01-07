@@ -136,8 +136,8 @@
 - [x] `pnpm tsc --noEmit` passes with 0 errors
 - [x] `pnpm lint` passes with 0 warnings
 - [x] `pnpm build` succeeds
-- [ ] Lighthouse Performance ≥ 90 on all pages (to verify)
-- [ ] Lighthouse Accessibility ≥ 95 on all pages (to verify)
+- [ ] Lighthouse Performance ≥ 90 on all pages (Pending Verification)
+- [ ] Lighthouse Accessibility ≥ 95 on all pages (Pending Verification)
 - [x] All images have alt text
 - [x] Semantic HTML used (`<main>`, `<nav>`, `<article>`, single `<h1>`)
 - [x] Keyboard navigation works on all interactive elements
