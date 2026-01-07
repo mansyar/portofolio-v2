@@ -1,6 +1,7 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import type { QueryClient } from '@tanstack/react-query'
 
 import Header from '../components/Header'
 import { Footer } from '../components/layout/Footer'
@@ -8,7 +9,14 @@ import { Footer } from '../components/layout/Footer'
 import '../styles/variables.css'
 import appCss from '../styles/globals.css?url'
 
-export const Route = createRootRoute({
+// Define the router context interface
+export interface RouterContext {
+  queryClient: QueryClient
+}
+
+import { NotFound } from '../components/NotFound'
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
@@ -31,6 +39,7 @@ export const Route = createRootRoute({
   }),
 
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -44,7 +53,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <div className="flex flex-col min-h-screen">
+        <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">
             {children}

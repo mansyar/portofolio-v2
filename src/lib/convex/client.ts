@@ -1,5 +1,5 @@
 import { ConvexReactClient } from "convex/react";
-import { ConvexQueryClient } from "@convex-dev/react-query";
+
 
 /**
  * Convex URL from environment variables.
@@ -20,8 +20,5 @@ if (!convexUrl) {
  */
 export const convex = new ConvexReactClient(convexUrl);
 
-/**
- * Convex Query Client for TanStack Query integration.
- * Enables SSR and caching with React Query.
- */
-export const convexQueryClient = new ConvexQueryClient(convex);
+// convexQueryClient should be instantiated per router/request to avoid state leakage
+// and "already subscribed" errors. See src/router.tsx

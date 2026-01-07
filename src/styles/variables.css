@@ -46,17 +46,32 @@
   --animation-blink-interval: 500ms;
 }
 
-/* Dark Mode Defaults */
+/* Dark Mode Defaults (Base) */
 :root {
   --color-bg-primary: var(--color-terminal-bg-dark);
   --color-text-primary: var(--color-text-primary-dark);
   --color-surface: var(--color-surface-dark);
 }
 
+/* Light Mode Overrides (System Preference) */
 @media (prefers-color-scheme: light) {
   :root {
     --color-bg-primary: var(--color-terminal-bg-light);
     --color-text-primary: var(--color-text-primary-light);
     --color-surface: var(--color-surface-light);
   }
+}
+
+/* Manual Light Mode Override */
+:root.light {
+  --color-bg-primary: var(--color-terminal-bg-light);
+  --color-text-primary: var(--color-text-primary-light);
+  --color-surface: var(--color-surface-light);
+}
+
+/* Manual Dark Mode Override */
+:root.dark {
+  --color-bg-primary: var(--color-terminal-bg-dark);
+  --color-text-primary: var(--color-text-primary-dark);
+  --color-surface: var(--color-surface-dark);
 }

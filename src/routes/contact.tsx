@@ -1,67 +1,194 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { Card } from '../components/ui/card'
-import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Seo } from '../components/seo'
+import { Terminal, Send, CheckCircle, AlertCircle, Mail, MapPin } from 'lucide-react'
+import { useState } from 'react'
+import { z } from 'zod'
 
 export const Route = createFileRoute('/contact')({
-  component: ContactPage,
+  component: Contact,
 })
 
-function ContactPage() {
+// Client-side validation using Zod (optional but good practice)
+const contactSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  subject: z.string().min(3, "Subject is required"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+function Contact() {
+  const submitMessage = useMutation(api.contact.submit);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    setErrorMessage(null);
+
+    // Validate
+    const result = contactSchema.safeParse(formData);
+    if (!result.success) {
+      setStatus('error');
+      setErrorMessage(result.error.issues[0].message);
+      return;
+    }
+
+    try {
+      await submitMessage(formData);
+      setStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      setStatus('error');
+      setErrorMessage("Failed to send message. Please try again later.");
+      console.error(error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   return (
-    <div className="container mx-auto max-w-2xl py-12 px-4">
-      <h1 className="mb-8 font-mono text-4xl font-bold text-[var(--color-ubuntu-orange)]">
-        # Contact
-      </h1>
+    <div className="container mx-auto flex max-w-5xl flex-col gap-12 px-4 pt-10 pb-20 md:px-6">
+      <Seo 
+        title="Contact | Portfolio" 
+        description="Get in touch for freelance opportunities or just to say hi." 
+      />
 
-      <Card title="contact_form.sh" variant="terminal">
-        <form className="space-y-6">
-          <div className="font-mono text-sm text-[var(--color-terminal-green)] mb-4">
-            # Fill out the form below to send a message
-          </div>
-          
-          <Input 
-            label="Name" 
-            placeholder="John Doe" 
-          />
-          
-          <Input 
-            label="Email" 
-            type="email" 
-            placeholder="john@example.com" 
-          />
-          
-          <Input 
-            label="Subject" 
-            placeholder="Project inquiry" 
-          />
-          
-          <div className="space-y-2">
-            <label className="font-mono text-sm text-[var(--color-text-secondary)]">Message</label>
-            <div className="bg-[rgba(0,0,0,0.2)] p-3 rounded border border-[var(--color-border)] focus-within:border-[var(--color-ubuntu-orange)]">
-              <textarea 
-                className="w-full bg-transparent border-none outline-none font-mono text-white min-h-[150px]"
-                placeholder="Write your message here..."
-              />
-            </div>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        {/* Contact Info */}
+        <div className="flex flex-col gap-8">
+           <div className="flex flex-col gap-4">
+            <h1 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
+              <Terminal className="text-(--color-ubuntu-orange)" />
+              Contact
+            </h1>
+            <p className="text-lg text-(--color-text-secondary)">
+              Have a project in mind or want to collaborate? <br/>
+              Fill out the form or reach out directly.
+            </p>
           </div>
 
-          <div className="flex justify-end">
-            <Button type="submit">
-              Send Message
-            </Button>
+          <div className="flex flex-col gap-6 rounded-lg border border-(--color-border) bg-(--color-surface)/50 p-6">
+             <div className="flex items-center gap-4">
+               <div className="rounded-full border border-(--color-border) bg-(--color-surface-dark) p-3">
+                 <Mail className="text-(--color-ubuntu-orange)" size={24} />
+               </div>
+               <div>
+                 <h3 className="font-bold">Email</h3>
+                 <p className="text-(--color-text-secondary)">hello@example.com</p>
+               </div>
+             </div>
+             
+             <div className="flex items-center gap-4">
+               <div className="rounded-full border border-(--color-border) bg-(--color-surface-dark) p-3">
+                 <MapPin className="text-(--color-terminal-green)" size={24} />
+               </div>
+               <div>
+                 <h3 className="font-bold">Location</h3>
+                 <p className="text-(--color-text-secondary)">Remote / Worldwide</p>
+               </div>
+             </div>
           </div>
-        </form>
-      </Card>
+        </div>
 
-      <div className="mt-12 text-center font-mono space-y-2">
-        <p className="text-[var(--color-text-secondary)]">Or email me directly:</p>
-        <a 
-          href="mailto:contact@ansyar-world.top" 
-          className="text-[var(--color-terminal-cyan)] hover:underline block text-lg"
-        >
-          contact@ansyar-world.top
-        </a>
+        {/* Contact Form */}
+        <Card title="Send Message" className="w-full">
+            {status === 'success' ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-(--color-terminal-green)/20">
+                  <CheckCircle className="text-(--color-terminal-green)" size={32} />
+                </div>
+                <h3 className="text-xl font-bold">Message Sent!</h3>
+                <p className="text-(--color-text-secondary)">
+                  Thanks for reaching out. I'll get back to you as soon as possible.
+                </p>
+                <Button onClick={() => setStatus('idle')} variant="secondary">Send another</Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                {status === 'error' && (
+                  <div className="flex items-center gap-2 rounded border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500">
+                    <AlertCircle size={16} />
+                    {errorMessage}
+                  </div>
+                )}
+                
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="name" className="font-mono text-sm text-(--color-text-secondary)">Name</label>
+                  <Input 
+                    id="name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="Your Name"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="email" className="font-mono text-sm text-(--color-text-secondary)">Email</label>
+                  <Input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="subject" className="font-mono text-sm text-(--color-text-secondary)">Subject</label>
+                  <Input 
+                    id="subject" 
+                    name="subject" 
+                    value={formData.subject} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="Project Inquiry"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="message" className="font-mono text-sm text-(--color-text-secondary)">Message</label>
+                  <textarea 
+                    id="message" 
+                    name="message" 
+                    value={formData.message} 
+                    onChange={handleChange} 
+                    required 
+                    rows={5}
+                    className="flex w-full rounded-md border border-(--color-border) bg-(--color-surface-dark) px-3 py-2 font-sans text-sm text-(--color-text-primary) placeholder:text-gray-500 focus-visible:ring-1 focus-visible:ring-(--color-ubuntu-orange) focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Tell me about your project..."
+                  />
+                </div>
+
+                <Button type="submit" className="mt-2 w-full" disabled={status === 'submitting'}>
+                  {status === 'submitting' ? (
+                     <>Sending...</>
+                  ) : (
+                     <><Send size={16} className="mr-2" /> Send Message</>
+                  )}
+                </Button>
+              </form>
+            )}
+        </Card>
       </div>
     </div>
   )

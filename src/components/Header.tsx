@@ -1,50 +1,68 @@
-import { Link, useLocation } from '@tanstack/react-router'
-import { cn } from '../lib/utils'
+import { Link } from "@tanstack/react-router";
+import { Terminal } from "lucide-react";
+import { useLocation } from "@tanstack/react-router";
+import { ThemeToggle } from "./ui/theme-toggle";
 
 export default function Header() {
-  const location = useLocation()
-  
-  const navItems = [
-    { label: 'Home', to: '/' },
-    { label: 'About', to: '/about' },
-    { label: 'Skills', to: '/skills' },
-    { label: 'Projects', to: '/projects' },
-    { label: 'Blog', to: '/blog' },
-    { label: 'Uses', to: '/uses' },
-    { label: 'Contact', to: '/contact' },
-  ]
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Skills", path: "/skills" },
+    { name: "Projects", path: "/projects" },
+    { name: "Blog", path: "/blog" },
+    { name: "Uses", path: "/uses" },
+    { name: "Contact", path: "/contact" },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-aubergine)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-aubergine)]/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center px-4">
-        <div className="mr-4 flex">
-          <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-mono text-xl font-bold text-[var(--color-ubuntu-orange)]">
-              ~/ansyar-world
-            </span>
-          </Link>
-        </div>
-        
-        <nav className="flex flex-1 items-center justify-end space-x-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "group relative px-3 py-2 font-mono text-sm transition-colors hover:text-[var(--color-ubuntu-orange)]",
-                location.pathname === item.to 
-                  ? "text-[var(--color-ubuntu-orange)] font-medium" 
-                  : "text-[var(--color-text-secondary)]"
-              )}
-            >
-              <span className="relative z-10">{item.label}</span>
-              {location.pathname === item.to && (
-                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[var(--color-ubuntu-orange)]" />
-              )}
-            </Link>
-          ))}
+    <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-bg-primary)/80 backdrop-blur-md">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+        <Link to="/" className="group flex items-center gap-2">
+          <div className="rounded border border-(--color-border) bg-(--color-surface-dark) p-1.5 transition-colors group-hover:border-(--color-ubuntu-orange)">
+            <Terminal size={20} className="text-(--color-ubuntu-orange)" />
+          </div>
+          <span className="text-lg font-bold tracking-tight">
+            ansyar<span className="text-(--color-text-secondary)">.dev</span>
+          </span>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => {
+            const isActive = 
+              link.path === "/" 
+                ? currentPath === "/" 
+                : currentPath.startsWith(link.path);
+            
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "border border-(--color-border) bg-(--color-surface-dark) text-(--color-ubuntu-orange)"
+                    : "text-(--color-text-secondary) hover:bg-(--color-surface-dark)/50 hover:text-(--color-text-primary)"
+                }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
+          
+          <div className="ml-2 border-l border-(--color-border) pl-2">
+             <ThemeToggle />
+          </div>
         </nav>
+
+        {/* Mobile Nav Placeholder - for now just ThemeToggle */}
+        <div className="flex items-center gap-4 md:hidden">
+           <ThemeToggle />
+           {/* Mobile menu toggle would go here */}
+        </div>
       </div>
     </header>
-  )
+  );
 }

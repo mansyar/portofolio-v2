@@ -4,7 +4,7 @@ import "./button.css";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 }
 
 export function Button({ 
