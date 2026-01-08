@@ -2,7 +2,7 @@
 
 > **Project:** Ansyar's Portfolio + Custom CMS  
 > **Last Updated:** January 8, 2026  
-> **Current Phase:** Phase 2 - Public Pages Complete
+> **Current Phase:** Phase 3 - CMS Core Complete
 
 ---
 
@@ -10,10 +10,11 @@
 
 | Metric            | Value                 |
 | ----------------- | --------------------- |
-| **Overall**       | █████░░░░░ 50%        |
+| **Overall**       | ██████░░░░ 60%        |
 | **Phase 0**       | ██████████ 100%       |
 | **Phase 1**       | ██████████ 100%       |
 | **Phase 2**       | ██████████ 100%       |
+| **Phase 3**       | ██████████ 100%       |
 | **Target Launch** | ~10 weeks (estimated) |
 
 ---
@@ -39,7 +40,7 @@
 - [x] `npx convex dev` connects to self-hosted backend
 - [x] Schema deploys successfully
 - [x] Basic query works with SSR (tested in Phase 2)
-- [ ] Auth flow works (sign in, sign out) (to test in Phase 3)
+- [x] Auth flow works (sign in, sign out) ✅ Completed in Phase 3
 - [x] Admin authorization checks defined
 
 </details>
@@ -174,44 +175,57 @@
 
 ## Phase 3: CMS - Core (Week 5-6)
 
-**Status:** ⚪ Pending  
-**Progress:** 0/6 tasks
+**Status:** ✅ Complete  
+**Progress:** 6/6 tasks
 
-| Task                        | Status | Notes |
-| --------------------------- | ------ | ----- |
-| Authentication (Magic Link) | [ ]    |       |
-| Admin layout and navigation | [ ]    |       |
-| Dashboard                   | [ ]    |       |
-| Projects CRUD               | [ ]    |       |
-| Skills CRUD                 | [ ]    |       |
-| Media manager (Convex Storage) | [ ]    | Uses Convex File Storage (backed by R2) |
+| Task                           | Status | Notes                                                  |
+| ------------------------------ | ------ | ------------------------------------------------------ |
+| Authentication (Password)      | [x]    | Convex Auth with Password provider, JWT keys, OIDC     |
+| Admin layout and navigation    | [x]    | Ubuntu Terminal-themed sidebar, responsive layout      |
+| Dashboard                      | [x]    | Stats cards, recent messages, quick actions, system status |
+| Projects CRUD                  | [x]    | Complete with reorder, feature toggle, rich form       |
+| Skills CRUD                    | [x]    | Complete with category management, proficiency sliders |
+| Media manager (Convex Storage) | [x]    | Uses Convex File Storage (backed by R2)                |
 
 <details>
 <summary><strong>Acceptance Criteria</strong></summary>
 
-- [ ] Magic link login works for whitelisted admin email
-- [ ] Unauthorized users redirected to login page
-- [ ] Admin sidebar navigation renders all sections
-- [ ] Dashboard shows quick stats (projects, posts, messages count)
-- [ ] Projects: Create, read, update, delete, reorder, toggle visibility
-- [ ] Skills: Create, read, update, delete, reorder by category
-- [ ] Media: Upload via Convex Storage, delete, copy URL, preview thumbnails
-- [ ] All admin routes protected with `requireAdmin()` check
+- [x] Password-based login works for whitelisted admin email
+- [x] Unauthorized users redirected to login page
+- [x] Admin sidebar navigation renders all sections
+- [x] Dashboard shows quick stats (projects, posts, messages count)
+- [x] Projects: Create, read, update, delete, reorder, toggle visibility
+- [x] Skills: Create, read, update, delete, reorder by category
+- [x] Media: Upload via Convex Storage, delete, copy URL, preview thumbnails
+- [x] All admin routes protected with `requireAdmin()` check
 
 </details>
 
 <details>
 <summary><strong>Definition of Done</strong></summary>
 
-- [ ] `pnpm tsc --noEmit` passes with 0 errors
-- [ ] `pnpm lint` passes with 0 warnings
-- [ ] `pnpm build` succeeds
-- [ ] All CRUD operations tested manually
-- [ ] RLS policies verified (admin can write, public cannot)
-- [ ] Session persistence works across page refreshes
-- [ ] Logout clears session correctly
+- [x] `pnpm tsc --noEmit` passes with 0 errors
+- [x] `pnpm lint` passes with 0 warnings
+- [x] `pnpm build` succeeds
+- [x] All CRUD operations tested manually
+- [x] Authorization checks verified (admin can write, public cannot)
+- [x] Session persistence works across page refreshes
+- [x] Logout clears session correctly
 
 </details>
+
+### Technical Implementation Notes
+
+- **Convex Auth Setup (Self-Hosted):**
+  - Created `convex/auth.config.ts` for OIDC provider configuration
+  - Created `convex/http.ts` for auth HTTP routes (JWKS, token verification)
+  - JWT keys generated and stored in Convex env vars (`JWT_PRIVATE_KEY`, `JWKS`)
+  - `CONVEX_SITE_URL` configured for self-hosted backend discovery
+  - `ADMIN_EMAIL` environment variable for authorization
+  
+- **Email Lookup Fix:**
+  - Self-hosted Convex JWT tokens don't include email claims
+  - Modified `requireAdmin()` to lookup email from `authAccounts` table using subject ID
 
 ---
 
@@ -310,6 +324,8 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Jan 8, 2026 | Phase 3 complete: CMS Core with Auth, Dashboard, Projects/Skills CRUD, Media    |
+| Jan 8, 2026 | Phase 3 (50%): Convex Auth working, admin login, dashboard, protected routes    |
 | Jan 8, 2026 | Phase 2 complete: All 7 public pages with SSR, type-safe routing, Tailwind v4   |
 | Jan 8, 2026 | Phase 1 complete: UI components, 7 public routes, Ubuntu theme                  |
 | Jan 4, 2026 | Created progress tracking document                                              |

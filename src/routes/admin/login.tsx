@@ -16,6 +16,13 @@ function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Redirect if already authenticated - must be before any conditional returns
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.navigate({ to: '/admin' });
+    }
+  }, [isAuthenticated, router]);
+
   // Show loading while auth state is being determined
   if (isAuthLoading) {
     return (
@@ -30,13 +37,6 @@ function AdminLogin() {
     );
   }
 
-  // Redirect if already authenticated - using useEffect to avoid setState during render
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.navigate({ to: '/admin' });
-    }
-  }, [isAuthenticated, router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -45,9 +45,10 @@ function AdminLogin() {
     try {
       await signIn("password", { email, password, flow: "signIn" });
       // Success is handled by the auth state change -> redirect
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || 'Authentication failed. Check your credentials.');
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed. Check your credentials.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

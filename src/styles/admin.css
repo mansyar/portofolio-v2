@@ -75,3 +75,108 @@
   width: 1.25rem;
   height: 1.25rem;
 }
+
+/* Terminal Input Styles */
+.terminal-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.75rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.terminal-input-wrapper:focus-within {
+  border-color: var(--color-ubuntu-orange);
+}
+
+.terminal-prompt {
+  color: var(--color-ubuntu-orange);
+  font-family: var(--font-mono);
+  font-weight: bold;
+  user-select: none;
+}
+
+.terminal-input {
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-mono) !important;
+  padding: 0.75rem 0 !important;
+  flex: 1;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 0.875rem;
+}
+
+/* Data Tables */
+.admin-table-wrapper {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.admin-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.admin-badge.success {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: var(--color-terminal-green);
+}
+
+.admin-badge.warning {
+  background-color: rgba(241, 196, 15, 0.15);
+  color: var(--color-terminal-yellow);
+}
+
+.admin-badge.error {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: var(--color-terminal-red);
+}
+
+.admin-badge.neutral {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-secondary);
+}

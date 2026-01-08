@@ -1,36 +1,43 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ProjectForm, ProjectFormData } from '@/components/features/ProjectForm'
-import { useMutation } from 'convex/react'
-import { api } from '../../../../convex/_generated/api'
-import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router';
+import { useQuery } from 'convex/react';
+import { api } from '../../../../convex/_generated/api';
+import { ProjectForm } from '../../../components/features/ProjectForm';
 
 export const Route = createFileRoute('/admin/projects/new')({
   component: NewProjectPage,
-})
+});
 
 function NewProjectPage() {
-  const createProject = useMutation(api.projects.create)
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = async (data: ProjectFormData) => {
-    setIsSubmitting(true)
-    try {
-      await createProject(data)
-      router.navigate({ to: '/admin/projects' })
-    } catch (error) {
-      console.error('Failed to create project:', error)
-      alert('Failed to create project. Check console.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const projects = useQuery(api.projects.listAll);
+  
+  const nextDisplayOrder = projects ? projects.length : 0;
 
   return (
-    <ProjectForm 
-      title="Initialize New Project"
-      onSubmit={handleSubmit}
-      isSubmitting={isSubmitting}
-    />
-  )
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-(--color-text-primary)">Create Project</h1>
+        <p className="text-sm text-(--color-text-secondary) font-mono mt-1">
+          Add a new project to your portfolio
+        </p>
+      </div>
+
+      <ProjectForm 
+        mode="create" 
+        initialData={{
+          title: '',
+          slug: '',
+          shortDescription: '',
+          fullDescription: '',
+          thumbnailUrl: '',
+          images: [],
+          techStack: [],
+          liveDemoUrl: '',
+          githubUrl: '',
+          isFeatured: false,
+          displayOrder: nextDisplayOrder,
+          isVisible: true,
+        }} 
+      />
+    </div>
+  );
 }

@@ -1,23 +1,24 @@
-import { QueryCtx, MutationCtx } from "../_generated/server";
+import { QueryCtx, MutationCtx, ActionCtx } from "../_generated/server";
 
 /**
  * Admin email(s) that have full CMS access.
  * Set via ADMIN_EMAIL environment variable.
  */
-const ADMIN_EMAILS = process.env.ADMIN_EMAIL
-  ? [process.env.ADMIN_EMAIL]
-  : [];
+const ADMIN_EMAILS = (process.env.ADMIN_EMAIL || "")
+  .split(",")
+  .map((e) => e.trim())
+  .filter(Boolean);
 
 /**
  * Requires the current user to be authenticated as an admin.
  * Throws an error if not authenticated or not an admin.
  *
- * @param ctx - The Convex query or mutation context
+ * @param ctx - The Convex query, mutation, or action context
  * @returns The user identity if authorized
  * @throws Error if not authenticated or not an admin
  */
 export async function requireAdmin(
-  ctx: QueryCtx | MutationCtx
+  ctx: QueryCtx | MutationCtx | ActionCtx
 ): Promise<{ email: string; subject: string }> {
   const identity = await ctx.auth.getUserIdentity();
 
@@ -25,34 +26,64 @@ export async function requireAdmin(
     throw new Error("Unauthorized: Not authenticated");
   }
 
-  // The identity.subject contains the user ID - we need to look up the user to get their email
-  // The subject format from Convex Auth is: userId|sessionId
-  const subjectParts = identity.subject.split("|");
-  const userId = subjectParts[0];
+  // Use email from identity if available
+  let email = identity.email;
 
-  // Look up the user in the users table (from authTables)
-  const user = await ctx.db
-    .query("users")
-    .filter((q) => q.eq(q.field("_id"), userId as any))
-    .first();
-
-  // If user not found by _id, try looking up by the full tokenIdentifier
-  let email = user?.email;
-
-  // If still no email, check authAccounts table for the email
+  // If identity doesn't have email, we look it up from the database
   if (!email) {
-    const authAccount = await ctx.db
-      .query("authAccounts")
-      .filter((q) => q.eq(q.field("userId"), userId as any))
-      .first();
-    
-    if (authAccount) {
-      // For password auth, the providerAccountId is the email
-      email = (authAccount as any).providerAccountId;
+    // The subject format from Convex Auth is: userId|sessionId
+    const subjectParts = identity.subject.split("|");
+    const userIdStr = subjectParts[0];
+
+    if ("db" in ctx) {
+      const db = ctx.db as QueryCtx["db"];
+      const userId = db.normalizeId("users", userIdStr);
+
+      if (userId) {
+        // Try to get user directly by ID
+        const user = await db.get(userId);
+        email = user?.email;
+
+        // If still no email, check authAccounts table
+        if (!email) {
+          // System tables are tricky to type explicitly without Generics. 
+          // Using a safe cast to avoid 'any' while accessing internal query methods.
+          type FilterBuilder = { 
+            eq: (a: unknown, b: unknown) => unknown; 
+            field: (f: string) => unknown 
+          };
+          const authAccount = await (db.query("authAccounts") as unknown as { 
+            filter: (cb: (q: FilterBuilder) => unknown) => { 
+              first: () => Promise<{ providerAccountId: string } | null> 
+            } 
+          })
+            .filter((q) => q.eq(q.field("userId"), userId))
+            .first();
+          
+          if (authAccount) {
+            email = authAccount.providerAccountId;
+          }
+        }
+      }
+    } else if ("runQuery" in ctx) {
+      // In an Action, call the internal query to resolve email
+      try {
+        // Dynamic import to avoid circular dependency in generated api
+        const { internal } = await import("../_generated/api");
+        // We use unknown cast here because ActionCtx.runQuery type definitions
+        // might not always expose internal query execution in all environments
+        // but it is supported by the runtime.
+        email = (await (ctx as unknown as { 
+          runQuery: (fn: unknown, args: unknown) => Promise<string | null> 
+        }).runQuery(internal.admin.getUserEmail, { userId: userIdStr })) ?? undefined;
+      } catch (err) {
+        console.error("Failed to resolve email in action:", err);
+      }
     }
   }
 
   if (!email || !ADMIN_EMAILS.includes(email)) {
+    console.error(`Unauthorized access for email: ${email || 'unknown'} (Subject: ${identity.subject})`);
     throw new Error("Unauthorized: Not an admin");
   }
 

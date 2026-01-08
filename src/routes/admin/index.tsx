@@ -89,7 +89,7 @@ function Dashboard() {
                    No recent messages found. System clean.
                  </div>
               ) : (
-                recentMessages?.map((msg: any) => (
+                recentMessages?.map((msg) => (
                   <div key={msg._id} className="p-4 hover:bg-(--color-surface) transition-colors group">
                     <div className="flex justify-between items-start mb-1">
                       <span className={`text-sm font-bold ${!msg.isRead ? 'text-(--color-ubuntu-orange)' : 'text-(--color-text-primary)'}`}>

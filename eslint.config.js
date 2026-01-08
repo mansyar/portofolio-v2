@@ -12,6 +12,7 @@ export default tseslint.config(
       ".tanstack",
       "node_modules",
       "convex/_generated",
+      "src/routeTree.gen.ts",
     ],
   },
   {

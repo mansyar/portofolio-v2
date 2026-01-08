@@ -2,9 +2,6 @@
 trigger: always_on
 ---
 
----
-trigger: always_on
----
 # Portfolio CMS - AI Agent Rules
 > **Stack:** TanStack Start, React 19, TypeScript, Self-Hosted Convex, R2  
 > **Design:** Ubuntu Terminal aesthetic with monospace typography

@@ -1,4 +1,4 @@
-import { Link, useRouterState } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -13,9 +13,6 @@ import { useAuth } from '@/hooks/use-auth';
 
 export function AdminSidebar() {
   const { signOut } = useAuth();
-  const routerState = useRouterState();
-
-  const isActive = (path: string) => routerState.location.pathname.startsWith(path);
 
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', exact: true },
@@ -38,22 +35,18 @@ export function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 py-6 px-3 space-y-1">
-        {navItems.map((item) => {
-          const active = item.exact 
-            ? routerState.location.pathname === item.path
-            : isActive(item.path);
-            
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link rounded-md ${active ? 'active' : ''}`}
-            >
-              <item.icon />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            activeOptions={{ exact: item.exact }}
+            className="nav-link rounded-md"
+            activeProps={{ className: 'active' }}
+          >
+            <item.icon />
+            <span>{item.label}</span>
+          </Link>
+        ))}
       </nav>
 
       {/* User Footer */}

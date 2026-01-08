@@ -1,36 +1,37 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { SkillForm, SkillFormData } from '@/components/features/SkillForm'
-import { useMutation } from 'convex/react'
-import { api } from '../../../../convex/_generated/api'
-import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router';
+import { useQuery } from 'convex/react';
+import { api } from '../../../../convex/_generated/api';
+import { SkillForm } from '../../../components/features/SkillForm';
 
 export const Route = createFileRoute('/admin/skills/new')({
   component: NewSkillPage,
-})
+});
 
 function NewSkillPage() {
-  const createSkill = useMutation(api.skills.create)
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = async (data: SkillFormData) => {
-    setIsSubmitting(true)
-    try {
-      await createSkill(data)
-      router.navigate({ to: '/admin/skills' })
-    } catch (error) {
-      console.error('Failed to create skill:', error)
-      alert('Failed to create skill. Check console for details.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  // We can fetch existing skills to determine the next display order
+  const skills = useQuery(api.skills.listAll);
+  
+  const nextDisplayOrder = skills ? skills.length : 0;
 
   return (
-    <SkillForm 
-      title="Add New Skill"
-      onSubmit={handleSubmit}
-      isSubmitting={isSubmitting}
-    />
-  )
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-(--color-text-primary)">Add New Skill</h1>
+        <p className="text-sm text-(--color-text-secondary) font-mono mt-1">
+          Create a new entry in your technical skills matrix
+        </p>
+      </div>
+
+      <SkillForm 
+        mode="create" 
+        initialData={{
+          name: '',
+          category: 'frontend',
+          proficiency: 50,
+          displayOrder: nextDisplayOrder,
+          isVisible: true
+        }} 
+      />
+    </div>
+  );
 }
