@@ -37,6 +37,41 @@ export const getEducation = query({
   },
 });
 
+export const getCertifications = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("certifications")
+      .withIndex("by_order")
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+  },
+});
+
+export const listAllExperiences = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("workExperiences").order("desc").collect();
+  },
+});
+
+export const listAllEducation = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("education").order("desc").collect();
+  },
+});
+
+export const listAllCertifications = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("certifications").order("desc").collect();
+  },
+});
+
 // =============================================================================
 // Admin Mutations
 // =============================================================================
@@ -52,6 +87,8 @@ export const updateProfile = mutation({
     linkedinUrl: v.optional(v.string()),
     githubUrl: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
+    services: v.optional(v.array(v.string())),
+    interests: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
@@ -78,5 +115,118 @@ export const createExperience = mutation({
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     return await ctx.db.insert("workExperiences", args);
+  },
+});
+
+export const updateExperience = mutation({
+  args: {
+    id: v.id("workExperiences"),
+    company: v.string(),
+    role: v.string(),
+    location: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.optional(v.string()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    await ctx.db.patch(id, data);
+  },
+});
+
+export const deleteExperience = mutation({
+  args: { id: v.id("workExperiences") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const createEducation = mutation({
+  args: {
+    institution: v.string(),
+    degree: v.string(),
+    field: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.optional(v.string()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.insert("education", args);
+  },
+});
+
+export const updateEducation = mutation({
+  args: {
+    id: v.id("education"),
+    institution: v.string(),
+    degree: v.string(),
+    field: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.optional(v.string()),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    await ctx.db.patch(id, data);
+  },
+});
+
+export const deleteEducation = mutation({
+  args: { id: v.id("education") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const createCertification = mutation({
+  args: {
+    name: v.string(),
+    issuer: v.string(),
+    issueDate: v.string(),
+    expiryDate: v.optional(v.string()),
+    credentialUrl: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.insert("certifications", args);
+  },
+});
+
+export const updateCertification = mutation({
+  args: {
+    id: v.id("certifications"),
+    name: v.string(),
+    issuer: v.string(),
+    issueDate: v.string(),
+    expiryDate: v.optional(v.string()),
+    credentialUrl: v.optional(v.string()),
+    displayOrder: v.number(),
+    isVisible: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    await ctx.db.patch(id, data);
+  },
+});
+
+export const deleteCertification = mutation({
+  args: { id: v.id("certifications") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
   },
 });

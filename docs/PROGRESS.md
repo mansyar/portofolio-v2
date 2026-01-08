@@ -1,8 +1,8 @@
 # Progress Tracking
 
 > **Project:** Ansyar's Portfolio + Custom CMS  
-> **Last Updated:** January 8, 2026  
-> **Current Phase:** Phase 3 - CMS Core Complete
+> **Last Updated:** January 9, 2026  
+> **Current Phase:** Phase 4 - CMS - Blog & Resume Complete (Polished)
 
 ---
 
@@ -10,11 +10,12 @@
 
 | Metric            | Value                 |
 | ----------------- | --------------------- |
-| **Overall**       | ██████░░░░ 60%        |
+| **Overall**       | ████████░░ 80%        |
 | **Phase 0**       | ██████████ 100%       |
 | **Phase 1**       | ██████████ 100%       |
 | **Phase 2**       | ██████████ 100%       |
 | **Phase 3**       | ██████████ 100%       |
+| **Phase 4**       | ██████████ 100%       |
 | **Target Launch** | ~10 weeks (estimated) |
 
 ---
@@ -231,42 +232,52 @@
 
 ## Phase 4: CMS - Blog & Resume (Week 7-8)
 
-**Status:** ⚪ Pending  
-**Progress:** 0/5 tasks
+**Status:** ✅ Complete  
+**Progress:** 5/5 tasks
 
-| Task                         | Status | Notes |
-| ---------------------------- | ------ | ----- |
-| Rich text editor integration | [ ]    |       |
-| Blog posts CRUD              | [ ]    |       |
-| Categories and tags          | [ ]    |       |
-| Resume data management       | [ ]    |       |
-| PDF generation               | [ ]    |       |
+| Task                         | Status | Notes                                           |
+| ---------------------------- | ------ | ----------------------------------------------- |
+| Rich text editor integration | [x]    | Tiptap based with Ubuntu Terminal theme         |
+| Blog posts CRUD              | [x]    | Full lifecycle management (Draft/Publish)       |
+| Categories and tags          | [x]    | Inline CRUD management                          |
+| Resume data management       | [x]    | Tabbed admin interface for all sections         |
+| PDF generation               | [x]    | ATS-friendly PDF via @react-pdf/renderer        |
 
 <details>
 <summary><strong>Acceptance Criteria</strong></summary>
 
-- [ ] Rich text editor supports: headings, bold, italic, lists, quotes, code blocks, links, images
-- [ ] Blog posts: Create draft, edit, publish, unpublish, delete
-- [ ] Reading time auto-calculated on save
-- [ ] Categories: CRUD with order management
-- [ ] Tags: CRUD, can be assigned to multiple posts
-- [ ] Resume profile: Edit personal info, summary, social links
-- [ ] Work experiences: CRUD with date ranges and descriptions
-- [ ] Education & Certifications: CRUD with visibility toggle
-- [ ] PDF generates with all resume sections, downloads correctly
+- [x] Rich text editor supports: headings, bold, italic, lists, quotes, code blocks, links, images
+- [x] Blog posts: Create draft, edit, publish, unpublish, delete
+- [x] Reading time auto-calculated on save
+- [x] Categories: CRUD with order management
+- [x] Tags: CRUD, can be assigned to multiple posts
+- [x] Resume profile: Edit personal info, summary, social links
+- [x] Work experiences: CRUD with date ranges and descriptions
+- [x] Education & Certifications: CRUD with visibility toggle
+- [x] PDF generates with all resume sections, downloads correctly
 
 </details>
 
 <details>
 <summary><strong>Definition of Done</strong></summary>
 
-- [ ] `pnpm tsc --noEmit` passes with 0 errors
-- [ ] `pnpm lint` passes with 0 warnings
-- [ ] `pnpm build` succeeds
-- [ ] Rich text content renders correctly on public blog pages
-- [ ] Code blocks have syntax highlighting
-- [ ] PDF is ATS-friendly (parseable text, proper structure)
-- [ ] All resume changes reflected in generated PDF
+- [x] `pnpm tsc --noEmit` passes with 0 errors
+- [x] `pnpm lint` passes with 0 warnings
+- [x] `pnpm build` succeeds
+- [x] Rich text content renders correctly on public blog pages
+- [x] Code blocks have syntax highlighting
+- [x] PDF is ATS-friendly (parseable text, proper structure)
+- [x] All resume changes reflected in generated PDF
+
+### Phase 4 Technical Notes
+
+- **Rich Text Editor**: Developed custom Tiptap integration with Lucide icons and Ubuntu terminal theme. Supports syntax highlighting in both editor and public view.
+- **PDF Engine**: Successfully integrated `@react-pdf/renderer` for client-side PDF generation. The template is optimized for ATS readability (single column, standard fonts, text-based).
+- **Resume Sync**: Public About page and Admin Resume section are fully synced via Convex reactive queries.
+- **Reading Time**: Automatically calculated on every content update using a word-count utility in `convex/blog.ts`.
+- **Dynamic About Page**: Migrated hardcoded 'Services' and 'Interests' sections to database, editable via CMS Profile editor.
+- **Terminal Aesthetic**: Applied `>` prompt prefix to all admin form inputs for consistent Ubuntu terminal design.
+- **Bug Fixes**: Resolved validation errors in profile form, category creation, and blog routing issues.
 
 </details>
 
@@ -324,6 +335,8 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Jan 9, 2026 | Phase 4 polish: Dynamic About page, terminal prompts, bug fixes, manual testing |
+| Jan 8, 2026 | Phase 4 complete: Blog & Resume CMS, Rich Text Editor, PDF Generation           |
 | Jan 8, 2026 | Phase 3 complete: CMS Core with Auth, Dashboard, Projects/Skills CRUD, Media    |
 | Jan 8, 2026 | Phase 3 (50%): Convex Auth working, admin login, dashboard, protected routes    |
 | Jan 8, 2026 | Phase 2 complete: All 7 public pages with SSR, type-safe routing, Tailwind v4   |

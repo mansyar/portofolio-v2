@@ -3,6 +3,14 @@ import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { paginationOptsValidator } from "convex/server";
 
+// Utility to calculate reading time
+const calculateReadingTime = (content: string): number => {
+  const wordsPerMinute = 200;
+  const noHtml = content.replace(/<[^>]*>/g, "");
+  const words = noHtml.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+};
+
 // =============================================================================
 // Public Queries
 // =============================================================================
@@ -107,6 +115,22 @@ export const getTags = query({
   },
 });
 
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db.query("blogPosts").order("desc").collect();
+  },
+});
+
+export const getAdminPost = query({
+  args: { id: v.id("blogPosts") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.get(args.id);
+  },
+});
+
 // =============================================================================
 // Admin Mutations
 // =============================================================================
@@ -124,6 +148,29 @@ export const createCategory = mutation({
   },
 });
 
+export const updateCategory = mutation({
+  args: {
+    id: v.id("blogCategories"),
+    name: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    displayOrder: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    await ctx.db.patch(id, data);
+  },
+});
+
+export const deleteCategory = mutation({
+  args: { id: v.id("blogCategories") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
 export const createPost = mutation({
   args: {
     slug: v.string(),
@@ -134,11 +181,95 @@ export const createPost = mutation({
     categoryId: v.optional(v.id("blogCategories")),
     tagIds: v.array(v.id("blogTags")),
     status: v.union(v.literal("draft"), v.literal("published")),
-    readingTime: v.optional(v.number()),
     publishedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    return await ctx.db.insert("blogPosts", args);
+    const readingTime = calculateReadingTime(args.content);
+    return await ctx.db.insert("blogPosts", {
+      ...args,
+      readingTime,
+    });
+  },
+});
+
+export const updatePost = mutation({
+  args: {
+    id: v.id("blogPosts"),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    content: v.string(),
+    coverImageUrl: v.optional(v.string()),
+    categoryId: v.optional(v.id("blogCategories")),
+    tagIds: v.array(v.id("blogTags")),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    const readingTime = calculateReadingTime(data.content);
+    await ctx.db.patch(id, {
+      ...data,
+      readingTime,
+    });
+  },
+});
+
+export const deletePost = mutation({
+  args: { id: v.id("blogPosts") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const togglePublish = mutation({
+  args: { id: v.id("blogPosts") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const post = await ctx.db.get(args.id);
+    if (!post) throw new Error("Post not found");
+    
+    const newStatus = post.status === "draft" ? "published" : "draft";
+    const publishedAt = newStatus === "published" ? Date.now() : post.publishedAt;
+    
+    await ctx.db.patch(args.id, {
+      status: newStatus,
+      publishedAt,
+    });
+  },
+});
+
+export const createTag = mutation({
+  args: {
+    name: v.string(),
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.insert("blogTags", args);
+  },
+});
+
+export const updateTag = mutation({
+  args: {
+    id: v.id("blogTags"),
+    name: v.string(),
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const { id, ...data } = args;
+    await ctx.db.patch(id, data);
+  },
+});
+
+export const deleteTag = mutation({
+  args: { id: v.id("blogTags") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
   },
 });

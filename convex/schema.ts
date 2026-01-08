@@ -102,6 +102,8 @@ export default defineSchema({
     linkedinUrl: v.optional(v.string()),
     githubUrl: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
+    services: v.optional(v.array(v.string())),
+    interests: v.optional(v.array(v.string())),
   }),
 
   // Work Experiences

@@ -7,6 +7,7 @@ import {
   Settings, 
   LogOut,
   PenTool,
+  User,
   Terminal
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -19,6 +20,7 @@ export function AdminSidebar() {
     { label: 'Projects', icon: Briefcase, path: '/admin/projects' },
     { label: 'Skills', icon: Code2, path: '/admin/skills' },
     { label: 'Blog', icon: PenTool, path: '/admin/blog' },
+    { label: 'Resume', icon: User, path: '/admin/resume' },
     { label: 'Media', icon: ImageIcon, path: '/admin/media' },
     { label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];

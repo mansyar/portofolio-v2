@@ -4,9 +4,9 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { api } from '../../convex/_generated/api'
 import { Card } from '../components/ui/card'
 import { Timeline } from '../components/ui/timeline'
-import { Button } from '../components/ui/button'
 import { Seo } from '../components/seo'
-import { Download, MapPin, Mail, Github, Linkedin, Terminal } from 'lucide-react'
+import { MapPin, Mail, Github, Linkedin, Terminal } from 'lucide-react'
+import { DownloadResumeButton } from '../components/features/DownloadResumeButton'
 
 export const Route = createFileRoute('/about')({
   component: About,
@@ -84,9 +84,7 @@ function About() {
                    </a>
                  )}
                </div>
-               <Button className="mt-4 w-full gap-2">
-                 <Download size={16} /> Download CV
-               </Button>
+                <DownloadResumeButton />
              </div>
            </div>
            
@@ -106,28 +104,26 @@ function About() {
              <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
                <Card title="Services">
                  <ul className="space-y-2 text-sm">
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-terminal-green)">✓</span> Web Development
-                   </li>
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-terminal-green)">✓</span> DevOps & Cloud
-                   </li>
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-terminal-green)">✓</span> API Design
-                   </li>
+                   {profile?.services?.map((service, i) => (
+                     <li key={i} className="flex items-center gap-2">
+                       <span className="text-(--color-terminal-green)">✓</span> {service}
+                     </li>
+                   ))}
+                   {(!profile?.services || profile.services.length === 0) && (
+                     <li className="text-(--color-text-secondary) italic">No services listed yet.</li>
+                   )}
                  </ul>
                </Card>
                <Card title="Interests">
                  <ul className="space-y-2 text-sm">
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-ubuntu-orange)">➜</span> Open Source
-                   </li>
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-ubuntu-orange)">➜</span> System Architecture
-                   </li>
-                   <li className="flex items-center gap-2">
-                     <span className="text-(--color-ubuntu-orange)">➜</span> UI/UX Design
-                   </li>
+                   {profile?.interests?.map((interest, i) => (
+                     <li key={i} className="flex items-center gap-2">
+                       <span className="text-(--color-ubuntu-orange)">➜</span> {interest}
+                     </li>
+                   ))}
+                   {(!profile?.interests || profile.interests.length === 0) && (
+                     <li className="text-(--color-text-secondary) italic">No interests listed yet.</li>
+                   )}
                  </ul>
                </Card>
              </div>
