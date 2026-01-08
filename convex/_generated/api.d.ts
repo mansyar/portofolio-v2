@@ -11,8 +11,9 @@
 import type * as auth from "../auth.js";
 import type * as blog from "../blog.js";
 import type * as contact from "../contact.js";
-import type * as debug from "../debug.js";
+import type * as dashboard from "../dashboard.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as media from "../media.js";
 import type * as projects from "../projects.js";
 import type * as resume from "../resume.js";
 import type * as seed from "../seed.js";
@@ -29,8 +30,9 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   blog: typeof blog;
   contact: typeof contact;
-  debug: typeof debug;
+  dashboard: typeof dashboard;
   "lib/auth": typeof lib_auth;
+  media: typeof media;
   projects: typeof projects;
   resume: typeof resume;
   seed: typeof seed;
