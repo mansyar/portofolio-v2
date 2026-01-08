@@ -25,7 +25,33 @@ export async function requireAdmin(
     throw new Error("Unauthorized: Not authenticated");
   }
 
-  const email = identity.email;
+  // The identity.subject contains the user ID - we need to look up the user to get their email
+  // The subject format from Convex Auth is: userId|sessionId
+  const subjectParts = identity.subject.split("|");
+  const userId = subjectParts[0];
+
+  // Look up the user in the users table (from authTables)
+  const user = await ctx.db
+    .query("users")
+    .filter((q) => q.eq(q.field("_id"), userId as any))
+    .first();
+
+  // If user not found by _id, try looking up by the full tokenIdentifier
+  let email = user?.email;
+
+  // If still no email, check authAccounts table for the email
+  if (!email) {
+    const authAccount = await ctx.db
+      .query("authAccounts")
+      .filter((q) => q.eq(q.field("userId"), userId as any))
+      .first();
+    
+    if (authAccount) {
+      // For password auth, the providerAccountId is the email
+      email = (authAccount as any).providerAccountId;
+    }
+  }
+
   if (!email || !ADMIN_EMAILS.includes(email)) {
     throw new Error("Unauthorized: Not an admin");
   }

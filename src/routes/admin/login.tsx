@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/use-auth';
 import '@/styles/admin.css';
@@ -15,15 +15,14 @@ function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle between sign-in and sign-up
 
   // Show loading while auth state is being determined
   if (isAuthLoading) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ubuntu-orange)] border-t-transparent" />
-          <p className="font-mono text-sm text-[var(--color-text-secondary)]">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-(--color-ubuntu-orange) border-t-transparent" />
+          <p className="font-mono text-sm text-(--color-text-secondary)">
             Checking authentication...
           </p>
         </div>
@@ -31,11 +30,12 @@ function AdminLogin() {
     );
   }
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    router.navigate({ to: '/admin' });
-    return null;
-  }
+  // Redirect if already authenticated - using useEffect to avoid setState during render
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.navigate({ to: '/admin' });
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +43,7 @@ function AdminLogin() {
     setIsSubmitting(true);
 
     try {
-      // Use signUp or signIn based on mode
-      const flow = isSignUp ? "signUp" : "signIn";
-      await signIn("password", { email, password, flow });
+      await signIn("password", { email, password, flow: "signIn" });
       // Success is handled by the auth state change -> redirect
     } catch (err: any) {
       console.error(err);
@@ -71,10 +69,10 @@ function AdminLogin() {
         <div className="p-8">
           <div className="mb-6 text-center">
             <h1 className="font-mono text-2xl font-bold text-(--color-ubuntu-orange)">
-              {isSignUp ? 'Create Account' : 'System Access'}
+              System Access
             </h1>
             <p className="mt-2 text-sm text-(--color-text-secondary)">
-              {isSignUp ? 'Set up your admin credentials' : 'Please authenticate to continue'}
+              Please authenticate to continue
             </p>
           </div>
 
@@ -125,19 +123,9 @@ function AdminLogin() {
               className="terminal-button w-full justify-center"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : (isSignUp ? 'Create Account' : 'Access CMS')}
+              {isSubmitting ? 'Processing...' : 'Access CMS'}
             </button>
           </form>
-          
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="font-mono text-xs text-(--color-ubuntu-orange) hover:underline"
-            >
-              {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
-            </button>
-          </div>
           
           <div className="mt-6 border-t border-(--color-border) pt-4 text-center">
              <p className="font-mono text-xs text-(--color-text-secondary)">
