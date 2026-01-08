@@ -14,13 +14,23 @@ import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminSkillsIndexRouteImport } from './routes/admin/skills/index'
+import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
+import { Route as AdminMediaIndexRouteImport } from './routes/admin/media/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
+import { Route as AdminSkillsNewRouteImport } from './routes/admin/skills/new'
+import { Route as AdminSkillsIdRouteImport } from './routes/admin/skills/$id'
+import { Route as AdminProjectsNewRouteImport } from './routes/admin/projects/new'
+import { Route as AdminProjectsIdRouteImport } from './routes/admin/projects/$id'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
@@ -51,6 +61,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -61,6 +76,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -70,6 +90,26 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSkillsIndexRoute = AdminSkillsIndexRouteImport.update({
+  id: '/skills/',
+  path: '/skills/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsIndexRoute = AdminProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaIndexRoute = AdminMediaIndexRouteImport.update({
+  id: '/media/',
+  path: '/media/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
   id: '/demo/start/server-funcs',
@@ -85,6 +125,26 @@ const DemoApiNamesRoute = DemoApiNamesRouteImport.update({
   id: '/demo/api/names',
   path: '/demo/api/names',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSkillsNewRoute = AdminSkillsNewRouteImport.update({
+  id: '/skills/new',
+  path: '/skills/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSkillsIdRoute = AdminSkillsIdRouteImport.update({
+  id: '/skills/$id',
+  path: '/skills/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsNewRoute = AdminProjectsNewRouteImport.update({
+  id: '/projects/new',
+  path: '/projects/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsIdRoute = AdminProjectsIdRouteImport.update({
+  id: '/projects/$id',
+  path: '/projects/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
   id: '/demo/start/ssr/',
@@ -110,16 +170,26 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/uses': typeof UsesRoute
+  '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/projects/new': typeof AdminProjectsNewRoute
+  '/admin/skills/$id': typeof AdminSkillsIdRoute
+  '/admin/skills/new': typeof AdminSkillsNewRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/media': typeof AdminMediaIndexRoute
+  '/admin/projects': typeof AdminProjectsIndexRoute
+  '/admin/skills': typeof AdminSkillsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -133,11 +203,20 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/uses': typeof UsesRoute
+  '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/projects/new': typeof AdminProjectsNewRoute
+  '/admin/skills/$id': typeof AdminSkillsIdRoute
+  '/admin/skills/new': typeof AdminSkillsNewRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/media': typeof AdminMediaIndexRoute
+  '/admin/projects': typeof AdminProjectsIndexRoute
+  '/admin/skills': typeof AdminSkillsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -147,16 +226,26 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/uses': typeof UsesRoute
+  '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/projects/new': typeof AdminProjectsNewRoute
+  '/admin/skills/$id': typeof AdminSkillsIdRoute
+  '/admin/skills/new': typeof AdminSkillsNewRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/media/': typeof AdminMediaIndexRoute
+  '/admin/projects/': typeof AdminProjectsIndexRoute
+  '/admin/skills/': typeof AdminSkillsIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
   '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
   '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
@@ -167,16 +256,26 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/blog'
     | '/contact'
     | '/projects'
     | '/skills'
     | '/uses'
+    | '/admin/login'
     | '/blog/$slug'
     | '/projects/$slug'
+    | '/admin/'
+    | '/admin/projects/$id'
+    | '/admin/projects/new'
+    | '/admin/skills/$id'
+    | '/admin/skills/new'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/media'
+    | '/admin/projects'
+    | '/admin/skills'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -190,11 +289,20 @@ export interface FileRouteTypes {
     | '/projects'
     | '/skills'
     | '/uses'
+    | '/admin/login'
     | '/blog/$slug'
     | '/projects/$slug'
+    | '/admin'
+    | '/admin/projects/$id'
+    | '/admin/projects/new'
+    | '/admin/skills/$id'
+    | '/admin/skills/new'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/media'
+    | '/admin/projects'
+    | '/admin/skills'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -203,16 +311,26 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/blog'
     | '/contact'
     | '/projects'
     | '/skills'
     | '/uses'
+    | '/admin/login'
     | '/blog/$slug'
     | '/projects/$slug'
+    | '/admin/'
+    | '/admin/projects/$id'
+    | '/admin/projects/new'
+    | '/admin/skills/$id'
+    | '/admin/skills/new'
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/media/'
+    | '/admin/projects/'
+    | '/admin/skills/'
     | '/demo/start/ssr/data-only'
     | '/demo/start/ssr/full-ssr'
     | '/demo/start/ssr/spa-mode'
@@ -222,6 +340,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
@@ -273,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -287,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/projects/$slug': {
       id: '/projects/$slug'
       path: '/$slug'
@@ -300,6 +433,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/skills/': {
+      id: '/admin/skills/'
+      path: '/skills'
+      fullPath: '/admin/skills'
+      preLoaderRoute: typeof AdminSkillsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects/': {
+      id: '/admin/projects/'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media/': {
+      id: '/admin/media/'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/demo/start/server-funcs': {
       id: '/demo/start/server-funcs'
@@ -321,6 +482,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/api/names'
       preLoaderRoute: typeof DemoApiNamesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/skills/new': {
+      id: '/admin/skills/new'
+      path: '/skills/new'
+      fullPath: '/admin/skills/new'
+      preLoaderRoute: typeof AdminSkillsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/skills/$id': {
+      id: '/admin/skills/$id'
+      path: '/skills/$id'
+      fullPath: '/admin/skills/$id'
+      preLoaderRoute: typeof AdminSkillsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects/new': {
+      id: '/admin/projects/new'
+      path: '/projects/new'
+      fullPath: '/admin/projects/new'
+      preLoaderRoute: typeof AdminProjectsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects/$id': {
+      id: '/admin/projects/$id'
+      path: '/projects/$id'
+      fullPath: '/admin/projects/$id'
+      preLoaderRoute: typeof AdminProjectsIdRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/demo/start/ssr/': {
       id: '/demo/start/ssr/'
@@ -353,6 +542,32 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminProjectsIdRoute: typeof AdminProjectsIdRoute
+  AdminProjectsNewRoute: typeof AdminProjectsNewRoute
+  AdminSkillsIdRoute: typeof AdminSkillsIdRoute
+  AdminSkillsNewRoute: typeof AdminSkillsNewRoute
+  AdminMediaIndexRoute: typeof AdminMediaIndexRoute
+  AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
+  AdminSkillsIndexRoute: typeof AdminSkillsIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminProjectsIdRoute: AdminProjectsIdRoute,
+  AdminProjectsNewRoute: AdminProjectsNewRoute,
+  AdminSkillsIdRoute: AdminSkillsIdRoute,
+  AdminSkillsNewRoute: AdminSkillsNewRoute,
+  AdminMediaIndexRoute: AdminMediaIndexRoute,
+  AdminProjectsIndexRoute: AdminProjectsIndexRoute,
+  AdminSkillsIndexRoute: AdminSkillsIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
 }
@@ -378,6 +593,7 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
   ProjectsRoute: ProjectsRouteWithChildren,

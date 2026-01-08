@@ -154,13 +154,13 @@ export default defineSchema({
     value: v.any(),
   }).index("by_key", ["key"]),
 
-  // Media Files (metadata only, actual files in R2)
+  // Media Files (metadata only, actual files in Convex Storage)
   mediaFiles: defineTable({
+    storageId: v.id("_storage"),
     filename: v.string(),
     originalFilename: v.string(),
     mimeType: v.string(),
     size: v.number(),
-    url: v.string(),
     altText: v.optional(v.string()),
-  }),
+  }).index("by_filename", ["filename"]),
 });

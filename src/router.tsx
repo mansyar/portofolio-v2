@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
-import { ConvexProvider } from "convex/react";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { convex } from "./lib/convex/client";
 import { routeTree } from "./routeTree.gen";
@@ -12,6 +12,7 @@ import { routeTree } from "./routeTree.gen";
  * - Convex React Query integration for SSR
  * - Automatic query deduplication
  * - Real-time subscriptions via Convex
+ * - Authentication via Convex Auth
  */
 export const getRouter = () => {
   // Create Convex Query Client for this router instance
@@ -42,14 +43,14 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
 
-    // Wrap the router with Convex and Query providers
+    // Wrap the router with Convex Auth and Query providers
     Wrap: function WrapComponent({ children }) {
       return (
-        <ConvexProvider client={convex}>
+        <ConvexAuthProvider client={convex}>
           <QueryClientProvider client={queryClient}>
             {children}
           </QueryClientProvider>
-        </ConvexProvider>
+        </ConvexAuthProvider>
       );
     },
   });

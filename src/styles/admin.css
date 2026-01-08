@@ -1,0 +1,77 @@
+:root {
+  --admin-sidebar-width: 280px;
+  --admin-header-height: 64px;
+}
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: var(--admin-sidebar-width) 1fr;
+  grid-template-rows: var(--admin-header-height) 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar content";
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "content";
+  }
+}
+
+.admin-sidebar {
+  grid-area: sidebar;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header {
+  grid-area: header;
+  background-color: var(--color-terminal-bg-dark);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.admin-content {
+  grid-area: content;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: var(--color-terminal-bg-dark);
+}
+
+/* Nav Link Styles */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-text-secondary);
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+}
+
+.nav-link.active {
+  background-color: rgba(233, 84, 32, 0.1); /* Ubuntu Orange w/ opacity */
+  color: var(--color-ubuntu-orange);
+  border-left-color: var(--color-ubuntu-orange);
+}
+
+.nav-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}

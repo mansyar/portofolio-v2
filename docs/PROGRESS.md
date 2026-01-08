@@ -66,7 +66,7 @@
 | --------------------------------- | ------ | ------------------------------------------ |
 | Initialize TanStack Start project | [x]    | Done                                       |
 | Set up Convex + schema            | [x]    | Schema deployed, Skills API created        |
-| Configure R2 bucket               | [x]    | Credentials in .env, bucket ready          |
+| Configure R2 bucket               | [x]    | R2 configured in self-hosted Convex        |
 | Implement design system           | [x]    | Ubuntu Terminal theme, CSS variables       |
 | Set up Docker configuration       | [x]    | Dockerfile & Compose created               |
 | Basic routing structure           | [x]    | All 7 public routes + Header/Footer layout |
@@ -184,7 +184,7 @@
 | Dashboard                   | [ ]    |       |
 | Projects CRUD               | [ ]    |       |
 | Skills CRUD                 | [ ]    |       |
-| Media manager (R2)          | [ ]    |       |
+| Media manager (Convex Storage) | [ ]    | Uses Convex File Storage (backed by R2) |
 
 <details>
 <summary><strong>Acceptance Criteria</strong></summary>
@@ -195,7 +195,7 @@
 - [ ] Dashboard shows quick stats (projects, posts, messages count)
 - [ ] Projects: Create, read, update, delete, reorder, toggle visibility
 - [ ] Skills: Create, read, update, delete, reorder by category
-- [ ] Media: Upload images to R2, delete, copy URL, preview thumbnails
+- [ ] Media: Upload via Convex Storage, delete, copy URL, preview thumbnails
 - [ ] All admin routes protected with `requireAdmin()` check
 
 </details>

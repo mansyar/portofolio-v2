@@ -58,10 +58,13 @@ A fully-featured portfolio website with a custom-built CMS, designed to showcase
 
 ### Storage & Media
 
-| Technology        | Purpose                             |
-| ----------------- | ----------------------------------- |
-| **Cloudflare R2** | Image/media storage (S3-compatible) |
-| **Sharp**         | Image optimization/processing       |
+| Technology               | Purpose                                        |
+| ------------------------ | ---------------------------------------------- |
+| **Convex File Storage**  | Image/media storage (backed by R2 in self-hosted) |
+| **Sharp**                | Image optimization/processing                  |
+
+> **Note:** Convex File Storage provides built-in file upload/download with automatic URL generation.
+> Files are stored in R2 (configured in self-hosted Convex) with zero additional setup.
 
 ### Deployment & Infrastructure
 
@@ -542,13 +545,19 @@ interface Certification {
 
 #### 6.2.5 Media Manager (`/admin/media`)
 
-| Feature          | Description                  |
-| ---------------- | ---------------------------- |
-| **Upload**       | Drag-and-drop, multi-file    |
-| **Storage**      | Cloudflare R2                |
-| **Preview**      | Thumbnail grid               |
-| **Operations**   | Delete, copy URL             |
-| **Optimization** | Auto-resize, WebP conversion |
+| Feature          | Description                           |
+| ---------------- | ------------------------------------- |
+| **Upload**       | Drag-and-drop, multi-file             |
+| **Storage**      | Convex File Storage (backed by R2)    |
+| **Preview**      | Thumbnail grid                        |
+| **Operations**   | Delete, copy URL                      |
+| **Optimization** | Auto-resize, WebP conversion (future) |
+
+**Upload Flow:**
+1. Client calls `generateUploadUrl()` mutation
+2. Client POSTs file directly to returned URL
+3. Client calls `saveFile(storageId)` mutation to store metadata
+4. Files accessible via `ctx.storage.getUrl(storageId)`
 
 #### 6.2.6 Contact Submissions (`/admin/messages`)
 
