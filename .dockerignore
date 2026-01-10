@@ -48,9 +48,6 @@ docker
 Dockerfile
 docker-compose*.yml
 
-# Convex (generated at runtime, not needed in build)
-convex/_generated
-
 # Misc
 .dockerignore
 .eslintcache
