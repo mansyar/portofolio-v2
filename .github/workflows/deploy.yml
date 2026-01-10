@@ -67,14 +67,14 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      # - name: Install dependencies
+      #   run: pnpm install --frozen-lockfile
 
-      - name: Deploy Convex Schema
-        run: pnpm exec convex deploy --cmd 'echo deployed'
-        env:
-          CONVEX_SELF_HOSTED_URL: ${{ secrets.CONVEX_SELF_HOSTED_URL }}
-          CONVEX_SELF_HOSTED_ADMIN_KEY: ${{ secrets.CONVEX_SELF_HOSTED_ADMIN_KEY }}
+      # - name: Deploy Convex Schema
+      #   run: pnpm exec convex deploy --cmd 'echo deployed'
+      #   env:
+      #     CONVEX_SELF_HOSTED_URL: ${{ secrets.CONVEX_SELF_HOSTED_URL }}
+      #     CONVEX_SELF_HOSTED_ADMIN_KEY: ${{ secrets.CONVEX_SELF_HOSTED_ADMIN_KEY }}
       
       - name: Trigger Coolify Webhook
         run: |
