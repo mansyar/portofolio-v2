@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs (we build fresh in Docker)
+.output
+dist
+.vinxi
+
+# Development & Testing
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test & Coverage
+coverage
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+vitest.setup.tsx
+vitest.config.ts
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs
+*.md
+!README.md
+LICENSE
+
+# CI/CD & Docker (no need to include these in build context)
+.github
+docker
+!docker/Dockerfile
+Dockerfile
+docker-compose*.yml
+
+# Convex (generated at runtime, not needed in build)
+convex/_generated
+
+# Misc
+.dockerignore
+.eslintcache
+.prettierignore
+*.tgz
