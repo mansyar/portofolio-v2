@@ -26,7 +26,10 @@ export function TerminalWindow({ children, className, title = "user@portfolio:~"
       </div>
       
       {/* Content */}
-      <div className="p-6 font-mono text-sm md:text-base">
+      <div className="relative p-6 font-mono text-sm md:text-base">
+        {/* Scanline Effect */}
+        <div className="pointer-events-none absolute inset-0 z-10 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-size-[100%_2px,3px_100%]"></div>
+        <div className="animate-scanline pointer-events-none absolute inset-0 z-10 h-1/2 w-full bg-linear-to-b from-white/5 to-transparent opacity-10"></div>
         {children}
       </div>
     </div>

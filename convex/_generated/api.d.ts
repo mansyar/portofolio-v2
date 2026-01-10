@@ -19,6 +19,7 @@ import type * as media from "../media.js";
 import type * as projects from "../projects.js";
 import type * as resume from "../resume.js";
 import type * as seed from "../seed.js";
+import type * as sitemap from "../sitemap.js";
 import type * as skills from "../skills.js";
 import type * as uses from "../uses.js";
 
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   resume: typeof resume;
   seed: typeof seed;
+  sitemap: typeof sitemap;
   skills: typeof skills;
   uses: typeof uses;
 }>;

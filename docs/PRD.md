@@ -7,8 +7,8 @@
 **Author:** Mezy Ansyar  
 **Role:** DevOps Engineer & Web Developer  
 **Created:** January 4, 2026  
-**Updated:** January 7, 2026  
-**Status:** Planning (Tech Stack Migration)
+**Updated:** January 11, 2026  
+**Status:** Development Complete (Phases 0-4)
 
 ---
 
@@ -735,6 +735,8 @@ export default defineSchema({
     linkedinUrl: v.optional(v.string()),
     githubUrl: v.optional(v.string()),
     websiteUrl: v.optional(v.string()),
+    services: v.optional(v.array(v.string())),
+    interests: v.optional(v.array(v.string())),
   }),
 
   // Work Experiences

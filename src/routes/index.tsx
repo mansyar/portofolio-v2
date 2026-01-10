@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '../../convex/_generated/api'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
@@ -11,28 +11,30 @@ import { TypingEffect } from '../components/ui/typing-effect'
 import { ArrowRight } from 'lucide-react'
 import { TerminalWindow, CodeBlock } from '../components/ui/terminal-window'
 import { useMediaQuery } from '../hooks/use-media-query'
-import type { RouterContext } from './__root'
+import { Seo } from '../components/seo'
 
 export const Route = createFileRoute('/')({
   component: App,
-  loader: async ({ context }: { context: RouterContext }) => {
-    // Prefetch critical data
-    await Promise.all([
-      context.queryClient.prefetchQuery(convexQuery(api.projects.listFeatured, {})),
-      context.queryClient.prefetchQuery(convexQuery(api.skills.listVisible, {})),
-      context.queryClient.prefetchQuery(convexQuery(api.blog.listRecent, { limit: 3 })),
-    ])
+  loader: async () => {
+    // Only prefetch the most critical data or nothing to allow instant navigation
   },
 })
 
 function App() {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
-  const { data: skills } = useSuspenseQuery(convexQuery(api.skills.listVisible, {}))
-  const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
-  const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
+  
+  // Use regular useQuery instead of useSuspenseQuery for below-the-fold content
+  // This allows the Hero section to render immediately
+  const { data: skills, isLoading: isLoadingSkills } = useQuery(convexQuery(api.skills.listVisible, {}))
+  const { data: featuredProjects, isLoading: isLoadingProjects } = useQuery(convexQuery(api.projects.listFeatured, {}))
+  const { data: latestPosts, isLoading: isLoadingPosts } = useQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
 
   return (
-    <div className="flex flex-col gap-16 pb-20 md:gap-24">
+    <div className="animate-fade-in flex flex-col gap-16 pb-20 md:gap-24">
+      <Seo 
+        title="Home" 
+        description="Welcome to Ansyar's portfolio and custom CMS. I am a Full-Stack Developer and DevOps Engineer specialized in building scalable applications."
+      />
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-10 pb-10 md:pt-20 lg:pt-32">
         <div className="relative z-10 container px-4 md:px-6">
@@ -113,35 +115,44 @@ function App() {
         </div>
         
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-           {/* Manually grouped preview or just top skills */}
-           <Card title="Frontend" className="h-full">
-              <div className="flex flex-col gap-4">
-                {skills.filter(s => s.category === 'frontend').slice(0, 4).map(skill => (
-                  <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                ))}
-              </div>
-           </Card>
-           <Card title="Backend" className="h-full">
-              <div className="flex flex-col gap-4">
-                {skills.filter(s => s.category === 'backend').slice(0, 4).map(skill => (
-                  <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                ))}
-              </div>
-           </Card>
-           <Card title="DevOps" className="h-full">
-              <div className="flex flex-col gap-4">
-                {skills.filter(s => s.category === 'devops').slice(0, 4).map(skill => (
-                   <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                ))}
-              </div>
-           </Card>
-            <Card title="Tools" className="h-full">
-              <div className="flex flex-col gap-4">
-                {skills.filter(s => s.category === 'tools').slice(0, 4).map(skill => (
-                  <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                ))}
-              </div>
-           </Card>
+            {isLoadingSkills ? (
+              Array(4).fill(0).map((_, i) => (
+                <Card key={i} title="Loading...">
+                  <div className="h-32 w-full animate-pulse bg-(--color-surface-dark)/50" />
+                </Card>
+              ))
+            ) : (
+              <>
+                <Card title="Frontend">
+                  <div className="flex flex-col gap-4">
+                    {skills?.filter(s => s.category === 'frontend').slice(0, 4).map(skill => (
+                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+                    ))}
+                  </div>
+                </Card>
+                <Card title="Backend">
+                  <div className="flex flex-col gap-4">
+                    {skills?.filter(s => s.category === 'backend').slice(0, 4).map(skill => (
+                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+                    ))}
+                  </div>
+                </Card>
+                <Card title="DevOps">
+                  <div className="flex flex-col gap-4">
+                    {skills?.filter(s => s.category === 'devops').slice(0, 4).map(skill => (
+                       <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+                    ))}
+                  </div>
+                </Card>
+                <Card title="Tools">
+                  <div className="flex flex-col gap-4">
+                    {skills?.filter(s => s.category === 'tools').slice(0, 4).map(skill => (
+                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+                    ))}
+                  </div>
+                </Card>
+              </>
+            )}
         </div>
         
         <div className="mt-6 text-center md:hidden">
@@ -164,7 +175,11 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.length > 0 ? (
+          {isLoadingProjects ? (
+             Array(3).fill(0).map((_, i) => (
+                <div key={i} className="aspect-video animate-pulse rounded border border-(--color-border) bg-(--color-surface)" />
+             ))
+          ) : featuredProjects && featuredProjects.length > 0 ? (
             featuredProjects.map((project) => (
               <ProjectCard
                 key={project._id}
@@ -172,7 +187,7 @@ function App() {
                 slug={project.slug}
                 shortDescription={project.shortDescription}
                 techStack={project.techStack}
-                // thumbnailUrl={project.images?.[0]} // Assuming images array
+                thumbnailUrl={project.thumbnailUrl}
               />
             ))
           ) : (
@@ -196,7 +211,11 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {latestPosts.length > 0 ? (
+          {isLoadingPosts ? (
+             Array(3).fill(0).map((_, i) => (
+                <div key={i} className="h-48 animate-pulse rounded border border-(--color-border) bg-(--color-surface)" />
+             ))
+          ) : latestPosts && latestPosts.length > 0 ? (
             latestPosts.map((post) => (
               <BlogCard
                 key={post._id}
@@ -205,10 +224,6 @@ function App() {
                 excerpt={post.excerpt}
                 publishedAt={post.publishedAt}
                 readingTime={post.readingTime}
-                // category={post.category} // Need to join category? API returns it?
-                // Actually listPublished returns standard query result, likely just the doc.
-                // We might need to join/fetch category name if needed, or update query.
-                // For now, simple card.
               />
             ))
           ) : (

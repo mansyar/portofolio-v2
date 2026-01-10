@@ -45,16 +45,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Preconnect to font origins */}
+        {/* Preconnect to font origins to speed up connection establishment */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Load only essential font weights */}
+        
+        {/* Load font stylesheet with display swap for non-blocking render */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
           rel="stylesheet" 
         />
       </head>
-      <body>
+      {/* suppressHydrationWarning prevents console errors from browser extensions (like Grammarly) 
+          that inject attributes into the DOM before React hydrates */}
+      <body suppressHydrationWarning>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">
