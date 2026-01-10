@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { api } from '../../convex/_generated/api'
 import { Button } from '../components/ui/button'
 import { Card } from '../components/ui/card'
@@ -15,19 +15,21 @@ import { Seo } from '../components/seo'
 
 export const Route = createFileRoute('/')({
   component: App,
-  loader: async () => {
-    // Only prefetch the most critical data or nothing to allow instant navigation
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.prefetchQuery(convexQuery(api.skills.listVisible, {})),
+      context.queryClient.prefetchQuery(convexQuery(api.projects.listFeatured, {})),
+      context.queryClient.prefetchQuery(convexQuery(api.blog.listRecent, { limit: 3 })),
+    ])
   },
 })
 
 function App() {
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const { data: skills } = useSuspenseQuery(convexQuery(api.skills.listVisible, {}))
+  const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
+  const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
   
-  // Use regular useQuery instead of useSuspenseQuery for below-the-fold content
-  // This allows the Hero section to render immediately
-  const { data: skills, isLoading: isLoadingSkills } = useQuery(convexQuery(api.skills.listVisible, {}))
-  const { data: featuredProjects, isLoading: isLoadingProjects } = useQuery(convexQuery(api.projects.listFeatured, {}))
-  const { data: latestPosts, isLoading: isLoadingPosts } = useQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
 
   return (
     <div className="animate-fade-in flex flex-col gap-16 pb-20 md:gap-24">
@@ -90,8 +92,8 @@ function App() {
 }`} 
                     />
                     <div className="mt-4 flex items-center gap-2 text-(--color-terminal-green)">
-                      <span>$</span>
-                      <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
+                       <span>$</span>
+                       <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
                     </div>
                   </TerminalWindow>
                 </div>
@@ -115,44 +117,34 @@ function App() {
         </div>
         
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {isLoadingSkills ? (
-              Array(4).fill(0).map((_, i) => (
-                <Card key={i} title="Loading...">
-                  <div className="h-32 w-full animate-pulse bg-(--color-surface-dark)/50" />
-                </Card>
-              ))
-            ) : (
-              <>
-                <Card title="Frontend">
-                  <div className="flex flex-col gap-4">
-                    {skills?.filter(s => s.category === 'frontend').slice(0, 4).map(skill => (
-                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                    ))}
-                  </div>
-                </Card>
-                <Card title="Backend">
-                  <div className="flex flex-col gap-4">
-                    {skills?.filter(s => s.category === 'backend').slice(0, 4).map(skill => (
-                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                    ))}
-                  </div>
-                </Card>
-                <Card title="DevOps">
-                  <div className="flex flex-col gap-4">
-                    {skills?.filter(s => s.category === 'devops').slice(0, 4).map(skill => (
-                       <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                    ))}
-                  </div>
-                </Card>
-                <Card title="Tools">
-                  <div className="flex flex-col gap-4">
-                    {skills?.filter(s => s.category === 'tools').slice(0, 4).map(skill => (
-                      <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-                    ))}
-                  </div>
-                </Card>
-              </>
-            )}
+          <Card title="Frontend">
+            <div className="flex flex-col gap-4">
+              {skills.filter(s => s.category === 'frontend').slice(0, 4).map(skill => (
+                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+              ))}
+            </div>
+          </Card>
+          <Card title="Backend">
+            <div className="flex flex-col gap-4">
+              {skills.filter(s => s.category === 'backend').slice(0, 4).map(skill => (
+                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+              ))}
+            </div>
+          </Card>
+          <Card title="DevOps">
+            <div className="flex flex-col gap-4">
+              {skills.filter(s => s.category === 'devops').slice(0, 4).map(skill => (
+                  <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+              ))}
+            </div>
+          </Card>
+          <Card title="Tools">
+            <div className="flex flex-col gap-4">
+              {skills.filter(s => s.category === 'tools').slice(0, 4).map(skill => (
+                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
+              ))}
+            </div>
+          </Card>
         </div>
         
         <div className="mt-6 text-center md:hidden">
@@ -175,11 +167,7 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {isLoadingProjects ? (
-             Array(3).fill(0).map((_, i) => (
-                <div key={i} className="aspect-video animate-pulse rounded border border-(--color-border) bg-(--color-surface)" />
-             ))
-          ) : featuredProjects && featuredProjects.length > 0 ? (
+          {featuredProjects.length > 0 ? (
             featuredProjects.map((project) => (
               <ProjectCard
                 key={project._id}
@@ -188,6 +176,8 @@ function App() {
                 shortDescription={project.shortDescription}
                 techStack={project.techStack}
                 thumbnailUrl={project.thumbnailUrl}
+                liveDemoUrl={project.liveDemoUrl}
+                githubUrl={project.githubUrl}
               />
             ))
           ) : (
@@ -211,11 +201,7 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {isLoadingPosts ? (
-             Array(3).fill(0).map((_, i) => (
-                <div key={i} className="h-48 animate-pulse rounded border border-(--color-border) bg-(--color-surface)" />
-             ))
-          ) : latestPosts && latestPosts.length > 0 ? (
+          {latestPosts.length > 0 ? (
             latestPosts.map((post) => (
               <BlogCard
                 key={post._id}
@@ -244,7 +230,7 @@ function App() {
                 If you have a project that needs some creative engineering, I'd love to hear about it.
               </p>
               <Link to="/contact">
-                <Button size="lg" className="shadow-[0_0_20px_-5px_var(--color-ubuntu-orange) h-12 px-8 text-base">
+                <Button size="lg" className="shadow-[0_0_20px_-5px_var(--color-ubuntu-orange)] h-12 px-8 text-base">
                   Get in Touch
                 </Button>
               </Link>

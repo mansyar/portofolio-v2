@@ -10,9 +10,13 @@
   color-scheme: dark light;
 }
 
+html {
+  background-color: #300a24;
+}
+
 body {
   margin: 0;
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-bg-primary, #300a24);
   color: var(--color-text-primary, #ffffff);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;

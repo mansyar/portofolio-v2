@@ -325,13 +325,18 @@
 
 </details>
 
-### Phase 5 Technical Notes
+> **Last Updated:** January 11, 2026  
+> **Current Phase:** Phase 5 - Polish & Deploy Complete
+---
+## Phase 5 Technical Notes
 
+- **Convex Version Alignment**: Resolved a critical 502 Bad Gateway deployment error by aligning the Convex CLI/package versions between the application and the self-hosted backend.
 - **Dynamic Sitemap**: Implemented a server-side route `/sitemap.xml` that fetches real-time slugs from Convex.
 - **Vitest Infrastructure**: Integrated Vitest with JSDOM, including mocks for Convex and TanStack Router to ensure robust component testing.
 - **CI/CD Pipeline**: Sophisticated GitHub Actions workflow that handles testing, Dockerization (multi-stage), and deployment orchestration to Coolify.
 - **Docker Security**: Hardened production image by using a non-root user and adding automated healthchecks.
 - **SEO Tuning**: Added comprehensive JSON-LD and OG metadata to the home page and verified consistency across listing/detail pages.
+- **UX Polish**: Added terminal scanline effects, page fade-in animations, and optimized home page queries for perceived performance.
 
 ---
 
@@ -339,7 +344,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
-| Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, and Production Polish            |
+| Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, Production Polish, and Infra Fixes  |
 | Jan 9, 2026 | Phase 4 polish: Dynamic About page, terminal prompts, bug fixes, manual testing |
 | Jan 8, 2026 | Phase 4 complete: Blog & Resume CMS, Rich Text Editor, PDF Generation           |
 | Jan 8, 2026 | Phase 3 complete: CMS Core with Auth, Dashboard, Projects/Skills CRUD, Media    |
