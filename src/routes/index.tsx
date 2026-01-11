@@ -1,22 +1,22 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { api } from '../../convex/_generated/api'
 import { Button } from '../components/ui/button'
-import { Card } from '../components/ui/card'
-import { SkillBar } from '../components/ui/skill-bar'
-import { ProjectCard } from '../components/ui/project-card'
-import { BlogCard } from '../components/ui/blog-card'
 import { TypingEffect } from '../components/ui/typing-effect'
 import { ArrowRight } from 'lucide-react'
 import { TerminalWindow, CodeBlock } from '../components/ui/terminal-window'
 import { useMediaQuery } from '../hooks/use-media-query'
 import { Seo } from '../components/seo'
+import { SkillsSection } from '../components/features/home/SkillsSection'
+import { ProjectsSection } from '../components/features/home/ProjectsSection'
+import { BlogSection } from '../components/features/home/BlogSection'
+import { SectionSkeleton } from '../components/ui/section-skeleton'
 
 export const Route = createFileRoute('/')({
   component: App,
   loader: async ({ context }) => {
+    // Keep prefetching in loader to warm up cache on server
     await Promise.all([
       context.queryClient.prefetchQuery(convexQuery(api.skills.listVisible, {})),
       context.queryClient.prefetchQuery(convexQuery(api.projects.listFeatured, {})),
@@ -26,10 +26,6 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
-  const { data: skills } = useSuspenseQuery(convexQuery(api.skills.listVisible, {}))
-  const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
-  const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
-  
   const isMounted = React.useSyncExternalStore(
     () => () => {},
     () => true,
@@ -112,120 +108,19 @@ function App() {
       </section>
 
       {/* Skills Preview */}
-      <section className="container px-4 md:px-6">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="mb-2 text-2xl font-bold md:text-3xl">Technical Skills</h2>
-            <p className="text-(--color-text-secondary)">Technologies I work with daily</p>
-          </div>
-          <Link to="/skills" className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex">
-           view_all_skills() &gt;
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card title="Frontend">
-            <div className="flex flex-col gap-4">
-              {skills.filter(s => s.category === 'frontend').slice(0, 4).map(skill => (
-                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-              ))}
-            </div>
-          </Card>
-          <Card title="Backend">
-            <div className="flex flex-col gap-4">
-              {skills.filter(s => s.category === 'backend').slice(0, 4).map(skill => (
-                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-              ))}
-            </div>
-          </Card>
-          <Card title="DevOps">
-            <div className="flex flex-col gap-4">
-              {skills.filter(s => s.category === 'devops').slice(0, 4).map(skill => (
-                  <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-              ))}
-            </div>
-          </Card>
-          <Card title="Tools">
-            <div className="flex flex-col gap-4">
-              {skills.filter(s => s.category === 'tools').slice(0, 4).map(skill => (
-                <SkillBar key={skill._id} name={skill.name} proficiency={skill.proficiency} />
-              ))}
-            </div>
-          </Card>
-        </div>
-        
-        <div className="mt-6 text-center md:hidden">
-          <Link to="/skills" className="inline-flex items-center font-mono text-(--color-ubuntu-orange) hover:underline">
-            view_all_skills() &gt;
-          </Link>
-        </div>
-      </section>
-
+      <Suspense fallback={<SectionSkeleton title="Technical Skills" items={4} />}>
+        <SkillsSection />
+      </Suspense>
+      
       {/* Featured Projects */}
-      <section className="container px-4 md:px-6">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="mb-2 text-2xl font-bold md:text-3xl">Featured Projects</h2>
-            <p className="text-(--color-text-secondary)">Recent work and case studies</p>
-          </div>
-          <Link to="/projects" className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex">
-           view_all_projects() &gt;
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.length > 0 ? (
-            featuredProjects.map((project) => (
-              <ProjectCard
-                key={project._id}
-                title={project.title}
-                slug={project.slug}
-                shortDescription={project.shortDescription}
-                techStack={project.techStack}
-                thumbnailUrl={project.thumbnailUrl}
-                liveDemoUrl={project.liveDemoUrl}
-                githubUrl={project.githubUrl}
-              />
-            ))
-          ) : (
-             <div className="col-span-full rounded border border-dashed border-(--color-border) py-12 text-center">
-                <p className="font-mono text-(--color-text-secondary)">No featured projects found.</p>
-             </div>
-          )}
-        </div>
-      </section>
+      <Suspense fallback={<SectionSkeleton title="Featured Projects" />}>
+        <ProjectsSection />
+      </Suspense>
 
       {/* Latest Blog */}
-      <section className="container px-4 md:px-6">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="mb-2 text-2xl font-bold md:text-3xl">Latest from Blog</h2>
-            <p className="text-(--color-text-secondary)">Thoughts on tech and development</p>
-          </div>
-          <Link to="/blog" className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex">
-           read_more_posts() &gt;
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {latestPosts.length > 0 ? (
-            latestPosts.map((post) => (
-              <BlogCard
-                key={post._id}
-                title={post.title}
-                slug={post.slug}
-                excerpt={post.excerpt}
-                publishedAt={post.publishedAt}
-                readingTime={post.readingTime}
-              />
-            ))
-          ) : (
-            <div className="col-span-full rounded border border-dashed border-(--color-border) py-12 text-center">
-                <p className="font-mono text-(--color-text-secondary)">No blog posts found.</p>
-             </div>
-          )}
-        </div>
-      </section>
+      <Suspense fallback={<SectionSkeleton title="Latest from Blog" />}>
+        <BlogSection />
+      </Suspense>
 
       {/* CTA */}
       <section className="container px-4 md:px-6">

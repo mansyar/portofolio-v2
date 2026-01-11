@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LoadingSpinner } from "./components/ui/loading-spinner";
 import { createRouter } from "@tanstack/react-router";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
@@ -27,7 +28,8 @@ export const getRouter = () => {
         // Use Convex's query function for data fetching
         queryFn: convexQueryClient.queryFn(),
         // Stale time for SSR - data is fresh from server
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        // Set to Infinity to prevent hydration flicker; Convex handles real-time updates
+        staleTime: Infinity,
       },
     },
   });
@@ -42,6 +44,8 @@ export const getRouter = () => {
     },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
+    defaultPendingComponent: LoadingSpinner,
+    defaultPendingMs: 500,
 
     // Wrap the router with Convex Auth and Query providers
     Wrap: function WrapComponent({ children }) {
