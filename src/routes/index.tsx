@@ -31,7 +31,7 @@ function App() {
     <div className="animate-fade-in flex flex-col gap-16 pb-20 md:gap-24">
       <Seo 
         title="Home" 
-        description="Welcome to Ansyar's portfolio and custom CMS. I am a Full-Stack Developer and DevOps Engineer specialized in building scalable applications."
+        description="Senior Full-Stack Developer & DevOps Engineer. Building scalable applications with React, TanStack Start, Convex, and modern infrastructure. Explore my projects and technical deep dives."
       />
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-10 pb-10 md:pt-20 lg:pt-32">

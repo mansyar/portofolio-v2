@@ -20,7 +20,8 @@ export function Seo({
   jsonLd,
 }: SeoProps) {
   const location = useLocation();
-  const siteUrl = "https://ansyar-world.top"; // In future could be env var
+  // Use environment variable for site URL or fallback
+  const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
   const url = `${siteUrl}${location.pathname}`;
   const fullTitle = `${title} | Ansyar's Portfolio`;
   const defaultImage = `${siteUrl}/og-image.jpg`; // Fallback image
@@ -39,6 +40,7 @@ export function Seo({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content="Ansyar's Portfolio" />
+      <meta property="og:locale" content="en_US" />
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
 
       {/* Twitter Card */}

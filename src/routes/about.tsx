@@ -24,7 +24,7 @@ function About() {
     <div className="flex flex-col gap-12 pb-20">
       <Seo 
         title="About Me | Portfolio" 
-        description="Learn more about my background, experience, and education." 
+        description="My professional journey from Full-Stack Development to DevOps. Explore my experience, technical skills, and educational background." 
       />
 
       <Suspense fallback={
