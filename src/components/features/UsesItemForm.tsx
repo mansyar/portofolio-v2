@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
 
@@ -22,8 +22,14 @@ interface UsesItemFormProps {
 
 export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps) {
   const router = useRouter();
-  const createItem = useMutation(api.uses.create);
-  const updateItem = useMutation(api.uses.update);
+  const createItem = useToastMutation(api.uses.create, {
+    successMessage: 'item saved successfully',
+    errorMessage: 'failed to save item'
+  });
+  const updateItem = useToastMutation(api.uses.update, {
+    successMessage: 'item updated successfully',
+    errorMessage: 'failed to update item'
+  });
 
   const [formData, setFormData] = useState<UsesItemFormData>({
     category: initialData?.category || '',
@@ -36,7 +42,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -53,7 +58,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
 
     try {
       if (mode === 'create') {
@@ -71,8 +75,7 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
         router.navigate({ to: '/admin/uses' });
       }
     } catch (err) {
-      console.error('Failed to save uses item:', err);
-      setError('Failed to save item. Please try again.');
+      // Handled by toast
     } finally {
       setIsSubmitting(false);
     }
@@ -87,12 +90,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {error && (
-          <div className="bg-[rgba(233,84,32,0.1)] border-l-2 border-(--color-terminal-red) p-3 text-xs text-(--color-terminal-red)">
-            Error: {error}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column: Basic Info */}
           <div className="space-y-6">

@@ -6,6 +6,7 @@ import { Seo } from '../components/seo';
 import { Calendar, Clock, ChevronLeft, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import '../components/editor/RichTextEditor.css';
+import { ErrorFallback } from '../components/ui/error-fallback';
 
 export const Route = createFileRoute('/blog/$slug')({
   component: BlogPostDetail,
@@ -14,7 +15,14 @@ export const Route = createFileRoute('/blog/$slug')({
       convexQuery(api.blog.bySlug, { slug })
     );
     if (!post) throw notFound();
-  }
+  },
+  errorComponent: ({ error, reset }) => (
+    <ErrorFallback 
+      error={error} 
+      reset={reset} 
+      title="BLOG_POST_FETCH_FAILED" 
+    />
+  ),
 });
 
 function BlogPostDetail() {

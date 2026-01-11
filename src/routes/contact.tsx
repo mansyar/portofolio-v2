@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import { useToastMutation } from '../hooks/use-toast-mutation'
 import { Card } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Seo } from '../components/seo'
-import { Terminal, Send, CheckCircle, AlertCircle, Mail, MapPin } from 'lucide-react'
+import { Terminal, Send, CheckCircle, Mail, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -37,7 +37,10 @@ const contactSchema = z.object({
 });
 
 function Contact() {
-  const submitMessage = useMutation(api.contact.submit);
+  const submitMessage = useToastMutation(api.contact.submit, {
+    successMessage: 'message sent successfully',
+    errorMessage: 'failed to send message'
+  });
   
   const [formData, setFormData] = useState({
     name: '',
@@ -48,18 +51,15 @@ function Contact() {
   });
   
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
-    setErrorMessage(null);
 
     // Validate
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
       setStatus('error');
-      setErrorMessage(result.error.issues[0].message);
       return;
     }
 
@@ -78,15 +78,8 @@ function Contact() {
       
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
-    } catch (error) {
+    } catch (_error) {
       setStatus('error');
-      const msg = error instanceof Error ? error.message : String(error);
-      if (msg.includes("Too many submissions")) {
-        setErrorMessage("You've sent too many messages. Please wait an hour.");
-      } else {
-        setErrorMessage("Failed to send message. Please try again later.");
-      }
-      console.error(error);
     }
   };
 
@@ -153,13 +146,6 @@ function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {status === 'error' && (
-                  <div className="flex items-center gap-2 rounded border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500">
-                    <AlertCircle size={16} />
-                    {errorMessage}
-                  </div>
-                )}
-                
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="font-mono text-sm text-(--color-text-secondary)">Name</label>
                   <Input 

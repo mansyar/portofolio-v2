@@ -1,0 +1,22 @@
+.toast-success {
+  border-left: 4px solid var(--color-terminal-green) !important;
+}
+
+.toast-error {
+  border-left: 4px solid var(--color-terminal-red) !important;
+}
+
+/* Ensure monospace font for title and description */
+[data-sonner-toast] [data-title],
+[data-sonner-toast] [data-description] {
+  font-family: var(--font-mono) !important;
+}
+
+/* Terminal-like text colors */
+.toast-success [data-title] {
+  color: var(--color-terminal-green) !important;
+}
+
+.toast-error [data-title] {
+  color: var(--color-terminal-red) !important;
+}

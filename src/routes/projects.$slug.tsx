@@ -9,6 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { TerminalWindow } from '../components/ui/terminal-window';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { ErrorFallback } from '../components/ui/error-fallback';
 
 export const Route = createFileRoute('/projects/$slug')({
   component: ProjectDetail,
@@ -17,7 +18,14 @@ export const Route = createFileRoute('/projects/$slug')({
       convexQuery(api.projects.bySlug, { slug })
     );
     if (!project) throw notFound();
-  }
+  },
+  errorComponent: ({ error, reset }) => (
+    <ErrorFallback 
+      error={error} 
+      reset={reset} 
+      title="PROJECT_FETCH_FAILED" 
+    />
+  ),
 });
 
 function ProjectDetail() {

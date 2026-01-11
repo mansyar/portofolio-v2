@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQuery } from 'convex/react';
+import { useQuery } from 'convex/react';
+import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
@@ -37,8 +38,14 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
   const categories = useQuery(api.blog.getCategories);
   const tags = useQuery(api.blog.getTags);
   
-  const createPost = useMutation(api.blog.createPost);
-  const updatePost = useMutation(api.blog.updatePost);
+  const createPost = useToastMutation(api.blog.createPost, {
+    successMessage: 'post published successfully',
+    errorMessage: 'failed to publish post'
+  });
+  const updatePost = useToastMutation(api.blog.updatePost, {
+    successMessage: 'post updated successfully',
+    errorMessage: 'failed to update post'
+  });
 
   const [formData, setFormData] = useState<BlogPostFormData>({
     title: initialData?.title || '',
@@ -56,13 +63,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
 
   useEffect(() => {
     if (autoSlug && mode === 'create') {
-      setFormData(prev => ({ ...prev, slug: slugify(formData.title) }));
+      setFormData((prev: BlogPostFormData) => ({ ...prev, slug: slugify(formData.title) }));
     }
   }, [formData.title, autoSlug, mode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev: BlogPostFormData) => ({ ...prev, [name]: value }));
     
     if (name === 'slug') {
       setAutoSlug(false);
@@ -70,7 +77,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
   };
 
   const handleTagToggle = (tagId: Id<"blogTags">) => {
-    setFormData(prev => ({
+    setFormData((prev: BlogPostFormData) => ({
       ...prev,
       tagIds: prev.tagIds.includes(tagId)
         ? prev.tagIds.filter(id => id !== tagId)
@@ -90,8 +97,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
       }
       router.navigate({ to: '/admin/blog' });
     } catch (error) {
-      console.error('Failed to save blog post:', error);
-      alert('Failed to save blog post. Check console for details.');
+      // Handled by toast
     } finally {
       setIsSubmitting(false);
     }
@@ -151,7 +157,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           <RichTextEditor 
             label="Content"
             content={formData.content}
-            onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+            onChange={(content: string) => setFormData((prev: BlogPostFormData) => ({ ...prev, content }))}
             placeholder="Write your post here..."
           />
         </div>
@@ -168,7 +174,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
               <span className="text-xs font-mono">Status</span>
               <button
                 type="button"
-                onClick={() => setFormData(prev => ({ ...prev, status: prev.status === 'draft' ? 'published' : 'draft' }))}
+                onClick={() => setFormData((prev: BlogPostFormData) => ({ ...prev, status: prev.status === 'draft' ? 'published' : 'draft' }))}
                 className={`admin-badge ${formData.status === 'published' ? 'success' : 'neutral'} cursor-pointer flex items-center gap-1`}
               >
                 {formData.status === 'published' ? <Globe size={10} /> : <EyeOff size={10} />}

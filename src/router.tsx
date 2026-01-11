@@ -5,6 +5,7 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { convex } from "./lib/convex/client";
 import { routeTree } from "./routeTree.gen";
+import { ErrorFallback } from "./components/ui/error-fallback";
 
 /**
  * Creates the TanStack Router instance with Convex integration.
@@ -46,6 +47,9 @@ export const getRouter = () => {
     defaultPreloadStaleTime: 0,
     defaultPendingComponent: LoadingSpinner,
     defaultPendingMs: 500,
+    defaultErrorComponent: ({ error, reset }) => (
+      <ErrorFallback error={error} reset={reset} />
+    ),
 
     // Wrap the router with Convex Auth and Query providers
     Wrap: function WrapComponent({ children }) {

@@ -6,6 +6,8 @@ import { Footer } from '../components/layout/Footer'
 
 import '../styles/variables.css'
 import '../styles/globals.css'
+import '../styles/toast.css'
+import { ToastProvider } from '../components/ui/toast-provider'
 
 // Define the router context interface
 export interface RouterContext {
@@ -60,6 +62,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </main>
           <Footer />
         </div>
+        <ToastProvider />
         <Scripts />
       </body>
     </html>

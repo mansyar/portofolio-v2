@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
 
@@ -25,8 +25,14 @@ interface SkillFormProps {
 
 export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   const router = useRouter();
-  const createSkill = useMutation(api.skills.create);
-  const updateSkill = useMutation(api.skills.update);
+  const createSkill = useToastMutation(api.skills.create, {
+    successMessage: 'skill added successfully',
+    errorMessage: 'failed to add skill'
+  });
+  const updateSkill = useToastMutation(api.skills.update, {
+    successMessage: 'skill updated successfully',
+    errorMessage: 'failed to update skill'
+  });
 
   const [formData, setFormData] = useState<SkillFormData>({
     name: '',
@@ -40,7 +46,6 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -73,7 +78,6 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
 
     try {
       if (mode === 'create') {
@@ -101,9 +105,7 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
         router.navigate({ to: '/admin/skills' });
       }
     } catch (err: unknown) {
-      console.error('Error saving skill:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save skill';
-      setError(errorMessage);
+      // Handled by toast
     } finally {
       setIsSubmitting(false);
     }
@@ -125,12 +127,6 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
       </div>
       
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {error && (
-          <div className="bg-[rgba(233,84,32,0.1)] border-l-2 border-(--color-terminal-red) p-3 text-xs text-(--color-terminal-red)">
-            Error: {error}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name */}
           <div className="space-y-2">

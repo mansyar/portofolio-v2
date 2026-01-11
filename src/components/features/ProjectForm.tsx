@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
 
@@ -36,8 +36,14 @@ function slugify(text: string) {
 
 export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   const router = useRouter();
-  const createProject = useMutation(api.projects.create);
-  const updateProject = useMutation(api.projects.update);
+  const createProject = useToastMutation(api.projects.create, {
+    successMessage: 'project saved successfully',
+    errorMessage: 'failed to save project'
+  });
+  const updateProject = useToastMutation(api.projects.update, {
+    successMessage: 'project updated successfully',
+    errorMessage: 'failed to update project'
+  });
 
   const [formData, setFormData] = useState<ProjectFormData>({
     title: '',
@@ -55,7 +61,6 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Raw text state for array fields to allow typing commas/newlines
   const [techStackText, setTechStackText] = useState('');
@@ -116,7 +121,6 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
 
     try {
       const payload = {
@@ -140,9 +144,7 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
 
       router.navigate({ to: '/admin/projects' });
     } catch (err: unknown) {
-      console.error('Error saving project:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save project';
-      setError(errorMessage);
+      // Handled by toast
     } finally {
       setIsSubmitting(false);
     }
@@ -157,12 +159,6 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
       </div>
       
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {error && (
-          <div className="bg-[rgba(233,84,32,0.1)] border-l-2 border-(--color-terminal-red) p-3 text-xs text-(--color-terminal-red)">
-            Error: {error}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column: Basic Info */}
           <div className="space-y-6">

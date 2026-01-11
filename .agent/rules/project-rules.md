@@ -153,7 +153,4 @@ Reference
 PRD: 
 docs/PRD.md
  for specs
-Migration: 
-docs/MIGRATION_PLAN.md
- for migration details
 Workflows: /setup, /component, /page, /admin-page, /api, /migrate, /types, /check
