@@ -1,0 +1,4 @@
+/* Badge specific styles if needed, though most are handled via Tailwind/variables */
+.badge-terminal {
+  box-shadow: 0 0 5px var(--color-terminal-green-opacity, rgba(78, 154, 6, 0.3));
+}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -29,6 +30,11 @@ function App() {
   const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
   const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
   
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const isDesktop = useMediaQuery("(min-width: 1024px)")
 
   return (
@@ -74,7 +80,7 @@ function App() {
             </div>
             
             {/* Terminal Illustration - Desktop Only */}
-            {isDesktop && (
+            {isMounted && isDesktop && (
               <div className="hidden perspective-1000 lg:block">
                 <div className="relative transform transition-transform duration-500 hover:rotate-1">
                   <TerminalWindow title="ansyar@portfolio:~/about" className="shadow-2xl">

@@ -5,7 +5,7 @@ import Header from '../components/Header'
 import { Footer } from '../components/layout/Footer'
 
 import '../styles/variables.css'
-import appCss from '../styles/globals.css?url'
+import '../styles/globals.css'
 
 // Define the router context interface
 export interface RouterContext {
@@ -28,12 +28,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         title: "Ansyar's Portfolio",
       },
     ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+    links: [],
   }),
 
   shellComponent: RootDocument,

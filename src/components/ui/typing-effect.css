@@ -40,6 +40,15 @@
   }
 }
 
+@keyframes typing-reveal {
+  from {
+    max-width: 0;
+  }
+  to {
+    max-width: 100%;
+  }
+}
+
 /* Ensure text shows immediately if JS fails or on print */
 @media print, (prefers-reduced-motion: reduce) {
   .typing-text {
