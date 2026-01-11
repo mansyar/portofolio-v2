@@ -96,7 +96,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
         await updatePost({ id: initialData.id, ...formData });
       }
       router.navigate({ to: '/admin/blog' });
-    } catch (error) {
+    } catch {
       // Handled by toast
     } finally {
       setIsSubmitting(false);

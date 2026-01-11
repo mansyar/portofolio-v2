@@ -104,7 +104,7 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
       } else {
         router.navigate({ to: '/admin/skills' });
       }
-    } catch (err: unknown) {
+    } catch {
       // Handled by toast
     } finally {
       setIsSubmitting(false);

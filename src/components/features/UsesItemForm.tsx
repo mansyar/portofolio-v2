@@ -74,7 +74,7 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
       } else {
         router.navigate({ to: '/admin/uses' });
       }
-    } catch (err) {
+    } catch {
       // Handled by toast
     } finally {
       setIsSubmitting(false);

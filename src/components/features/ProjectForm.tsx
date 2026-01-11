@@ -143,7 +143,7 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
       }
 
       router.navigate({ to: '/admin/projects' });
-    } catch (err: unknown) {
+    } catch {
       // Handled by toast
     } finally {
       setIsSubmitting(false);

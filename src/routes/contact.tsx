@@ -78,7 +78,7 @@ function Contact() {
       
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
-    } catch (_error) {
+    } catch {
       setStatus('error');
     }
   };
