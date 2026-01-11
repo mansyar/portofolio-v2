@@ -83,15 +83,48 @@ export const submit = mutation({
     email: v.string(),
     subject: v.string(),
     message: v.string(),
+    honeypot: v.optional(v.string()),
+    clientIp: v.string(),
   },
   handler: async (ctx, args) => {
-    // Save the submission to the database
+    // 1. Honeypot check (Bot detection)
+    if (args.honeypot) {
+      // Bot detected - silently succeed to not tip off the bot
+      console.warn("Honeypot filled - bot submission ignored");
+      return { success: true };
+    }
+
+    // 2. Rate limiting check (max 3 submissions per hour per IP)
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    const recentAttempts = await ctx.db
+      .query("rateLimits")
+      .withIndex("by_identifier_action", (q) =>
+        q.eq("identifier", args.clientIp).eq("action", "contact_submit")
+      )
+      .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
+      .collect();
+
+    if (recentAttempts.length >= 3) {
+      throw new Error("Too many submissions. Please try again later.");
+    }
+
+    // 3. Log this attempt
+    await ctx.db.insert("rateLimits", {
+      identifier: args.clientIp,
+      action: "contact_submit",
+      timestamp: Date.now(),
+    });
+
+    // 4. Save the submission to the database
     await ctx.db.insert("contactSubmissions", {
-      ...args,
+      name: args.name,
+      email: args.email,
+      subject: args.subject,
+      message: args.message,
       isRead: false,
     });
 
-    // Schedule Slack notification (runs immediately but non-blocking)
+    // 5. Schedule Slack notification (runs immediately but non-blocking)
     await ctx.scheduler.runAfter(0, internal.contact.sendSlackNotification, {
       name: args.name,
       email: args.email,

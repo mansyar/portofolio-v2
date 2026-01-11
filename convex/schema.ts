@@ -150,6 +150,13 @@ export default defineSchema({
     isRead: v.boolean(),
   }).index("by_read", ["isRead"]),
 
+  // Rate Limiting (for contact form)
+  rateLimits: defineTable({
+    identifier: v.string(), // IP address or user identifier
+    action: v.string(), // "contact_submit"
+    timestamp: v.number(), // When the action occurred
+  }).index("by_identifier_action", ["identifier", "action"]),
+
   // Site Settings (key-value store pattern)
   siteSettings: defineTable({
     key: v.string(),

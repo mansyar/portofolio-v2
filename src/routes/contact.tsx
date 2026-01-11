@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+import { getRequest } from '@tanstack/react-start/server'
 import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { Card } from '../components/ui/card'
@@ -8,6 +10,19 @@ import { Seo } from '../components/seo'
 import { Terminal, Send, CheckCircle, AlertCircle, Mail, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
+
+// Server function to get client IP from Traefik headers
+const getClientIp = createServerFn({ method: "GET" }).handler(async () => {
+  const request = getRequest();
+  if (!request) return "unknown";
+  
+  // Traefik adds X-Forwarded-For with the client IP first
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") || "unknown";
+});
 
 export const Route = createFileRoute('/contact')({
   component: Contact,
@@ -28,7 +43,8 @@ function Contact() {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    website: '' // honeypot field
   });
   
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -48,12 +64,28 @@ function Contact() {
     }
 
     try {
-      await submitMessage(formData);
+      // Get client IP server-side
+      const clientIp = await getClientIp();
+
+      await submitMessage({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        honeypot: formData.website,
+        clientIp
+      });
+      
       setStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
     } catch (error) {
       setStatus('error');
-      setErrorMessage("Failed to send message. Please try again later.");
+      const msg = error instanceof Error ? error.message : String(error);
+      if (msg.includes("Too many submissions")) {
+        setErrorMessage("You've sent too many messages. Please wait an hour.");
+      } else {
+        setErrorMessage("Failed to send message. Please try again later.");
+      }
       console.error(error);
     }
   };
@@ -137,6 +169,17 @@ function Contact() {
                     onChange={handleChange} 
                     required 
                     placeholder="Your Name"
+                  />
+                </div>
+
+                {/* Honeypot field - hidden from humans */}
+                <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                  <Input 
+                    name="website" 
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.website}
+                    onChange={handleChange}
                   />
                 </div>
 
