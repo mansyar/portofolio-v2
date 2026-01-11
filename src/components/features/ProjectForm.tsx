@@ -57,6 +57,10 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Raw text state for array fields to allow typing commas/newlines
+  const [techStackText, setTechStackText] = useState('');
+  const [imagesText, setImagesText] = useState('');
+
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -73,6 +77,9 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
         displayOrder: initialData.displayOrder,
         isVisible: initialData.isVisible,
       });
+      // Initialize raw text from array data
+      setTechStackText(initialData.techStack?.join(', ') || '');
+      setImagesText(initialData.images?.join('\n') || '');
     }
   }, [initialData]);
 
@@ -98,9 +105,11 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
     });
   };
 
-  const handleArrayChange = (name: 'images' | 'techStack', value: string) => {
+  // Parse array field on blur (when user leaves the input)
+  const parseArrayField = (name: 'images' | 'techStack') => {
+    const text = name === 'techStack' ? techStackText : imagesText;
     // Split by comma or newline and clean up
-    const list = value.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
+    const list = text.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
     setFormData(prev => ({ ...prev, [name]: list }));
   };
 
@@ -196,8 +205,9 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
               <textarea
                 id="techStack"
                 rows={3}
-                value={formData.techStack.join(', ')}
-                onChange={(e) => handleArrayChange('techStack', e.target.value)}
+                value={techStackText}
+                onChange={(e) => setTechStackText(e.target.value)}
+                onBlur={() => parseArrayField('techStack')}
                 className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
                 placeholder="React, TypeScript, TailwindCSS"
               />
@@ -304,8 +314,9 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
               <textarea
                 id="images"
                 rows={4}
-                value={formData.images.join('\n')}
-                onChange={(e) => handleArrayChange('images', e.target.value)}
+                value={imagesText}
+                onChange={(e) => setImagesText(e.target.value)}
+                onBlur={() => parseArrayField('images')}
                 className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
                 placeholder="https://..."
               />
