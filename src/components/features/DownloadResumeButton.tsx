@@ -37,10 +37,13 @@ export function DownloadResumeButton() {
     setIsGenerating(true);
     try {
       // Lazy load heavy PDF libraries only on demand
-      const [{ pdf }, { ResumeDocument }] = await Promise.all([
+      const [reactPdf, { ResumeDocument }] = await Promise.all([
         import('@react-pdf/renderer'),
         import('./ResumeDocument')
       ]);
+
+      const { pdf, Document, Page, Text, View, StyleSheet } = reactPdf;
+      const pdfComponents = { Document, Page, Text, View, StyleSheet };
 
       const doc = <ResumeDocument 
         profile={profile} 
@@ -48,6 +51,7 @@ export function DownloadResumeButton() {
         education={education} 
         skills={skills} 
         certifications={certifications} 
+        pdfComponents={pdfComponents}
       />;
       
       const blob = await pdf(doc).toBlob();

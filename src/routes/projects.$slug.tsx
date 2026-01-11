@@ -7,9 +7,10 @@ import { ChevronLeft, ExternalLink, Github, Code2, Layers } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { TerminalWindow } from '../components/ui/terminal-window';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { lazy, Suspense } from 'react';
 import { ErrorFallback } from '../components/ui/error-fallback';
+
+const MarkdownContent = lazy(() => import('../components/ui/markdown-content').then(m => ({ default: m.MarkdownContent })));
 
 import { OptimizedImage } from '../components/ui/optimized-image';
 
@@ -98,9 +99,9 @@ function ProjectDetail() {
                 <Code2 size={20} />
                 PROJECT_OVERVIEW
               </h2>
-              <div className="markdown-content text-(--color-text-secondary)">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.fullDescription}</ReactMarkdown>
-              </div>
+              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
+                <MarkdownContent content={project.fullDescription} className="text-(--color-text-secondary)" />
+              </Suspense>
             </div>
           )}
         </div>

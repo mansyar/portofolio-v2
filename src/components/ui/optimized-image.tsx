@@ -38,7 +38,6 @@ export function OptimizedImage({
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        // @ts-ignore - fetchPriority is supported in modern browsers but might not be in all type definitions yet
         fetchPriority={priority ? 'high' : 'auto'}
         decoding="async"
         onLoad={() => setIsLoaded(true)}

@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from 'convex/react';
 import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
-import { RichTextEditor } from '../editor/RichTextEditor';
 import { Terminal, Save, X, Globe, EyeOff } from 'lucide-react';
+
+const RichTextEditor = lazy(() => import('../editor/RichTextEditor').then(m => ({ default: m.RichTextEditor })));
+
+function EditorSkeleton() {
+  return (
+    <div className="space-y-2">
+      <div className="h-5 w-20 animate-pulse rounded bg-(--color-surface)" />
+      <div className="h-64 animate-pulse rounded border border-(--color-border) bg-(--color-surface)" />
+    </div>
+  );
+}
 
 interface BlogPostFormData {
   title: string;
@@ -154,12 +164,14 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
             </div>
           </div>
 
-          <RichTextEditor 
-            label="Content"
-            content={formData.content}
-            onChange={(content: string) => setFormData((prev: BlogPostFormData) => ({ ...prev, content }))}
-            placeholder="Write your post here..."
-          />
+          <Suspense fallback={<EditorSkeleton />}>
+            <RichTextEditor 
+              label="Content"
+              content={formData.content}
+              onChange={(content: string) => setFormData((prev: BlogPostFormData) => ({ ...prev, content }))}
+              placeholder="Write your post here..."
+            />
+          </Suspense>
         </div>
 
         {/* Sidebar Settings */}
