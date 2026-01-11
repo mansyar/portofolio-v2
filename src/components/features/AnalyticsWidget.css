@@ -1,0 +1,37 @@
+/* AnalyticsWidget Styles */
+
+.analytics-widget {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.analytics-widget .card {
+  transition: transform 0.2s ease-out, border-color 0.2s ease-out;
+}
+
+.analytics-widget .card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-ubuntu-orange);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Ping for active users */
+.analytics-widget .animate-ping {
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

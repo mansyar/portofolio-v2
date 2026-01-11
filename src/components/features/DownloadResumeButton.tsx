@@ -76,6 +76,8 @@ export function DownloadResumeButton() {
       onClick={handleDownload}
       disabled={isGenerating}
       className="terminal-button btn-primary flex items-center gap-2"
+      data-umami-event="resume-download"
+      data-umami-event-format="pdf"
     >
       {isGenerating ? (
         <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

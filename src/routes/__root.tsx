@@ -8,6 +8,7 @@ import '../styles/variables.css'
 import '../styles/globals.css'
 import '../styles/toast.css'
 import { ToastProvider } from '../components/ui/toast-provider'
+import { UmamiScript } from '../components/analytics/UmamiScript'
 
 // Define the router context interface
 export interface RouterContext {
@@ -58,6 +59,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
           rel="stylesheet" 
         />
+
+        {/* Umami Analytics */}
+        <UmamiScript />
       </head>
       {/* suppressHydrationWarning prevents console errors from browser extensions (like Grammarly) 
           that inject attributes into the DOM before React hydrates */}

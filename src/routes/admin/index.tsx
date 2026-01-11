@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Clock
 } from 'lucide-react'
+import { AnalyticsWidget } from '@/components/features/AnalyticsWidget'
 
 export const Route = createFileRoute('/admin/')({
   component: Dashboard,
@@ -35,6 +36,9 @@ function Dashboard() {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Analytics Widget */}
+      <AnalyticsWidget />
+
       {/* Stats Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 

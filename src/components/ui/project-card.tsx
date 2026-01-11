@@ -25,7 +25,13 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <Card title={slug} className="flex h-full flex-col transition-colors duration-200 hover:border-(--color-ubuntu-orange)">
-      <Link to="/projects/$slug" params={{ slug }} className="group block">
+      <Link 
+        to="/projects/$slug" 
+        params={{ slug }} 
+        className="group block"
+        data-umami-event="project-click"
+        data-umami-event-project={slug}
+      >
         <div className="relative mb-4 overflow-hidden rounded border border-(--color-border) bg-(--color-terminal-bg-dark)/50">
           {thumbnailUrl ? (
             <OptimizedImage 
@@ -43,7 +49,12 @@ export function ProjectCard({
       </Link>
 
       <div className="flex flex-1 flex-col">
-        <Link to="/projects/$slug" params={{ slug }}>
+        <Link 
+          to="/projects/$slug" 
+          params={{ slug }}
+          data-umami-event="project-click"
+          data-umami-event-project={slug}
+        >
           <h3 className="mb-2 text-xl font-bold transition-colors hover:text-(--color-ubuntu-orange)">
             {title}
           </h3>
@@ -85,7 +96,13 @@ export function ProjectCard({
             </a>
           )}
           {!liveDemoUrl && !githubUrl && (
-             <Link to="/projects/$slug" params={{ slug }} className="flex-1">
+             <Link 
+               to="/projects/$slug" 
+               params={{ slug }} 
+               className="flex-1"
+               data-umami-event="project-click"
+               data-umami-event-project={slug}
+             >
                <Button size="sm" className="w-full">Details</Button>
              </Link>
           )}

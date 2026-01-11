@@ -45,7 +45,13 @@ export function BlogCard({
           )}
         </div>
 
-        <Link to="/blog/$slug" params={{ slug }} className="group">
+        <Link 
+          to="/blog/$slug" 
+          params={{ slug }} 
+          className="group"
+          data-umami-event="blog-click"
+          data-umami-event-post={slug}
+        >
           <h2 className="mb-3 text-xl font-bold transition-colors group-hover:text-(--color-ubuntu-orange)">
             {title}
           </h2>
@@ -62,6 +68,8 @@ export function BlogCard({
             to="/blog/$slug" 
             params={{ slug }}
             className="inline-flex items-center font-mono text-sm text-(--color-terminal-cyan) hover:underline"
+            data-umami-event="blog-click"
+            data-umami-event-post={slug}
           >
             read_article() &gt;
           </Link>

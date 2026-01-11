@@ -208,7 +208,12 @@ function Contact() {
                   />
                 </div>
 
-                <Button type="submit" className="mt-2 w-full" disabled={status === 'submitting'}>
+                <Button 
+                  type="submit" 
+                  className="mt-2 w-full" 
+                  disabled={status === 'submitting'}
+                  data-umami-event="contact-submit"
+                >
                   {status === 'submitting' ? (
                      <>Sending...</>
                   ) : (

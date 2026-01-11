@@ -1,8 +1,8 @@
 # Progress Tracking
 
 > **Project:** Ansyar's Portfolio + Custom CMS  
-> **Last Updated:** January 12, 2026  
-> **Current Phase:** Phase 5 - Polish & Deploy Complete (RELEASED)
+> **Last Updated:** January 12, 2026 (Phase 6 complete)
+> **Current Phase:** Phase 6 - Analytics & Insights Complete (v1.1)
 
 ---
 
@@ -23,7 +23,7 @@
 
 | Phase | Theme | Status |
 |-------|-------|--------|
-| **Phase 6** | 📊 Analytics & Insights | 🔲 Planned |
+| **Phase 6** | 📊 Analytics & Insights | ✅ Complete |
 | **Phase 7** | 🔗 Content Discovery | 🔲 Planned |
 | **Phase 8** | ⚙️ Admin Enhancements | 🔲 Planned |
 | **Phase 9** | 💬 Visitor Engagement | 🔲 Planned |
@@ -356,6 +356,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Jan 12, 2026 | Phase 6 complete: Umami Analytics, Admin Widget, Event Tracking                |
 | Jan 12, 2026 | Integrated full roadmap (Phases 6-12) directly into PROGRESS.md                 |
 | Jan 12, 2026 | Documentation sync: Updated PRD and PROGRESS.md to match implementation          |
 | Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, Production Polish, and Infra Fixes  |
@@ -385,7 +386,7 @@
 
 ## Phase 6: Analytics & Insights (v1.1)
 
-**Status:** 🔲 Planned  
+**Status:** ✅ Complete  
 **Goal:** Understand visitor behavior to make data-driven improvements  
 **Timeline:** 1-2 weeks  
 **Theme:** 📊 *"Measure before you optimize"*
@@ -396,15 +397,19 @@
 | **Dashboard Analytics Widget** | Show visitor stats in admin dashboard | 🟡 Medium | ⭐⭐ High |
 | **Event Tracking** | Track resume downloads, contact form, project clicks | 🟢 Low | ⭐⭐ High |
 
-<details>
-<summary><strong>Acceptance Criteria</strong></summary>
-
-- [ ] Umami deployed on Coolify with domain `analytics.ansyar-world.top` or similar
-- [ ] Tracking script integrated on all public pages
-- [ ] Admin dashboard shows basic stats (visitors, page views, top pages)
-- [ ] Resume downloads and contact submissions tracked as events
+- [x] Umami deployed on Coolify with domain `analytics.ansyar-world.top`
+- [x] Tracking script integrated on all public pages
+- [x] Admin dashboard shows basic stats (visitors, page views, active)
+- [x] Resume downloads, contact submissions, and card clicks tracked as events
 
 </details>
+
+### Phase 6 Technical Notes
+
+- **Secure Proxy**: Implemented a Convex action to proxy Umami API requests, keeping credentials safe on the backend.
+- **Terminal Aesthetics**: Created a custom `AnalyticsWidget` with real-time active visitor "ping" animation and terminal-inspired stat cards.
+- **Event Tracking**: Integrated `data-umami-event` attributes across `ProjectCard`, `BlogCard`, `ContactForm`, and `DownloadResumeButton`.
+- **React 19 Compatibility**: Handled React 19's script hoisting behavior in unit tests for the `UmamiScript` component.
 
 ---
 
