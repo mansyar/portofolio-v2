@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import '../components/editor/RichTextEditor.css';
 import { ErrorFallback } from '../components/ui/error-fallback';
 
+import { OptimizedImage } from '../components/ui/optimized-image';
+
 export const Route = createFileRoute('/blog/$slug')({
   component: BlogPostDetail,
   loader: async ({ context, params: { slug } }) => {
@@ -62,11 +64,12 @@ function BlogPostDetail() {
         </div>
 
         {post.coverImageUrl && (
-          <div className="mt-8 aspect-video overflow-hidden rounded-lg border border-(--color-border)">
-            <img 
+          <div className="mt-8 overflow-hidden rounded-lg border border-(--color-border)">
+            <OptimizedImage 
               src={post.coverImageUrl} 
               alt={post.title} 
-              className="h-full w-full object-cover" 
+              aspectRatio="16/9"
+              priority
             />
           </div>
         )}

@@ -1,5 +1,6 @@
 import { Card } from "./card";
 import { ExternalLink } from "lucide-react";
+import { OptimizedImage } from "./optimized-image";
 
 interface UsesItemProps {
   name: string;
@@ -15,7 +16,11 @@ export function UsesItem({ name, description, url, imageUrl, className }: UsesIt
       <div className="flex items-start gap-4">
         {imageUrl && (
           <div className="h-16 w-16 shrink-0 overflow-hidden rounded border border-(--color-border) bg-(--color-surface)">
-            <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
+            <OptimizedImage 
+              src={imageUrl} 
+              alt={name} 
+              aspectRatio="1/1" 
+            />
           </div>
         )}
         <div className="min-w-0 flex-1">

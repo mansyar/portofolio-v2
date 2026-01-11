@@ -11,6 +11,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ErrorFallback } from '../components/ui/error-fallback';
 
+import { OptimizedImage } from '../components/ui/optimized-image';
+
 export const Route = createFileRoute('/projects/$slug')({
   component: ProjectDetail,
   loader: async ({ context, params: { slug } }) => {
@@ -106,11 +108,13 @@ function ProjectDetail() {
         <div className="space-y-6">
           <TerminalWindow title={`project-preview://${project.slug}`} className="sticky top-24">
             {project.thumbnailUrl ? (
-              <div className="aspect-video w-full overflow-hidden rounded border border-(--color-border) bg-(--color-surface)">
-                <img 
+              <div className="overflow-hidden rounded border border-(--color-border) bg-(--color-surface)">
+                <OptimizedImage 
                   src={project.thumbnailUrl} 
                   alt={project.title} 
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" 
+                  aspectRatio="16/9"
+                  priority
+                  className="transition-transform duration-500 hover:scale-105" 
                 />
               </div>
             ) : (
@@ -121,9 +125,13 @@ function ProjectDetail() {
             
             <div className="mt-6 grid grid-cols-2 gap-4">
               {project.images?.filter(img => img !== project.thumbnailUrl).map((img, idx) => (
-                <div key={idx} className="aspect-video overflow-hidden rounded border border-(--color-border)">
-                  <img src={img} alt={`${project.title} screenshot ${idx + 1}`} className="h-full w-full object-cover" />
-                </div>
+                <OptimizedImage 
+                  key={idx}
+                  src={img} 
+                  alt={`${project.title} screenshot ${idx + 1}`} 
+                  aspectRatio="16/9"
+                  className="rounded border border-(--color-border)"
+                />
               ))}
             </div>
           </TerminalWindow>

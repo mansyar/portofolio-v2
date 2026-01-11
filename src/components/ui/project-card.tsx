@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Card } from "./card";
 import { Button } from "./button";
 import { ExternalLink, Github } from "lucide-react";
+import { OptimizedImage } from "./optimized-image";
 
 interface ProjectCardProps {
   title: string;
@@ -25,15 +26,16 @@ export function ProjectCard({
   return (
     <Card title={slug} className="flex h-full flex-col transition-colors duration-200 hover:border-(--color-ubuntu-orange)">
       <Link to="/projects/$slug" params={{ slug }} className="group block">
-        <div className="relative mb-4 aspect-video w-full overflow-hidden rounded border border-(--color-border) bg-(--color-terminal-bg-dark)/50">
+        <div className="relative mb-4 overflow-hidden rounded border border-(--color-border) bg-(--color-terminal-bg-dark)/50">
           {thumbnailUrl ? (
-            <img 
+            <OptimizedImage 
               src={thumbnailUrl} 
               alt={title} 
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              aspectRatio="16/9"
+              className="transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center font-mono text-(--color-text-secondary)">
+            <div className="flex aspect-video w-full items-center justify-center font-mono text-(--color-text-secondary)">
               <span className="group-hover:text-(--color-ubuntu-orange)">./preview_missing.jpg</span>
             </div>
           )}
