@@ -46,6 +46,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
+        {/* Preload the font stylesheet for faster FCP/LCP */}
+        <link 
+          rel="preload" 
+          as="style" 
+          href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
+        />
+        
         {/* Load font stylesheet with display swap for non-blocking render */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
