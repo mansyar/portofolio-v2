@@ -3,10 +3,18 @@ import { Card } from "./card";
 interface SectionSkeletonProps {
   title?: string;
   items?: number;
+  columns?: number;
   variant?: 'grid' | 'timeline' | 'list';
 }
 
-export function SectionSkeleton({ title, items = 3, variant = 'grid' }: SectionSkeletonProps) {
+export function SectionSkeleton({ title, items = 3, columns = 3, variant = 'grid' }: SectionSkeletonProps) {
+  const gridColsClass = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-1 md:grid-cols-2',
+    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+  }[columns as 1|2|3|4] || 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+
   return (
     <section className="container px-4 md:px-6">
       {title && (
@@ -19,7 +27,7 @@ export function SectionSkeleton({ title, items = 3, variant = 'grid' }: SectionS
       )}
       
       {variant === 'grid' && (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`grid gap-6 ${gridColsClass}`}>
           {Array.from({ length: items }).map((_, i) => (
             <Card key={i} title="...">
               <div className="space-y-4">

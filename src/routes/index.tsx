@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
 import { api } from '../../convex/_generated/api'
@@ -6,7 +6,6 @@ import { Button } from '../components/ui/button'
 import { TypingEffect } from '../components/ui/typing-effect'
 import { ArrowRight } from 'lucide-react'
 import { TerminalWindow, CodeBlock } from '../components/ui/terminal-window'
-import { useMediaQuery } from '../hooks/use-media-query'
 import { Seo } from '../components/seo'
 import { SkillsSection } from '../components/features/home/SkillsSection'
 import { ProjectsSection } from '../components/features/home/ProjectsSection'
@@ -16,8 +15,10 @@ import { SectionSkeleton } from '../components/ui/section-skeleton'
 export const Route = createFileRoute('/')({
   component: App,
   loader: async ({ context }) => {
-    // Keep prefetching in loader to warm up cache on server
-    await Promise.all([
+    // PREFETCH WITHOUT AWAIT: Enables Streaming SSR.
+    // The server will send the shell (Header/Hero) immediately,
+    // and stream the lazy data as it resolves.
+    Promise.all([
       context.queryClient.prefetchQuery(convexQuery(api.skills.listVisible, {})),
       context.queryClient.prefetchQuery(convexQuery(api.projects.listFeatured, {})),
       context.queryClient.prefetchQuery(convexQuery(api.blog.listRecent, { limit: 3 })),
@@ -26,14 +27,6 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
-  const isMounted = React.useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  )
-
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
-
   return (
     <div className="animate-fade-in flex flex-col gap-16 pb-20 md:gap-24">
       <Seo 
@@ -76,39 +69,37 @@ function App() {
             </div>
             </div>
             
-            {/* Terminal Illustration - Desktop Only */}
-            {isMounted && isDesktop && (
-              <div className="hidden perspective-1000 lg:block">
-                <div className="relative transform transition-transform duration-500 hover:rotate-1">
-                  <TerminalWindow title="ansyar@portfolio:~/about" className="shadow-2xl">
-                    <div className="mb-4 flex items-center gap-2 text-(--color-terminal-green)">
-                      <span>$</span>
-                      <TypingEffect text="cat me.ts" speed={50} />
-                    </div>
-                    <CodeBlock 
-                      code={`interface Developer {
+            {/* Terminal Illustration - Responsive visibility handled by CSS to prevent CLS */}
+            <div className="hidden lg:block perspective-1000">
+              <div className="relative transform transition-transform duration-500 hover:rotate-1">
+                <TerminalWindow title="ansyar@portfolio:~/about" className="shadow-2xl">
+                  <div className="mb-4 flex items-center gap-2 text-(--color-terminal-green)">
+                    <span>$</span>
+                    <TypingEffect text="cat me.ts" speed={50} />
+                  </div>
+                  <CodeBlock 
+                    code={`interface Developer {
   name: "Ansyar";
   role: "Full Stack Developer";
   stack: ["React", "Convex", "DevOps"];
   passion: "Building great software";
   status: "Online";
 }`} 
-                    />
-                    <div className="mt-4 flex items-center gap-2 text-(--color-terminal-green)">
-                       <span>$</span>
-                       <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
-                    </div>
-                  </TerminalWindow>
-                </div>
+                  />
+                  <div className="mt-4 flex items-center gap-2 text-(--color-terminal-green)">
+                      <span>$</span>
+                      <span className="h-5 w-2 animate-pulse bg-(--color-terminal-green)"></span>
+                  </div>
+                </TerminalWindow>
               </div>
-            )}
+            </div>
             
           </div>
         </div>
       </section>
 
       {/* Skills Preview */}
-      <Suspense fallback={<SectionSkeleton title="Technical Skills" items={4} />}>
+      <Suspense fallback={<SectionSkeleton title="Technical Skills" items={4} columns={4} />}>
         <SkillsSection />
       </Suspense>
       
