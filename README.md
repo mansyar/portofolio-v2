@@ -3,7 +3,18 @@
 > A portfolio website + custom CMS built with TanStack Start, Convex, and an Ubuntu Terminal-inspired design.
 
 **Domain:** [ansyar-world.top](https://ansyar-world.top)  
-**Status:** 🚧 In Development (Phase 1 Complete)
+**Status:** ✅ Released (v1.0)
+
+---
+
+## ✨ Features
+
+- **Ubuntu Terminal Aesthetic** — Unique, techy design with monospace typography
+- **Custom CMS** — Full content management without third-party headless CMS
+- **Auto-Generated Resume** — PDF resume dynamically generated from CMS data
+- **Real-time Updates** — Convex reactive queries for instant content sync
+- **SEO Optimized** — SSR, sitemap, JSON-LD, Open Graph tags
+- **Responsive Design** — Mobile-first with dark/light theme support
 
 ---
 
@@ -13,9 +24,13 @@
 |----------|------------|
 | **Framework** | TanStack Start (React 19, SSR) |
 | **Database** | Convex (self-hosted) |
-| **Styling** | Tailwind CSS v4 + CSS Variables |
-| **Storage** | Cloudflare R2 |
+| **Auth** | Convex Auth (Password provider) |
+| **Styling** | Vanilla CSS + CSS Variables |
+| **PDF Generation** | @react-pdf/renderer |
+| **Rich Text** | Tiptap Editor |
+| **Storage** | Convex File Storage (R2 backend) |
 | **Deployment** | Docker + Coolify |
+| **CI/CD** | GitHub Actions |
 
 ---
 
@@ -57,26 +72,34 @@ The app will be running at [http://localhost:3000](http://localhost:3000).
 ```
 src/
 ├── components/
-│   ├── ui/          # Base primitives (Button, Input, Card)
-│   ├── layout/      # Header, Footer
-│   └── features/    # Domain-specific components
-├── routes/          # File-based routing
-│   ├── index.tsx    # Home page
-│   ├── about.tsx    # About page
-│   ├── skills.tsx   # Skills page
-│   ├── projects.tsx # Projects page
-│   ├── blog.tsx     # Blog page
-│   ├── uses.tsx     # Uses page
-│   └── contact.tsx  # Contact page
-├── styles/
-│   ├── variables.css # CSS custom properties (Ubuntu theme)
-│   └── globals.css   # Global styles
-└── lib/             # Utilities and Convex client
+│   ├── ui/              # Base primitives (Button, Input, Card, etc.)
+│   ├── layout/          # Footer, AdminHeader, AdminSidebar
+│   ├── features/        # Domain components (home/, blog/, projects/, etc.)
+│   └── editor/          # RichTextEditor
+├── routes/
+│   ├── index.tsx        # Home page
+│   ├── about.tsx        # About page (+ Resume download)
+│   ├── skills.tsx       # Skills page
+│   ├── projects.*.tsx   # Projects list & detail
+│   ├── blog.*.tsx       # Blog list & detail
+│   ├── uses.tsx         # Uses page
+│   ├── contact.tsx      # Contact page
+│   ├── sitemap[.]xml.ts # Dynamic sitemap
+│   ├── admin.tsx        # Admin layout (protected)
+│   └── admin/           # CMS pages (dashboard, projects, blog, etc.)
+├── hooks/               # Custom hooks (use-auth, use-toast-mutation)
+├── styles/              # CSS (variables, globals, admin, toast)
+└── lib/                 # Utilities and Convex client
 
 convex/
-├── schema.ts        # Database schema (14 tables)
-├── skills.ts        # Skills API
-└── lib/auth.ts      # Authorization helpers
+├── schema.ts            # Database schema (15 tables)
+├── skills.ts            # Skills queries/mutations
+├── projects.ts          # Projects queries/mutations
+├── blog.ts              # Blog queries/mutations
+├── resume.ts            # Resume queries/mutations
+├── contact.ts           # Contact form handling (with rate limiting)
+├── media.ts             # Media file management
+└── lib/auth.ts          # requireAdmin authorization helper
 ```
 
 ---
@@ -92,6 +115,12 @@ convex/
 | `pnpm lint` | Run ESLint |
 | `pnpm test` | Run Vitest tests |
 
+### Quality Check (before commit)
+
+```bash
+pnpm type-check; pnpm lint; pnpm build
+```
+
 ---
 
 ## Design System
@@ -100,8 +129,9 @@ The UI follows an **Ubuntu Terminal** aesthetic:
 
 - **Colors:** Ubuntu Orange (#E95420), Aubergine (#2C001E), Terminal Green (#4E9A06)
 - **Typography:** Ubuntu Mono throughout
-- **Components:** Terminal-style cards with traffic light dots, `>` prompt inputs
+- **Components:** Terminal-style cards with traffic light dots, `>` prompt inputs, `$` button prefixes
 - **Dark mode:** Default theme with light mode support
+- **Animations:** Typing effect, cursor blink, smooth transitions
 
 ---
 
@@ -112,15 +142,16 @@ See `.env.example` for all required variables:
 ```env
 # Convex
 VITE_CONVEX_URL=https://your-convex-url
+CONVEX_SELF_HOSTED_URL=https://your-convex-url
 CONVEX_SELF_HOSTED_ADMIN_KEY=your-admin-key
 
-# Cloudflare R2
-R2_ACCESS_KEY_ID=your-r2-key
-R2_SECRET_ACCESS_KEY=your-r2-secret
-R2_BUCKET_NAME=portfolio-media
-
-# Admin
+# Auth
 ADMIN_EMAIL=your-email@example.com
+JWT_PRIVATE_KEY=your-jwt-private-key
+JWKS=your-jwks-json
+
+# App
+VITE_APP_URL=https://ansyar-world.top
 ```
 
 ---
@@ -145,11 +176,28 @@ docker-compose -f docker/docker-compose.yml up
 
 ---
 
+## CMS Features
+
+The admin panel (`/admin`) includes:
+
+| Feature | Description |
+|---------|-------------|
+| **Dashboard** | Quick stats, recent messages, system status |
+| **Projects** | CRUD, reorder, featured toggle, rich descriptions |
+| **Blog** | Draft/publish workflow, categories, tags, reading time |
+| **Skills** | Category management, proficiency sliders, icon picker |
+| **Uses** | Hardware/software/tools showcase |
+| **Resume** | Profile, work experience, education, certifications |
+| **Media** | Upload, preview, delete files (Convex Storage) |
+| **Messages** | Contact form submissions, read/unread status |
+
+---
+
 ## Documentation
 
-- [PRD.md](./docs/PRD.md) - Product Requirements Document
-- [PROGRESS.md](./docs/PROGRESS.md) - Development progress tracking
-- [MIGRATION_PLAN.md](./docs/MIGRATION_PLAN.md) - Supabase → Convex migration details
+- [PRD.md](./docs/PRD.md) — Product Requirements Document
+- [PROGRESS.md](./docs/PROGRESS.md) — Development progress tracking
+- [MIGRATION_PLAN.md](./docs/MIGRATION_PLAN.md) — Supabase → Convex migration details
 
 ---
 

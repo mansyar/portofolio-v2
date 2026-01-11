@@ -1,8 +1,8 @@
 # Progress Tracking
 
 > **Project:** Ansyar's Portfolio + Custom CMS  
-> **Last Updated:** January 9, 2026  
-> **Current Phase:** Phase 4 - CMS - Blog & Resume Complete (Polished)
+> **Last Updated:** January 12, 2026  
+> **Current Phase:** Phase 5 - Polish & Deploy Complete (RELEASED)
 
 ---
 
@@ -345,6 +345,7 @@
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
 | Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, Production Polish, and Infra Fixes  |
+| Jan 12, 2026 | Documentation sync: Updated PRD and PROGRESS.md to match implementation          |
 | Jan 9, 2026 | Phase 4 polish: Dynamic About page, terminal prompts, bug fixes, manual testing |
 | Jan 8, 2026 | Phase 4 complete: Blog & Resume CMS, Rich Text Editor, PDF Generation           |
 | Jan 8, 2026 | Phase 3 complete: CMS Core with Auth, Dashboard, Projects/Skills CRUD, Media    |
@@ -359,12 +360,21 @@
 
 Items to implement after the initial launch:
 
+**High Priority (Deferred from v1):**
+- [ ] Admin Settings page (`/admin/settings`) - Site-wide SEO defaults, profile management
+- [ ] Public Resume page (`/resume`) - Dedicated page for resume download (currently via About page)
+- [ ] Related Projects/Posts - Show similar content on detail pages
+
+**Medium Priority:**
 - [ ] Analytics integration (Umami/Plausible)
 - [ ] Newsletter subscription
 - [ ] Project case studies
-- [ ] Internationalization (i18n)
 - [ ] Blog comments (Giscus/Utterances)
 - [ ] RSS feed for blog
+- [ ] Tag cloud on blog page
+
+**Low Priority:**
+- [ ] Internationalization (i18n)
 - [ ] Webmentions
 - [ ] Reading progress indicator
 - [ ] Command palette (Cmd+K)

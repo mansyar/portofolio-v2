@@ -7,7 +7,7 @@
 **Author:** Mezy Ansyar  
 **Role:** DevOps Engineer & Web Developer  
 **Created:** January 4, 2026  
-**Updated:** January 11, 2026  
+**Updated:** January 12, 2026  
 **Status:** Development Complete (Phases 0-4)
 
 ---
@@ -227,18 +227,19 @@ ansyar-world.top/
 │   └── Email CTA
 │
 ├── /resume (Download)
-│   └── Auto-generated PDF
+│   └── Auto-generated PDF (via Download button on About page)
 │
 └── /admin (CMS - Protected)
     ├── /admin/login
-    ├── /admin/dashboard
+    ├── /admin (Dashboard)
     ├── /admin/projects
     ├── /admin/blog
     ├── /admin/skills
     ├── /admin/uses
     ├── /admin/resume
-    ├── /admin/settings
-    └── /admin/media
+    ├── /admin/media
+    └── /admin/messages
+    # Note: /admin/settings planned for future release
 ```
 
 ---
@@ -783,19 +784,26 @@ export default defineSchema({
     isRead: v.boolean(),
   }).index("by_read", ["isRead"]),
 
+  // Rate Limiting (for contact form spam protection)
+  rateLimits: defineTable({
+    identifier: v.string(), // IP address or user identifier
+    action: v.string(), // "contact_submit"
+    timestamp: v.number(), // When the action occurred
+  }).index("by_identifier_action", ["identifier", "action"]),
+
   // Site Settings (key-value)
   siteSettings: defineTable({
     key: v.string(),
     value: v.any(),
   }).index("by_key", ["key"]),
 
-  // Media Files (metadata, files in R2)
+  // Media Files (metadata only, actual files in Convex Storage)
   mediaFiles: defineTable({
-    filename: v.string(),
+    storageId: v.id("_storage"), // Reference to Convex file storage
     originalFilename: v.string(),
     mimeType: v.string(),
     size: v.number(),
-    url: v.string(),
+    // Note: URL is generated dynamically via ctx.storage.getUrl(storageId)
     altText: v.optional(v.string()),
   }),
 });
@@ -840,120 +848,132 @@ export const create = mutation({
 
 ## 8. API Routes / Server Functions
 
-### Public API (TanStack Start Server Functions)
+> **Architecture Note:** Instead of traditional REST API routes, this project uses **Convex queries and mutations** directly from the client. Convex provides type-safe, real-time data fetching with automatic caching and optimistic updates. The routes below represent the logical API surface implemented as Convex functions in `convex/*.ts`.
 
-| Route                    | Method | Description                     |
-| ------------------------ | ------ | ------------------------------- |
-| `/api/skills`            | GET    | Get all visible skills          |
-| `/api/projects`          | GET    | Get all visible projects        |
-| `/api/projects/[slug]`   | GET    | Get single project              |
-| `/api/projects/featured` | GET    | Get featured projects           |
-| `/api/blog/posts`        | GET    | Get published posts (paginated) |
-| `/api/blog/posts/[slug]` | GET    | Get single post                 |
-| `/api/blog/categories`   | GET    | Get all categories              |
-| `/api/blog/tags`         | GET    | Get all tags                    |
-| `/api/uses`              | GET    | Get all uses items              |
-| `/api/resume`            | GET    | Get resume data                 |
-| `/api/resume/pdf`        | GET    | Generate & download PDF         |
-| `/api/contact`           | POST   | Submit contact form             |
+### Public API (Convex Queries)
 
-### Admin API (Protected)
+| Convex Function              | Type     | Description                     |
+| ---------------------------- | -------- | ------------------------------- |
+| `api.skills.listVisible`     | Query    | Get all visible skills          |
+| `api.projects.listVisible`   | Query    | Get all visible projects        |
+| `api.projects.getBySlug`     | Query    | Get single project              |
+| `api.projects.listFeatured`  | Query    | Get featured projects           |
+| `api.blog.listPublished`     | Query    | Get published posts (paginated) |
+| `api.blog.getBySlug`         | Query    | Get single post                 |
+| `api.blog.listCategories`    | Query    | Get all categories              |
+| `api.blog.listTags`          | Query    | Get all tags                    |
+| `api.uses.listVisible`       | Query    | Get all uses items              |
+| `api.resume.getProfile`      | Query    | Get resume profile data         |
+| `api.contact.submit`         | Mutation | Submit contact form             |
 
-| Route                        | Method             | Description                |
-| ---------------------------- | ------------------ | -------------------------- |
-| `/api/admin/auth/login`      | POST               | Send magic link            |
-| `/api/admin/auth/logout`     | POST               | Logout                     |
-| `/api/admin/skills`          | CRUD               | Manage skills              |
-| `/api/admin/projects`        | CRUD               | Manage projects            |
-| `/api/admin/blog/posts`      | CRUD               | Manage posts               |
-| `/api/admin/blog/categories` | CRUD               | Manage categories          |
-| `/api/admin/blog/tags`       | CRUD               | Manage tags                |
-| `/api/admin/uses`            | CRUD               | Manage uses items          |
-| `/api/admin/resume/*`        | CRUD               | Manage resume data         |
-| `/api/admin/media`           | CRUD               | Manage media files         |
-| `/api/admin/messages`        | GET, PATCH, DELETE | Manage contact submissions |
-| `/api/admin/settings`        | GET, PUT           | Site settings              |
+### Admin API (Protected Convex Mutations)
+
+All admin mutations are protected with `requireAdmin()` authorization check.
+
+| Convex Function Module     | Operations         | Description                |
+| -------------------------- | ------------------ | -------------------------- |
+| `api.skills.*`             | CRUD               | Manage skills              |
+| `api.projects.*`           | CRUD               | Manage projects            |
+| `api.blog.*`               | CRUD               | Manage posts               |
+| `api.blog.createCategory`  | CRUD               | Manage categories          |
+| `api.blog.createTag`       | CRUD               | Manage tags                |
+| `api.uses.*`               | CRUD               | Manage uses items          |
+| `api.resume.*`             | CRUD               | Manage resume data         |
+| `api.media.*`              | CRUD               | Manage media files         |
+| `api.contact.*`            | GET, PATCH, DELETE | Manage contact submissions |
+
+> **Note:** Authentication is handled by Convex Auth with password-based login. Site Settings management is planned for a future release.
 
 ---
 
 ## 9. Project Structure
 
+> **Note:** This structure reflects the actual implementation. Routes use TanStack Start file-based routing with pathless layouts. Data access is handled directly via Convex queries/mutations (no separate `/api` folder needed).
+
 ```
 portofolio-v2/
 ├── src/
 │   ├── routes/
-│   │   ├── __root.tsx              # Root layout
+│   │   ├── __root.tsx              # Root layout with providers
 │   │   ├── index.tsx               # Home page
-│   │   ├── about.tsx               # About page
+│   │   ├── about.tsx               # About page (includes Resume download)
 │   │   ├── skills.tsx              # Skills page
-│   │   ├── projects/
-│   │   │   ├── index.tsx           # Projects list
-│   │   │   └── $slug.tsx           # Project detail
-│   │   ├── blog/
-│   │   │   ├── index.tsx           # Blog list
-│   │   │   └── $slug.tsx           # Post detail
+│   │   ├── projects.tsx            # Projects pathless layout
+│   │   ├── projects.index.tsx      # Projects list
+│   │   ├── projects.$slug.tsx      # Project detail
+│   │   ├── blog.tsx                # Blog pathless layout
+│   │   ├── blog.index.tsx          # Blog list
+│   │   ├── blog.$slug.tsx          # Post detail
 │   │   ├── uses.tsx                # Uses page
 │   │   ├── contact.tsx             # Contact page
-│   │   ├── resume.tsx              # Resume download
-│   │   ├── admin/
-│   │   │   ├── _layout.tsx         # Admin layout (protected)
-│   │   │   ├── login.tsx           # Login page
-│   │   │   ├── dashboard.tsx       # Dashboard
-│   │   │   ├── projects/
-│   │   │   ├── blog/
-│   │   │   ├── skills.tsx
-│   │   │   ├── uses.tsx
-│   │   │   ├── resume.tsx
-│   │   │   ├── media.tsx
-│   │   │   ├── messages.tsx
-│   │   │   └── settings.tsx
-│   │   └── api/
-│   │       ├── skills.ts
-│   │       ├── projects.ts
-│   │       ├── blog.ts
-│   │       ├── contact.ts
-│   │       ├── resume.ts
-│   │       └── admin/
+│   │   ├── sitemap[.]xml.ts        # Dynamic sitemap generator
+│   │   ├── admin.tsx               # Admin pathless layout (protected)
+│   │   └── admin/
+│   │       ├── index.tsx           # Dashboard
+│   │       ├── login.tsx           # Login page
+│   │       ├── projects/           # Projects CRUD
+│   │       ├── blog/               # Blog CRUD
+│   │       ├── skills/             # Skills CRUD
+│   │       ├── uses/               # Uses CRUD
+│   │       ├── resume/             # Resume editor
+│   │       ├── media/              # Media manager
+│   │       └── messages/           # Contact submissions
 │   ├── components/
+│   │   ├── Header.tsx              # Main site header
+│   │   ├── NotFound.tsx            # 404 component
+│   │   ├── seo.tsx                 # SEO meta component
 │   │   ├── ui/                     # Base UI components
 │   │   │   ├── button.tsx
 │   │   │   ├── input.tsx
 │   │   │   ├── card.tsx
-│   │   │   ├── modal.tsx
+│   │   │   ├── theme-toggle.tsx
+│   │   │   ├── terminal-window.tsx
 │   │   │   └── ...
 │   │   ├── layout/
-│   │   │   ├── header.tsx
-│   │   │   ├── footer.tsx
-│   │   │   ├── navigation.tsx
-│   │   │   └── admin-sidebar.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── AdminHeader.tsx
+│   │   │   └── AdminSidebar.tsx
 │   │   ├── features/
-│   │   │   ├── hero.tsx
-│   │   │   ├── project-card.tsx
-│   │   │   ├── blog-card.tsx
-│   │   │   ├── skill-item.tsx
-│   │   │   ├── contact-form.tsx
-│   │   │   ├── theme-toggle.tsx
-│   │   │   └── ...
+│   │   │   ├── home/               # Home page components
+│   │   │   ├── about/              # About page components
+│   │   │   ├── projects/           # Project components
+│   │   │   ├── blog/               # Blog components
+│   │   │   ├── skills/             # Skills components
+│   │   │   ├── uses/               # Uses components
+│   │   │   ├── ProjectForm.tsx     # Admin project form
+│   │   │   ├── BlogPostForm.tsx    # Admin blog form
+│   │   │   ├── SkillForm.tsx       # Admin skill form
+│   │   │   ├── UsesItemForm.tsx    # Admin uses form
+│   │   │   ├── ResumeDocument.tsx  # PDF template
+│   │   │   └── DownloadResumeButton.tsx
 │   │   └── editor/
-│   │       └── rich-text-editor.tsx
+│   │       └── RichTextEditor.tsx
 │   ├── hooks/
-│   │   ├── use-theme.ts
 │   │   ├── use-auth.ts
-│   │   └── use-media-query.ts
+│   │   ├── use-media-query.ts
+│   │   └── use-toast-mutation.ts
 │   ├── lib/
 │   │   ├── convex/
 │   │   │   └── client.ts           # Convex client setup
-│   │   ├── r2/
-│   │   │   └── client.ts
-│   │   ├── utils.ts
-│   │   └── constants.ts
+│   │   └── utils.ts
 │   ├── styles/
 │   │   ├── globals.css
 │   │   ├── variables.css
-│   │   └── components/
-│   ├── types/
-│   │   └── index.ts
+│   │   ├── admin.css
+│   │   └── toast.css
 │   └── router.tsx                  # Router + Convex provider
+├── convex/                         # Convex backend functions
+│   ├── schema.ts                   # Database schema
+│   ├── skills.ts                   # Skills queries/mutations
+│   ├── projects.ts                 # Projects queries/mutations
+│   ├── blog.ts                     # Blog queries/mutations
+│   ├── uses.ts                     # Uses queries/mutations
+│   ├── resume.ts                   # Resume queries/mutations
+│   ├── contact.ts                  # Contact form handling
+│   ├── media.ts                    # Media file management
+│   ├── auth.ts                     # Auth configuration
+│   └── lib/
+│       └── auth.ts                 # requireAdmin helper
 ├── public/
 │   ├── fonts/
 │   ├── images/
