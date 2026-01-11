@@ -3,9 +3,10 @@ import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 import { ResumeDocument } from './ResumeDocument';
 import { FileDown } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function DownloadResumeButton() {
+  const [isMounted, setIsMounted] = useState(false);
   const profile = useQuery(api.resume.getProfile);
   const experiences = useQuery(api.resume.getExperiences);
   const education = useQuery(api.resume.getEducation);
@@ -13,6 +14,21 @@ export function DownloadResumeButton() {
   const certifications = useQuery(api.resume.getCertifications);
 
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Only render after client mount to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Show skeleton placeholder during SSR and initial hydration
+  if (!isMounted) {
+    return (
+      <div className="terminal-button btn-primary flex items-center gap-2 opacity-50">
+        <FileDown size={18} />
+        Download PDF
+      </div>
+    );
+  }
 
   const handleDownload = async () => {
     if (!profile || !experiences || !education || !skills || !certifications) {
