@@ -10,10 +10,10 @@ export function Footer() {
           &copy; {year} Ansyar World. All rights reserved.
         </div>
         <div className="footer__links">
-          <a href="https://github.com/ansyar-world" target="_blank" rel="noopener noreferrer" className="footer__link">
+          <a href="https://github.com/mansyar" target="_blank" rel="noopener noreferrer" className="footer__link">
             GitHub
           </a>
-          <a href="https://linkedin.com/in/ansyar-world" target="_blank" rel="noopener noreferrer" className="footer__link">
+          <a href="https://www.linkedin.com/in/muhammad-ansyar-rafi-putra-904a75157/" target="_blank" rel="noopener noreferrer" className="footer__link">
             LinkedIn
           </a>
         </div>
