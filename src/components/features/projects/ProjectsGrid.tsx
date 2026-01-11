@@ -16,7 +16,7 @@ export function ProjectsGrid() {
             slug={project.slug}
             shortDescription={project.shortDescription}
             techStack={project.techStack}
-            thumbnailUrl={project.images?.[0]}
+            thumbnailUrl={project.thumbnailUrl || project.images?.[0]}
             liveDemoUrl={project.liveDemoUrl}
             githubUrl={project.githubUrl}
           />
