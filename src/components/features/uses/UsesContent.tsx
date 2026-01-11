@@ -6,17 +6,25 @@ import { UsesItem } from "../../ui/uses-item";
 export function UsesContent() {
   const { data: items } = useSuspenseQuery(convexQuery(api.uses.listVisible, {}));
 
+  // Group items by category (case-insensitive)
   const groups: Record<string, typeof items> = {};
   items.forEach(item => {
-    if (!groups[item.category]) groups[item.category] = [];
-    groups[item.category].push(item);
+    const categoryKey = item.category.toLowerCase();
+    if (!groups[categoryKey]) groups[categoryKey] = [];
+    groups[categoryKey].push(item);
   });
 
   const categoryOrder = ['hardware', 'software', 'accessories', 'other'];
+  
+  // Get any categories not in the predefined order
+  const additionalCategories = Object.keys(groups).filter(
+    cat => !categoryOrder.includes(cat)
+  );
+  const allCategories = [...categoryOrder, ...additionalCategories];
 
   return (
     <div className="flex flex-col gap-10">
-      {categoryOrder.map(category => {
+      {allCategories.map(category => {
         const categoryItems = groups[category];
         if (!categoryItems || categoryItems.length === 0) return null;
 

@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 
@@ -27,6 +27,41 @@ export const submit = mutation({
 });
 
 // =============================================================================
+// Admin Queries
+// =============================================================================
+
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return await ctx.db
+      .query("contactSubmissions")
+      .order("desc")
+      .collect();
+  },
+});
+
+export const getById = query({
+  args: { id: v.id("contactSubmissions") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return await ctx.db.get(args.id);
+  },
+});
+
+export const unreadCount = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    const unread = await ctx.db
+      .query("contactSubmissions")
+      .withIndex("by_read", (q) => q.eq("isRead", false))
+      .collect();
+    return unread.length;
+  },
+});
+
+// =============================================================================
 // Admin Mutations
 // =============================================================================
 
@@ -35,5 +70,13 @@ export const markAsRead = mutation({
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     await ctx.db.patch(args.id, { isRead: args.isRead });
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.id("contactSubmissions") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.delete(args.id);
   },
 });

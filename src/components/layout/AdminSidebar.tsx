@@ -3,26 +3,31 @@ import {
   LayoutDashboard, 
   Briefcase, 
   Code2, 
-  Image as ImageIcon, 
-  Settings, 
+  Image as  ImageIcon, 
   LogOut,
   PenTool,
   User,
-  Terminal
+  Terminal,
+  Wrench,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 
 export function AdminSidebar() {
   const { signOut } = useAuth();
+  const unreadMessagesCount = useQuery(api.contact.unreadCount);
 
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', exact: true },
     { label: 'Projects', icon: Briefcase, path: '/admin/projects' },
     { label: 'Skills', icon: Code2, path: '/admin/skills' },
+    { label: 'Uses', icon: Wrench, path: '/admin/uses' },
     { label: 'Blog', icon: PenTool, path: '/admin/blog' },
+    { label: 'Messages', icon: Mail, path: '/admin/messages', badge: unreadMessagesCount },
     { label: 'Resume', icon: User, path: '/admin/resume' },
     { label: 'Media', icon: ImageIcon, path: '/admin/media' },
-    { label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
 
   return (
@@ -42,11 +47,16 @@ export function AdminSidebar() {
             key={item.path}
             to={item.path}
             activeOptions={{ exact: item.exact }}
-            className="nav-link rounded-md"
+            className="nav-link rounded-md relative"
             activeProps={{ className: 'active' }}
           >
             <item.icon />
             <span>{item.label}</span>
+            {item.badge && item.badge > 0 && (
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full bg-(--color-ubuntu-orange) text-[10px] font-bold text-white">
+                {item.badge}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
