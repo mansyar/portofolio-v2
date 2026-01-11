@@ -16,7 +16,7 @@ export function Seo({
   image,
   type = "website",
   publishedTime,
-  author = "Mezy Ansyar",
+  author = "Ansyar",
   jsonLd,
 }: SeoProps) {
   const location = useLocation();
