@@ -1,7 +1,5 @@
-import { pdf } from '@react-pdf/renderer';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { ResumeDocument } from './ResumeDocument';
 import { FileDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -38,6 +36,12 @@ export function DownloadResumeButton() {
 
     setIsGenerating(true);
     try {
+      // Lazy load heavy PDF libraries only on demand
+      const [{ pdf }, { ResumeDocument }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./ResumeDocument')
+      ]);
+
       const doc = <ResumeDocument 
         profile={profile} 
         experiences={experiences} 
