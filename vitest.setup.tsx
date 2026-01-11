@@ -33,13 +33,3 @@ vi.mock('@tanstack/react-router', async () => {
     Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
   }
 })
-
-// Mock import.meta.env for Vitest
-// @ts-ignore
-if (typeof import.meta === 'undefined') {
-  // @ts-ignore
-  globalThis.import = { meta: { env: process.env } }
-} else {
-  // @ts-ignore
-  import.meta.env = { ...import.meta.env, ...process.env }
-}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { StatCard } from "../ui/stat-card";
@@ -28,7 +28,7 @@ export function AnalyticsWidget() {
 
   const getStatsAction = useAction(api.analytics.getStats);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -60,14 +60,14 @@ export function AnalyticsWidget() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [range, getStatsAction]);
 
   useEffect(() => {
     fetchStats();
     // Refresh active visitors every 60 seconds
     const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
-  }, [range]);
+  }, [fetchStats]);
 
   if (loading && !stats) {
     return (
