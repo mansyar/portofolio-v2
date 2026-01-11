@@ -88,7 +88,7 @@ function ProjectDetail() {
                 <Code2 size={20} />
                 PROJECT_OVERVIEW
               </h2>
-              <div className="prose prose-invert prose-orange max-w-none text-(--color-text-secondary)">
+              <div className="markdown-content text-(--color-text-secondary)">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.fullDescription}</ReactMarkdown>
               </div>
             </div>
