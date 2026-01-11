@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { convexQuery } from '@convex-dev/react-query'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -30,10 +30,11 @@ function App() {
   const { data: featuredProjects } = useSuspenseQuery(convexQuery(api.projects.listFeatured, {}))
   const { data: latestPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 3 }))
   
-  const [isMounted, setIsMounted] = useState(false)
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  const isMounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   const isDesktop = useMediaQuery("(min-width: 1024px)")
 
