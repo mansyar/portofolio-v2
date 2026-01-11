@@ -1,0 +1,15 @@
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--color-surface);
+  z-index: 100;
+}
+
+.reading-progress__bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-ubuntu-orange), var(--color-terminal-green));
+  transition: width 50ms ease-out;
+}

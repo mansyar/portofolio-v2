@@ -61,6 +61,37 @@ export const getUniqueTechStacks = query({
   },
 });
 
+export const getRelated = query({
+  args: { 
+    currentProjectId: v.id("projects"),
+    limit: v.optional(v.number()) 
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 3;
+    const currentProject = await ctx.db.get(args.currentProjectId);
+    if (!currentProject) return [];
+
+    const allProjects = await ctx.db
+      .query("projects")
+      .filter((q) => q.eq(q.field("isVisible"), true))
+      .collect();
+
+    // Score projects by number of shared tech stack items
+    const scored = allProjects
+      .filter((p) => p._id !== args.currentProjectId)
+      .map((p) => ({
+        ...p,
+        sharedTech: p.techStack.filter((t) => 
+          currentProject.techStack.includes(t)
+        ).length,
+      }))
+      .filter((p) => p.sharedTech > 0)
+      .sort((a, b) => b.sharedTech - a.sharedTech);
+
+    return scored.slice(0, limit);
+  },
+});
+
 // =============================================================================
 // Admin Queries & Mutations
 // =============================================================================

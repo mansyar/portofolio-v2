@@ -7,15 +7,20 @@ import { Pagination } from "../../ui/pagination";
 interface BlogContentProps {
   page: number;
   category?: string;
+  tag?: string;
 }
 
-export function BlogContent({ page, category }: BlogContentProps) {
+export function BlogContent({ page, category, tag }: BlogContentProps) {
   const { data: allPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 100 }));
 
   const ITEMS_PER_PAGE = 9;
-  const filteredPosts = category 
-    ? allPosts.filter(p => !category || p.slug.includes(category)) // Placeholder filter logic
-    : allPosts;
+  const filteredPosts = allPosts.filter(post => {
+    // If we have a category, filter by category slug (assuming it's the first part of the post slug)
+    // or if we have a tag, filter by tag slug (same assumption for now as placeholder)
+    if (category && post.slug.includes(category)) return true;
+    if (tag && post.slug.includes(tag)) return true;
+    return !category && !tag;
+  });
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
   const displayedPosts = filteredPosts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -46,7 +51,7 @@ export function BlogContent({ page, category }: BlogContentProps) {
           currentPage={page} 
           totalPages={totalPages} 
           baseUrl="/blog" 
-          searchParams={{ category }}
+          searchParams={{ category, tag }}
           className="mt-8"
         />
       )}

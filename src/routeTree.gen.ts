@@ -14,6 +14,7 @@ import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as HealthRouteImport } from './routes/health'
+import { Route as FeedDotxmlRouteImport } from './routes/feed[.]xml'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -73,6 +74,11 @@ const ProjectsRoute = ProjectsRouteImport.update({
 const HealthRoute = HealthRouteImport.update({
   id: '/health',
   path: '/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedDotxmlRoute = FeedDotxmlRouteImport.update({
+  id: '/feed.xml',
+  path: '/feed.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/feed.xml': typeof FeedDotxmlRoute
   '/health': typeof HealthRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -297,6 +304,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/feed.xml': typeof FeedDotxmlRoute
   '/health': typeof HealthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/skills': typeof SkillsRoute
@@ -339,6 +347,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/feed.xml': typeof FeedDotxmlRoute
   '/health': typeof HealthRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -383,6 +392,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/contact'
+    | '/feed.xml'
     | '/health'
     | '/projects'
     | '/sitemap.xml'
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/feed.xml'
     | '/health'
     | '/sitemap.xml'
     | '/skills'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/contact'
+    | '/feed.xml'
     | '/health'
     | '/projects'
     | '/sitemap.xml'
@@ -507,6 +519,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
+  FeedDotxmlRoute: typeof FeedDotxmlRoute
   HealthRoute: typeof HealthRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -556,6 +569,13 @@ declare module '@tanstack/react-router' {
       path: '/health'
       fullPath: '/health'
       preLoaderRoute: typeof HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed.xml': {
+      id: '/feed.xml'
+      path: '/feed.xml'
+      fullPath: '/feed.xml'
+      preLoaderRoute: typeof FeedDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -884,6 +904,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
+  FeedDotxmlRoute: FeedDotxmlRoute,
   HealthRoute: HealthRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

@@ -32,6 +32,7 @@ export function Seo({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
+      <link rel="alternate" type="application/rss+xml" title="Ansyar's Dev Log" href="/feed.xml" />
 
       {/* Open Graph */}
       <meta property="og:url" content={url} />

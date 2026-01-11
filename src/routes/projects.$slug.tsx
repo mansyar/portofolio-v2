@@ -13,6 +13,7 @@ import { ErrorFallback } from '../components/ui/error-fallback';
 const MarkdownContent = lazy(() => import('../components/ui/markdown-content').then(m => ({ default: m.MarkdownContent })));
 
 import { OptimizedImage } from '../components/ui/optimized-image';
+import { RelatedProjects } from '../components/features/RelatedProjects';
 
 export const Route = createFileRoute('/projects/$slug')({
   component: ProjectDetail,
@@ -138,6 +139,10 @@ function ProjectDetail() {
           </TerminalWindow>
         </div>
       </div>
+
+      <Suspense fallback={<div className="h-48 animate-pulse bg-(--color-surface) rounded mt-16" />}>
+        <RelatedProjects currentProjectId={project._id} />
+      </Suspense>
     </div>
   );
 }

@@ -9,6 +9,9 @@ import '../components/editor/RichTextEditor.css';
 import { ErrorFallback } from '../components/ui/error-fallback';
 
 import { OptimizedImage } from '../components/ui/optimized-image';
+import { RelatedPosts } from '../components/features/RelatedPosts';
+import { ReadingProgress } from '../components/ui/ReadingProgress';
+import { Suspense } from 'react';
 
 export const Route = createFileRoute('/blog/$slug')({
   component: BlogPostDetail,
@@ -35,6 +38,7 @@ function BlogPostDetail() {
 
   return (
     <article className="container max-w-4xl px-4 pt-10 pb-20 md:px-6">
+      <ReadingProgress />
       <Seo 
         title={`${post.title} | Blog`} 
         description={post.excerpt || ''}
@@ -86,6 +90,10 @@ function BlogPostDetail() {
           <span>END_OF_TRANSMISSION</span>
         </div>
       </footer>
+
+      <Suspense fallback={<div className="h-48 animate-pulse bg-(--color-surface) rounded mt-16" />}>
+        <RelatedPosts currentPostId={post._id} />
+      </Suspense>
     </article>
   );
 }

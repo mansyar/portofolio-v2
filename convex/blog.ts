@@ -115,6 +115,66 @@ export const getTags = query({
   },
 });
 
+export const getRelated = query({
+  args: { 
+    currentPostId: v.id("blogPosts"),
+    limit: v.optional(v.number()) 
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 3;
+    const currentPost = await ctx.db.get(args.currentPostId);
+    if (!currentPost || !currentPost.categoryId) return [];
+
+    const relatedPosts = await ctx.db
+      .query("blogPosts")
+      .withIndex("by_category", (q) => q.eq("categoryId", currentPost.categoryId!))
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("status"), "published"),
+          q.neq(q.field("_id"), args.currentPostId)
+        )
+      )
+      .order("desc")
+      .take(limit);
+
+    return relatedPosts;
+  },
+});
+
+export const getTagsWithCounts = query({
+  args: {},
+  handler: async (ctx) => {
+    const posts = await ctx.db
+      .query("blogPosts")
+      .filter((q) => q.eq(q.field("status"), "published"))
+      .collect();
+
+    const tagCounts = new Map<string, number>();
+    posts.forEach((post) => {
+      post.tagIds.forEach((tagId) => {
+        tagCounts.set(tagId.toString(), (tagCounts.get(tagId.toString()) || 0) + 1);
+      });
+    });
+
+    const tags = await ctx.db.query("blogTags").collect();
+    return tags.map((tag) => ({
+      ...tag,
+      count: tagCounts.get(tag._id.toString()) || 0,
+    })).filter((t) => t.count > 0);
+  },
+});
+
+export const listForRss = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("blogPosts")
+      .filter((q) => q.eq(q.field("status"), "published"))
+      .order("desc")
+      .take(50);
+  },
+});
+
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
