@@ -8,16 +8,28 @@
 
 ## Overview
 
+### v1.0 Released ✅
+
 | Metric            | Value                 |
 | ----------------- | --------------------- |
-| **Overall**       | ██████████ 100%       |
-| **Phase 0**       | ██████████ 100%       |
-| **Phase 1**       | ██████████ 100%       |
-| **Phase 2**       | ██████████ 100%       |
-| **Phase 3**       | ██████████ 100%       |
-| **Phase 4**       | ██████████ 100%       |
-| **Phase 5**       | ██████████ 100%       |
-| **Target Launch** | **READY FOR RELEASE** |
+| **Phase 0**       | ██████████ 100% ✅    |
+| **Phase 1**       | ██████████ 100% ✅    |
+| **Phase 2**       | ██████████ 100% ✅    |
+| **Phase 3**       | ██████████ 100% ✅    |
+| **Phase 4**       | ██████████ 100% ✅    |
+| **Phase 5**       | ██████████ 100% ✅    |
+
+### Future Phases (Post v1.0)
+
+| Phase | Theme | Status |
+|-------|-------|--------|
+| **Phase 6** | 📊 Analytics & Insights | 🔲 Planned |
+| **Phase 7** | 🔗 Content Discovery | 🔲 Planned |
+| **Phase 8** | ⚙️ Admin Enhancements | 🔲 Planned |
+| **Phase 9** | 💬 Visitor Engagement | 🔲 Planned |
+| **Phase 10** | 📖 Content Depth | 🔲 Planned |
+| **Phase 11** | ⚡ Power User Features | 🔲 Planned |
+| **Phase 12** | 🌐 Platform Expansion | 🔲 Planned |
 
 ---
 
@@ -344,8 +356,9 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
-| Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, Production Polish, and Infra Fixes  |
+| Jan 12, 2026 | Integrated full roadmap (Phases 6-12) directly into PROGRESS.md                 |
 | Jan 12, 2026 | Documentation sync: Updated PRD and PROGRESS.md to match implementation          |
+| Jan 11, 2026 | Phase 5 complete: SEO, Unit Testing, CI/CD, Production Polish, and Infra Fixes  |
 | Jan 9, 2026 | Phase 4 polish: Dynamic About page, terminal prompts, bug fixes, manual testing |
 | Jan 8, 2026 | Phase 4 complete: Blog & Resume CMS, Rich Text Editor, PDF Generation           |
 | Jan 8, 2026 | Phase 3 complete: CMS Core with Auth, Dashboard, Projects/Skills CRUD, Media    |
@@ -356,29 +369,240 @@
 
 ---
 
-## Future Considerations (Post-v1)
+## Future Roadmap (Post v1.0)
 
-Items to implement after the initial launch:
+> **Status:** v1.0 Released ✅  
+> Features below are organized into strategic phases, prioritized by value and effort.
 
-**High Priority (Deferred from v1):**
-- [ ] Admin Settings page (`/admin/settings`) - Site-wide SEO defaults, profile management
-- [ ] Public Resume page (`/resume`) - Dedicated page for resume download (currently via About page)
-- [ ] Related Projects/Posts - Show similar content on detail pages
+### Roadmap Principles
 
-**Medium Priority:**
-- [ ] Analytics integration (Umami/Plausible)
-- [ ] Newsletter subscription
-- [ ] Project case studies
-- [ ] Blog comments (Giscus/Utterances)
-- [ ] RSS feed for blog
-- [ ] Tag cloud on blog page
+1. **Value-First** — Prioritize features that directly impact job opportunities
+2. **Incremental** — Small, shippable improvements over big-bang releases
+3. **Measurable** — Analytics before optimization (measure first)
+4. **Sustainable** — Balance new features with maintenance and content creation
 
-**Low Priority:**
-- [ ] Internationalization (i18n)
-- [ ] Webmentions
-- [ ] Reading progress indicator
-- [ ] Command palette (Cmd+K)
-- [ ] View transitions API
+---
+
+## Phase 6: Analytics & Insights (v1.1)
+
+**Status:** 🔲 Planned  
+**Goal:** Understand visitor behavior to make data-driven improvements  
+**Timeline:** 1-2 weeks  
+**Theme:** 📊 *"Measure before you optimize"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Umami Analytics** | Self-hosted, privacy-friendly analytics on Coolify | 🟢 Low | ⭐⭐⭐ Critical |
+| **Dashboard Analytics Widget** | Show visitor stats in admin dashboard | 🟡 Medium | ⭐⭐ High |
+| **Event Tracking** | Track resume downloads, contact form, project clicks | 🟢 Low | ⭐⭐ High |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] Umami deployed on Coolify with domain `analytics.ansyar-world.top` or similar
+- [ ] Tracking script integrated on all public pages
+- [ ] Admin dashboard shows basic stats (visitors, page views, top pages)
+- [ ] Resume downloads and contact submissions tracked as events
+
+</details>
+
+---
+
+## Phase 7: Content Discovery & Engagement (v1.2)
+
+**Status:** 🔲 Planned  
+**Goal:** Help visitors discover more content and encourage engagement  
+**Timeline:** 2-3 weeks  
+**Theme:** 🔗 *"Keep them exploring"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Related Projects** | Show 2-3 similar projects on detail pages (by tech stack) | 🟡 Medium | ⭐⭐⭐ Critical |
+| **Related Blog Posts** | Show 2-3 posts from same category on post detail | 🟡 Medium | ⭐⭐⭐ Critical |
+| **RSS Feed** | Auto-generated RSS for blog subscribers | 🟢 Low | ⭐⭐ High |
+| **Blog Tag Cloud** | Visual tag navigation on blog listing page | 🟢 Low | ⭐ Medium |
+| **Reading Progress** | Visual scroll indicator on blog posts | 🟢 Low | ⭐ Low |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] Project detail pages show 2-3 related projects based on shared tech stack
+- [ ] Blog post pages show related posts from same category
+- [ ] `/rss.xml` or `/feed.xml` returns valid RSS 2.0 feed
+- [ ] Tag cloud displays on blog page with weighted sizing
+
+</details>
+
+---
+
+## Phase 8: Admin Enhancements (v1.3)
+
+**Status:** 🔲 Planned  
+**Goal:** Improve CMS usability and centralize configuration  
+**Timeline:** 2 weeks  
+**Theme:** ⚙️ *"Admin quality of life"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Admin Settings Page** | `/admin/settings` for site-wide SEO defaults, social links | 🟡 Medium | ⭐⭐⭐ Critical |
+| **Bulk Actions** | Select multiple items for delete/visibility toggle | 🟡 Medium | ⭐⭐ High |
+| **Content Scheduling** | Schedule blog posts for future publish dates | 🟡 Medium | ⭐⭐ High |
+| **Activity Log** | Track who changed what and when | 🟡 Medium | ⭐ Medium |
+| **Image Optimization** | Auto-resize and WebP conversion on upload | � High | ⭐ Medium |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] Settings page allows editing: site title, meta description, default OG image, social links
+- [ ] Bulk select UI in projects/skills/uses/blog lists
+- [ ] Blog posts can have `scheduledAt` date and auto-publish
+- [ ] (Optional) Activity log records mutations with timestamps
+
+</details>
+
+---
+
+## Phase 9: Visitor Engagement (v1.4)
+
+**Status:** 🔲 Planned  
+**Goal:** Build audience and enable two-way communication  
+**Timeline:** 2-3 weeks  
+**Theme:** 💬 *"Start a conversation"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Blog Comments (Giscus)** | GitHub Discussions-powered comments | 🟢 Low | ⭐⭐⭐ Critical |
+| **Newsletter Signup** | Email subscription with Buttondown/Resend | 🟡 Medium | ⭐⭐ High |
+| **Share Buttons** | Twitter, LinkedIn, Copy URL on blog posts | 🟢 Low | ⭐⭐ High |
+| **Table of Contents** | Auto-generated TOC sidebar on blog posts | � Medium | ⭐ Medium |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] Giscus integrated on blog post detail pages
+- [ ] Newsletter form in footer or dedicated section
+- [ ] Share buttons open pre-filled share dialogs
+- [ ] TOC auto-generated from H2/H3 headings on posts
+
+</details>
+
+---
+
+## Phase 10: Content Depth (v1.5)
+
+**Status:** 🔲 Planned  
+**Goal:** Showcase projects at a deeper level to impress recruiters  
+**Timeline:** 3-4 weeks  
+**Theme:** 📖 *"Tell the story"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Project Case Studies** | Dedicated long-form pages: problem, process, solution, results | 🔴 High | ⭐⭐⭐ Critical |
+| **Public Resume Page** | Dedicated `/resume` page with interactive sections | 🟡 Medium | ⭐⭐ High |
+| **Skills Detail Pages** | `/skills/docker` with projects using that skill | 🟡 Medium | ⭐ Medium |
+| **Blog Series** | Group related posts into multi-part series | 🟡 Medium | ⭐ Medium |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] Case study template with: Overview, Challenge, Approach, Tech Stack, Outcome sections
+- [ ] At least 2 projects have full case studies
+- [ ] `/resume` page renders profile/experience/skills from CMS
+- [ ] PDF download button on resume page
+
+</details>
+
+---
+
+## Phase 11: Power User Features (v2.0)
+
+**Status:** 🔲 Planned  
+**Goal:** Delight power users and fellow developers  
+**Timeline:** 3-4 weeks  
+**Theme:** ⚡ *"Developer experience"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Command Palette** | `Cmd+K` quick navigation | 🟡 Medium | ⭐⭐ High |
+| **View Transitions API** | Smooth animated page transitions | 🟡 Medium | ⭐⭐ High |
+| **Keyboard Navigation** | Full keyboard shortcuts for browsing | 🟡 Medium | ⭐ Medium |
+| **Code Playground** | Embedded runnable code snippets in blog | 🔴 High | ⭐ Low |
+
+<details>
+<summary><strong>Acceptance Criteria</strong></summary>
+
+- [ ] `Cmd+K` / `Ctrl+K` opens search/navigation modal
+- [ ] Page transitions use View Transitions API (Chrome/Edge)
+- [ ] `j/k` navigation in lists, `g+h` for home, etc.
+
+</details>
+
+---
+
+## Phase 12: Platform Expansion (v2.1+)
+
+**Status:** 🔲 Planned  
+**Goal:** Long-term growth and discoverability  
+**Timeline:** Ongoing  
+**Theme:** 🌐 *"Reach wider audiences"*
+
+| Feature | Description | Effort | Priority |
+|---------|-------------|--------|----------|
+| **Internationalization (i18n)** | Multi-language support (EN/ID) | 🔴 High | ⭐ Low |
+| **Webmentions** | IndieWeb social interactions | 🟡 Medium | ⭐ Low |
+| **PWA Support** | Installable app, offline reading | 🔴 High | ⭐ Low |
+| **API for Portfolio** | Public API for other devs to fetch data | 🟡 Medium | ⭐ Low |
+| **Dark/Light/System Toggle** | Three-way theme preference | 🟢 Low | ⭐ Low |
+
+---
+
+## Recommended Order
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Phase 6: Analytics & Insights          ← START HERE           │
+│  ├── Umami integration                                         │
+│  └── Event tracking                                            │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 7: Content Discovery                                    │
+│  ├── Related projects/posts                                    │
+│  └── RSS feed                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 8: Admin Enhancements                                   │
+│  ├── Settings page                                             │
+│  └── Content scheduling                                        │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 9: Visitor Engagement                                   │
+│  ├── Giscus comments                                           │
+│  └── Newsletter                                                │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 10: Content Depth                                       │
+│  ├── Case studies (HIGH VALUE)                                 │
+│  └── Resume page                                               │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 11: Power User Features                                 │
+│  ├── Command palette                                           │
+│  └── View transitions                                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Phase 12: Platform Expansion                                  │
+│  └── i18n, PWA, Webmentions                                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Quick Wins (Can Do Anytime)
+
+Low-effort improvements that can be done between phases:
+
+| Feature | Effort | Impact |
+|---------|--------|--------|
+| Add more projects to portfolio | 🟢 Low | ⭐⭐⭐ High |
+| Write case studies for existing projects | 🟢 Low | ⭐⭐⭐ High |
+| Publish 1-2 blog posts per month | 🟢 Low | ⭐⭐ Medium |
+| Optimize existing images | 🟢 Low | ⭐⭐ Medium |
+| Improve meta descriptions | 🟢 Low | ⭐⭐ Medium |
+| Add more skills with icons | 🟢 Low | ⭐ Low |
 
 ---
 
@@ -387,7 +611,7 @@ Items to implement after the initial launch:
 Before each phase completion, verify:
 
 ```bash
-pnpm tsc --noEmit && pnpm lint && pnpm build
+pnpm type-check ; pnpm lint ; pnpm build
 ```
 
 | Check             | Target |
@@ -398,3 +622,13 @@ pnpm tsc --noEmit && pnpm lint && pnpm build
 | Lighthouse Perf   | 95+    |
 | Lighthouse SEO    | 100    |
 | Lighthouse a11y   | 95+    |
+
+---
+
+## Notes
+
+- **Content is King:** The best feature is great content. Prioritize adding quality projects and blog posts over new features.
+- **Measure First:** Phase 6 (Analytics) should be first to inform all future decisions.
+- **Ship Incrementally:** Each phase should be independently deployable.
+- **Revisit Quarterly:** Re-evaluate priorities based on analytics data and career goals.
+
