@@ -183,7 +183,7 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
                 value={formData.icon}
                 onChange={handleChange}
                 className="terminal-input w-full"
-                placeholder="FaReact"
+                placeholder="SiReact, FaTerminal, etc."
               />
             </div>
           </div>

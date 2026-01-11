@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "../../lib/utils";
+import { IconResolver } from "./icon-resolver";
 
 interface SkillBarProps {
   name: string;
@@ -18,11 +19,19 @@ export function SkillBar({ name, proficiency, icon, className }: SkillBarProps) 
     return `[${"█".repeat(filledBlocks)}${"░".repeat(emptyBlocks)}]`;
   }, [proficiency]);
 
+  const isUrl = icon?.startsWith('http') || icon?.startsWith('/');
+
   return (
     <div className={cn("font-mono text-sm sm:text-base", className)}>
       <div className="mb-1 flex items-end justify-between">
         <div className="flex items-center gap-2">
-          {icon && <img src={icon} alt="" className="h-5 w-5" />}
+          {icon && (
+            isUrl ? (
+              <img src={icon} alt="" className="h-5 w-5" />
+            ) : (
+              <IconResolver iconName={icon} size={20} className="text-(--color-ubuntu-orange)" />
+            )
+          )}
           <span className="font-bold text-(--color-text-primary)">{name}</span>
         </div>
         <span className="text-(--color-ubuntu-orange)">{proficiency}%</span>
