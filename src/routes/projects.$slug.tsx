@@ -8,6 +8,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { TerminalWindow } from '../components/ui/terminal-window';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const Route = createFileRoute('/projects/$slug')({
   component: ProjectDetail,
@@ -88,7 +89,7 @@ function ProjectDetail() {
                 PROJECT_OVERVIEW
               </h2>
               <div className="prose prose-invert prose-orange max-w-none text-(--color-text-secondary)">
-                <ReactMarkdown>{project.fullDescription}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.fullDescription}</ReactMarkdown>
               </div>
             </div>
           )}
