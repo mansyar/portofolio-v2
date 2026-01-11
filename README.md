@@ -46,7 +46,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/ansyar-world/portofolio-v2.git
+git clone https://github.com/mansyar/portofolio-v2.git
 cd portofolio-v2
 
 # Install dependencies
@@ -197,7 +197,6 @@ The admin panel (`/admin`) includes:
 
 - [PRD.md](./docs/PRD.md) — Product Requirements Document
 - [PROGRESS.md](./docs/PROGRESS.md) — Development progress tracking
-- [MIGRATION_PLAN.md](./docs/MIGRATION_PLAN.md) — Supabase → Convex migration details
 
 ---
 
