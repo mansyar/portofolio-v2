@@ -62,11 +62,17 @@ export const getStats = action({
       let activeVisitors = 0;
       if (activeResponse.ok) {
         const activeData = await activeResponse.json();
-        activeVisitors = activeData.visitors || 0;
+        activeVisitors = activeData.visitors || activeData.x || 0;
       }
 
+      // Transform to expected format
+      // Umami returns: { pageviews: number, visitors: number, visits: number, bounces: number }
+      // Widget expects: { pageviews: { value, change }, visitors: { value, change }, ... }
       return {
-        ...stats,
+        visitors: { value: stats.visitors || 0, change: 0 },
+        pageviews: { value: stats.pageviews || 0, change: 0 },
+        visits: { value: stats.visits || 0, change: 0 },
+        bounces: { value: stats.bounces || 0, change: 0 },
         activeVisitors,
       };
     } catch (error) {
