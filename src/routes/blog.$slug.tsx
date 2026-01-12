@@ -9,6 +9,7 @@ import '../components/editor/RichTextEditor.css';
 import { ErrorFallback } from '../components/ui/error-fallback';
 
 import { sanitizeHtml } from '../lib/sanitize';
+import { addHeadingIds } from '../lib/heading-ids';
 import { OptimizedImage } from '../components/ui/optimized-image';
 import { RelatedPosts } from '../components/features/RelatedPosts';
 import { ReadingProgress } from '../components/ui/ReadingProgress';
@@ -41,7 +42,9 @@ function BlogPostDetail() {
   const theme = useTheme();
   
   const sanitizedContent = useMemo(() => {
-    return post ? sanitizeHtml(post.content) : '';
+    if (!post) return '';
+    const sanitized = sanitizeHtml(post.content);
+    return addHeadingIds(sanitized);
   }, [post]);
 
   if (!post) return null;
