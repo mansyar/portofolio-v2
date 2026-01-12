@@ -17,6 +17,9 @@ export interface ProjectFormData {
   isFeatured: boolean;
   displayOrder: number;
   isVisible: boolean;
+  challenge?: string;
+  approach?: string;
+  outcome?: string;
 }
 
 interface ProjectFormProps {
@@ -58,6 +61,9 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
     isFeatured: initialData?.isFeatured ?? false,
     displayOrder: initialData?.displayOrder ?? 0,
     isVisible: initialData?.isVisible ?? true,
+    challenge: initialData?.challenge || '',
+    approach: initialData?.approach || '',
+    outcome: initialData?.outcome || '',
   }));
 
   // Raw text state for array fields to allow typing commas/newlines
@@ -318,6 +324,50 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
             placeholder="Detailed project explanation..."
           />
+        </div>
+
+        <div className="border-t border-(--color-border) pt-6">
+          <h3 className="text-sm font-mono text-(--color-ubuntu-orange) mb-4">CASE_STUDY_DETAILS</h3>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="challenge" className="block text-xs font-mono text-(--color-text-secondary)">Challenge (Markdown)</label>
+              <textarea
+                id="challenge"
+                name="challenge"
+                rows={4}
+                value={formData.challenge}
+                onChange={handleChange}
+                className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
+                placeholder="What problem were you trying to solve?"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="approach" className="block text-xs font-mono text-(--color-text-secondary)">Approach (Markdown)</label>
+              <textarea
+                id="approach"
+                name="approach"
+                rows={4}
+                value={formData.approach}
+                onChange={handleChange}
+                className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
+                placeholder="How did you solve it? (Architecture, tech choices, etc.)"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="outcome" className="block text-xs font-mono text-(--color-text-secondary)">Outcome (Markdown)</label>
+              <textarea
+                id="outcome"
+                name="outcome"
+                rows={4}
+                value={formData.outcome}
+                onChange={handleChange}
+                className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
+                placeholder="What were the results? (Improvements, metrics, lessons learned)"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Actions */}

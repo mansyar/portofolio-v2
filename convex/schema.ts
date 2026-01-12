@@ -39,6 +39,9 @@ export default defineSchema({
     isFeatured: v.boolean(),
     displayOrder: v.number(),
     isVisible: v.boolean(),
+    challenge: v.optional(v.string()),
+    approach: v.optional(v.string()),
+    outcome: v.optional(v.string()),
   })
     .index("by_slug", ["slug"])
     .index("by_featured", ["isFeatured"])

@@ -526,7 +526,7 @@
 <details>
 <summary><strong>Acceptance Criteria</strong></summary>
 
-- [ ] Case study template with: Overview, Challenge, Approach, Tech Stack, Outcome sections
+- [x] Case study template with: Overview, Challenge, Approach, Tech Stack, Outcome sections
 - [ ] At least 2 projects have full case studies
 - [ ] `/resume` page renders profile/experience/skills from CMS
 - [ ] PDF download button on resume page

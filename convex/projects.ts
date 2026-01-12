@@ -130,6 +130,9 @@ export const create = mutation({
     isFeatured: v.boolean(),
     displayOrder: v.number(),
     isVisible: v.boolean(),
+    challenge: v.optional(v.string()),
+    approach: v.optional(v.string()),
+    outcome: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
@@ -173,6 +176,9 @@ export const update = mutation({
     isFeatured: v.optional(v.boolean()),
     displayOrder: v.optional(v.number()),
     isVisible: v.optional(v.boolean()),
+    challenge: v.optional(v.string()),
+    approach: v.optional(v.string()),
+    outcome: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);

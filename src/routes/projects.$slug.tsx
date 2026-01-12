@@ -3,7 +3,7 @@ import { convexQuery } from '@convex-dev/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { api } from '../../convex/_generated/api';
 import { Seo } from '../components/seo';
-import { ChevronLeft, ExternalLink, Github, Code2, Layers } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Github, Code2, Layers, Target, Lightbulb, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { TerminalWindow } from '../components/ui/terminal-window';
@@ -102,6 +102,42 @@ function ProjectDetail() {
               </h2>
               <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
                 <MarkdownContent content={project.fullDescription} className="text-(--color-text-secondary)" />
+              </Suspense>
+            </div>
+          )}
+
+          {project.challenge && (
+            <div className="space-y-4">
+              <h2 className="flex items-center gap-2 text-xl font-bold font-mono text-(--color-ubuntu-orange)">
+                <Target size={20} />
+                THE_CHALLENGE
+              </h2>
+              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
+                <MarkdownContent content={project.challenge} className="text-(--color-text-secondary)" />
+              </Suspense>
+            </div>
+          )}
+
+          {project.approach && (
+            <div className="space-y-4">
+              <h2 className="flex items-center gap-2 text-xl font-bold font-mono text-(--color-terminal-blue)">
+                <Lightbulb size={20} />
+                OUR_APPROACH
+              </h2>
+              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
+                <MarkdownContent content={project.approach} className="text-(--color-text-secondary)" />
+              </Suspense>
+            </div>
+          )}
+
+          {project.outcome && (
+            <div className="space-y-4">
+              <h2 className="flex items-center gap-2 text-xl font-bold font-mono text-(--color-terminal-green)">
+                <CheckCircle size={20} />
+                THE_OUTCOME
+              </h2>
+              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
+                <MarkdownContent content={project.outcome} className="text-(--color-text-secondary)" />
               </Suspense>
             </div>
           )}
