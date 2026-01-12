@@ -1,0 +1,84 @@
+.newsletter-inline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.newsletter-inline-label {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.newsletter-inline-input-group {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  padding: 0 0.5rem;
+  transition: border-color 0.2s;
+}
+
+.newsletter-inline-input-group:focus-within {
+  border-color: var(--color-ubuntu-orange);
+}
+
+.newsletter-inline-prompt {
+  color: var(--color-ubuntu-orange);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  font-weight: bold;
+  margin-right: 0.5rem;
+  user-select: none;
+}
+
+.newsletter-inline-input {
+  background: transparent;
+  border: none;
+  height: 2rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  outline: none;
+  width: 140px;
+}
+
+.newsletter-inline-input::placeholder {
+  color: var(--color-surface-darker);
+}
+
+.newsletter-inline-submit {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.newsletter-inline-submit:hover:not(:disabled) {
+  color: var(--color-ubuntu-orange);
+}
+
+.newsletter-inline-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .newsletter-inline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .newsletter-inline-input {
+    width: 180px;
+  }
+}

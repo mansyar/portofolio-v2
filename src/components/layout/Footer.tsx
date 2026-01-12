@@ -1,3 +1,4 @@
+import { NewsletterForm } from "../features/NewsletterForm";
 import "./Footer.css";
 
 export function Footer() {
@@ -9,6 +10,7 @@ export function Footer() {
         <div className="footer__copyright">
           &copy; {year} Ansyar World. All rights reserved.
         </div>
+        <NewsletterForm />
         <div className="footer__links">
           <a href="https://github.com/mansyar" target="_blank" rel="noopener noreferrer" className="footer__link">
             GitHub

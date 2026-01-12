@@ -1,8 +1,8 @@
 # Progress Tracking
 
 > **Project:** Ansyar's Portfolio + Custom CMS  
-> **Last Updated:** January 12, 2026 (Phase 7 complete)
-> **Current Phase:** Phase 7 - Content Discovery Complete (v1.2)
+> **Last Updated:** January 12, 2026 (Phase 9 complete)
+> **Current Phase:** Phase 9 - Visitor Engagement Complete (v1.4)
 
 ---
 
@@ -25,7 +25,7 @@
 |-------|-------|--------|
 | **Phase 6** | 📊 Analytics & Insights | ✅ Complete |
 | **Phase 7** | 🔗 Content Discovery | ✅ Complete |
-| **Phase 8** | ⚙️ Admin Enhancements | 🔲 Planned |
+| **Phase 8** | ⚙️ Admin Enhancements | ✅ Complete |
 | **Phase 9** | 💬 Visitor Engagement | 🔲 Planned |
 | **Phase 10** | 📖 Content Depth | 🔲 Planned |
 | **Phase 11** | ⚡ Power User Features | 🔲 Planned |
@@ -356,6 +356,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Jan 12, 2026 | Phase 8 complete: Admin Settings, Bulk Actions, Scheduling, Activity Log, Image Optimization |
 | Jan 12, 2026 | Phase 7 complete: Related Content, RSS Feed, Tag Cloud, Progress Bar   |
 | Jan 12, 2026 | Phase 6 complete: Umami Analytics, Admin Widget, Event Tracking                |
 | Jan 12, 2026 | Integrated full roadmap (Phases 6-12) directly into PROGRESS.md                 |
@@ -448,7 +449,7 @@
 
 ## Phase 8: Admin Enhancements (v1.3)
 
-**Status:** 🔲 Planned  
+**Status:** ✅ Complete  
 **Goal:** Improve CMS usability and centralize configuration  
 **Timeline:** 2 weeks  
 **Theme:** ⚙️ *"Admin quality of life"*
@@ -459,23 +460,29 @@
 | **Bulk Actions** | Select multiple items for delete/visibility toggle | 🟡 Medium | ⭐⭐ High |
 | **Content Scheduling** | Schedule blog posts for future publish dates | 🟡 Medium | ⭐⭐ High |
 | **Activity Log** | Track who changed what and when | 🟡 Medium | ⭐ Medium |
-| **Image Optimization** | Auto-resize and WebP conversion on upload | � High | ⭐ Medium |
+| **Image Optimization** | Auto-resize and WebP conversion on upload | 🔴 High | ⭐ Medium |
 
-<details>
-<summary><strong>Acceptance Criteria</strong></summary>
-
-- [ ] Settings page allows editing: site title, meta description, default OG image, social links
-- [ ] Bulk select UI in projects/skills/uses/blog lists
-- [ ] Blog posts can have `scheduledAt` date and auto-publish
-- [ ] (Optional) Activity log records mutations with timestamps
+- [x] Settings page allows editing: site title, meta description, default OG image, social links
+- [x] Bulk select UI in projects/skills/uses/blog lists with delete/visibility toggles
+- [x] Blog posts can have `scheduledAt` date and auto-publish via hourly cron job
+- [x] Activity log records all admin mutations with timestamps, actors, and metadata
+- [x] Image optimization via `sharp` (WebP conversion, max 1600px resizing)
 
 </details>
+
+### Phase 8 Technical Notes
+
+- **Settings Architecture**: Created `siteSettings` key-value store with `getPublic` query for SSR-safe SEO defaults.
+- **Bulk Actions Hook**: Developed `useSelection` hook and `BulkActionBar` component for reusable multi-select patterns.
+- **Scheduled Publishing**: Implemented Convex cron job (`crons.ts`) that runs every minute to auto-publish scheduled posts.
+- **Activity Logging**: Centralized audit trail via `activity.ts` with internal mutation pattern for cross-module logging.
+- **Sharp Integration**: Created dedicated `mediaActions.ts` with Node.js runtime for `sharp` image processing.
 
 ---
 
 ## Phase 9: Visitor Engagement (v1.4)
 
-**Status:** 🔲 Planned  
+**Status:** ✅ Complete  
 **Goal:** Build audience and enable two-way communication  
 **Timeline:** 2-3 weeks  
 **Theme:** 💬 *"Start a conversation"*
@@ -483,19 +490,22 @@
 | Feature | Description | Effort | Priority |
 |---------|-------------|--------|----------|
 | **Blog Comments (Giscus)** | GitHub Discussions-powered comments | 🟢 Low | ⭐⭐⭐ Critical |
-| **Newsletter Signup** | Email subscription with Buttondown/Resend | 🟡 Medium | ⭐⭐ High |
+| **Newsletter Signup** | Email subscription with Resend | 🟡 Medium | ⭐⭐ High |
 | **Share Buttons** | Twitter, LinkedIn, Copy URL on blog posts | 🟢 Low | ⭐⭐ High |
-| **Table of Contents** | Auto-generated TOC sidebar on blog posts | � Medium | ⭐ Medium |
+| **Table of Contents** | Auto-generated TOC sidebar on blog posts | 🟡 Medium | ⭐ Medium |
 
-<details>
-<summary><strong>Acceptance Criteria</strong></summary>
-
-- [ ] Giscus integrated on blog post detail pages
-- [ ] Newsletter form in footer or dedicated section
-- [ ] Share buttons open pre-filled share dialogs
-- [ ] TOC auto-generated from H2/H3 headings on posts
+- [x] Giscus integrated on blog post detail pages with terminal styling
+- [x] Newsletter form in footer with Resend API integration
+- [x] Share buttons with Twitter, LinkedIn, and Clipboard support
+- [x] TOC auto-generated from H2/H3 headings with scroll tracking
 
 </details>
+
+### Phase 9 Technical Notes
+
+- **Dynamic Theme Proxy**: Created `useTheme` hook to sync Giscus iframe theme with the site's dark/light toggle using `MutationObserver`.
+- **Convex Actions**: Leveraged Convex actions and scheduler for reliable Resend email delivery.
+- **Scroll Tracking**: Implemented `IntersectionObserver` in `TableOfContents` for high-performance active section highlighting.
 
 ---
 

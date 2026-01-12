@@ -207,4 +207,10 @@ export default defineSchema({
     height: v.optional(v.number()),
     isOptimized: v.optional(v.boolean()),
   }).index("by_filename", ["filename"]),
+
+  newsletterSubscribers: defineTable({
+    email: v.string(),
+    subscribedAt: v.number(),
+    status: v.union(v.literal("active"), v.literal("unsubscribed")),
+  }).index("by_email", ["email"]),
 });

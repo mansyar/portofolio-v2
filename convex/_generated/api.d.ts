@@ -21,6 +21,7 @@ import type * as lib_auth from "../lib/auth.js";
 import type * as lib_validation from "../lib/validation.js";
 import type * as media from "../media.js";
 import type * as mediaActions from "../mediaActions.js";
+import type * as newsletter from "../newsletter.js";
 import type * as projects from "../projects.js";
 import type * as resume from "../resume.js";
 import type * as seed from "../seed.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   "lib/validation": typeof lib_validation;
   media: typeof media;
   mediaActions: typeof mediaActions;
+  newsletter: typeof newsletter;
   projects: typeof projects;
   resume: typeof resume;
   seed: typeof seed;
