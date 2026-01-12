@@ -7,6 +7,11 @@ interface MediaUploaderProps {
   onUploadComplete?: () => void;
 }
 
+// Allowed file types and max size (must match backend validation.ts)
+const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'pdf'];
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
   const uploadFileAction = useAction(api.media.upload);
   
@@ -28,6 +33,18 @@ export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
   };
 
   const uploadFile = async (file: File) => {
+    // Client-side validation
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
+      setError(`Invalid file type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}`);
+      return;
+    }
+    
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File too large. Maximum size: ${MAX_FILE_SIZE_MB}MB`);
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
 
@@ -65,6 +82,7 @@ export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
         onChange={handleFileSelect}
         className="hidden"
         id="file-upload"
+        accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.pdf"
       />
       
       {isUploading ? (

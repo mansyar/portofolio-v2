@@ -8,6 +8,13 @@ import { Id } from "./_generated/dataModel";
 // Admin Actions
 // =============================================================================
 
+import { 
+  ALLOWED_MIME_TYPES, 
+  MAX_FILE_SIZE, 
+  isAllowedMimeType, 
+  formatFileSize 
+} from "./lib/validation";
+
 /**
  * Upload a file directly via Convex action.
  * This bypasses CORS issues often found with the built-in storage upload URL
@@ -22,19 +29,34 @@ export const upload = action({
   handler: async (ctx, args): Promise<{ storageId: string; mediaId: string }> => {
     await requireAdmin(ctx);
 
-    // 1. Convert ArrayBuffer to Blob
+    // 1. Validate file type
+    if (!isAllowedMimeType(args.mimeType)) {
+      throw new Error(
+        `Invalid file type: ${args.mimeType}. Allowed types: ${ALLOWED_MIME_TYPES.join(", ")}`
+      );
+    }
+
+    // 2. Validate file size
+    const fileSize = args.fileData.byteLength;
+    if (fileSize > MAX_FILE_SIZE) {
+      throw new Error(
+        `File too large: ${formatFileSize(fileSize)}. Maximum allowed: ${formatFileSize(MAX_FILE_SIZE)}`
+      );
+    }
+
+    // 3. Convert ArrayBuffer to Blob
     // ctx.storage.store expects a Blob, but Convex actions receive ArrayBuffer for binary data
     const blob = new Blob([args.fileData], { type: args.mimeType });
 
-    // 2. Store the file in Convex storage
+    // 4. Store the file in Convex storage
     const storageId = (await ctx.storage.store(blob)) as string;
 
-    // 2. Save metadata via mutation
+    // 5. Save metadata via mutation
     const mediaId = (await ctx.runMutation(api.media.saveFile, {
       storageId: storageId as Id<"_storage">,
       filename: args.filename,
       mimeType: args.mimeType,
-      size: args.fileData.byteLength,
+      size: fileSize,
     })) as string;
 
     return { storageId, mediaId };

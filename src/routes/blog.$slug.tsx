@@ -8,10 +8,11 @@ import { format } from 'date-fns';
 import '../components/editor/RichTextEditor.css';
 import { ErrorFallback } from '../components/ui/error-fallback';
 
+import { sanitizeHtml } from '../lib/sanitize';
 import { OptimizedImage } from '../components/ui/optimized-image';
 import { RelatedPosts } from '../components/features/RelatedPosts';
 import { ReadingProgress } from '../components/ui/ReadingProgress';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 
 export const Route = createFileRoute('/blog/$slug')({
   component: BlogPostDetail,
@@ -34,6 +35,10 @@ function BlogPostDetail() {
   const { slug } = Route.useParams();
   const { data: post } = useSuspenseQuery(convexQuery(api.blog.bySlug, { slug }));
   
+  const sanitizedContent = useMemo(() => {
+    return post ? sanitizeHtml(post.content) : '';
+  }, [post]);
+
   if (!post) return null;
 
   return (
@@ -81,7 +86,7 @@ function BlogPostDetail() {
 
       <div 
         className="editor-content prose prose-invert prose-orange max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
 
       <footer className="mt-16 pt-8 border-t border-(--color-border)">
