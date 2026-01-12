@@ -1,0 +1,105 @@
+.bulk-action-bar-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: auto;
+  pointer-events: none;
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bulk-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+.bulk-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-primary);
+  padding: 0 0.5rem;
+}
+
+.bulk-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--color-border);
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bulk-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: var(--color-surface-dark);
+  color: var(--color-text-secondary);
+}
+
+.bulk-action-button:hover:not(:disabled) {
+  background: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.bulk-action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bulk-action-button.variant-danger:hover:not(:disabled) {
+  background: var(--color-terminal-red);
+  color: white;
+}
+
+.bulk-action-button.variant-success:hover:not(:disabled) {
+  background: var(--color-terminal-green);
+  color: black;
+}
+
+.bulk-clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border-radius: 0.25rem;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.bulk-clear-button:hover {
+  background: var(--color-border);
+  color: var(--color-terminal-red);
+}
+
+@keyframes slide-up {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}

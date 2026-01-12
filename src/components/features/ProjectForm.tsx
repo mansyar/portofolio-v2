@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { api } from '../../../convex/_generated/api';
 import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -36,57 +36,33 @@ function slugify(text: string) {
 
 export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   const router = useRouter();
-  const createProject = useToastMutation(api.projects.create, {
+  const { mutate: createProject, isPending: isCreating } = useToastMutation(api.projects.create, {
     successMessage: 'project saved successfully',
     errorMessage: 'failed to save project'
   });
-  const updateProject = useToastMutation(api.projects.update, {
+  const { mutate: updateProject, isPending: isUpdating } = useToastMutation(api.projects.update, {
     successMessage: 'project updated successfully',
     errorMessage: 'failed to update project'
   });
 
-  const [formData, setFormData] = useState<ProjectFormData>({
-    title: '',
-    slug: '',
-    shortDescription: '',
-    fullDescription: '',
-    thumbnailUrl: '',
-    images: [],
-    techStack: [],
-    liveDemoUrl: '',
-    githubUrl: '',
-    isFeatured: false,
-    displayOrder: 0,
-    isVisible: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<ProjectFormData>(() => ({
+    title: initialData?.title || '',
+    slug: initialData?.slug || '',
+    shortDescription: initialData?.shortDescription || '',
+    fullDescription: initialData?.fullDescription || '',
+    thumbnailUrl: initialData?.thumbnailUrl || '',
+    images: initialData?.images || [],
+    techStack: initialData?.techStack || [],
+    liveDemoUrl: initialData?.liveDemoUrl || '',
+    githubUrl: initialData?.githubUrl || '',
+    isFeatured: initialData?.isFeatured ?? false,
+    displayOrder: initialData?.displayOrder ?? 0,
+    isVisible: initialData?.isVisible ?? true,
+  }));
 
   // Raw text state for array fields to allow typing commas/newlines
-  const [techStackText, setTechStackText] = useState('');
-  const [imagesText, setImagesText] = useState('');
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        title: initialData.title,
-        slug: initialData.slug,
-        shortDescription: initialData.shortDescription || '',
-        fullDescription: initialData.fullDescription || '',
-        thumbnailUrl: initialData.thumbnailUrl || '',
-        images: initialData.images || [],
-        techStack: initialData.techStack || [],
-        liveDemoUrl: initialData.liveDemoUrl || '',
-        githubUrl: initialData.githubUrl || '',
-        isFeatured: initialData.isFeatured,
-        displayOrder: initialData.displayOrder,
-        isVisible: initialData.isVisible,
-      });
-      // Initialize raw text from array data
-      setTechStackText(initialData.techStack?.join(', ') || '');
-      setImagesText(initialData.images?.join('\n') || '');
-    }
-  }, [initialData]);
+  const [techStackText, setTechStackText] = useState(() => initialData?.techStack?.join(', ') || '');
+  const [imagesText, setImagesText] = useState(() => initialData?.images?.join('\n') || '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -120,7 +96,6 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     try {
       const payload = {
@@ -145,8 +120,6 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
       router.navigate({ to: '/admin/projects' });
     } catch {
       // Handled by toast
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -358,10 +331,10 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isCreating || isUpdating}
             className="terminal-button"
           >
-            {isSubmitting ? 'Saving...' : (mode === 'create' ? 'Create Project' : 'Update Project')}
+            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Project' : 'Update Project')}
           </button>
         </div>
       </form>

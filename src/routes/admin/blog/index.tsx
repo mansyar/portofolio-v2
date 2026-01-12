@@ -4,6 +4,9 @@ import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
 import { Terminal, Plus, PenTool, Trash2, Globe, EyeOff, Calendar, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSelection } from '@/hooks/use-selection';
+import { BulkActionBar } from '@/components/ui/BulkActionBar';
+import { useToastMutation } from '@/hooks/use-toast-mutation';
 
 export const Route = createFileRoute('/admin/blog/')({
   component: BlogAdmin,
@@ -13,6 +16,25 @@ function BlogAdmin() {
   const posts = useQuery(api.blog.listAll);
   const togglePublish = useMutation(api.blog.togglePublish);
   const deletePost = useMutation(api.blog.deletePost);
+
+  const { mutate: removeMany } = useToastMutation(api.blog.removePostsBulk, {
+    successMessage: 'posts deleted successfully',
+    errorMessage: 'failed to delete posts'
+  });
+  
+  const { mutate: toggleStatusMany } = useToastMutation(api.blog.toggleStatusBulk, {
+    successMessage: 'status updated successfully',
+    errorMessage: 'failed to update status'
+  });
+
+  const { 
+    selectedCount, 
+    selectedIdsArray, 
+    toggleSelect, 
+    toggleSelectAll, 
+    isAllSelected, 
+    clearSelection 
+  } = useSelection(posts);
 
   const handleToggle = async (id: Id<"blogPosts">) => {
     try {
@@ -31,6 +53,42 @@ function BlogAdmin() {
       }
     }
   };
+
+  const handleBulkDelete = async () => {
+    if (confirm(`Are you sure you want to delete ${selectedCount} posts? This action cannot be undone.`)) {
+      await removeMany({ ids: selectedIdsArray as Id<"blogPosts">[] });
+      clearSelection();
+    }
+  };
+
+  const handleBulkStatus = async (status: 'published' | 'draft') => {
+    await toggleStatusMany({ 
+      ids: selectedIdsArray as Id<"blogPosts">[], 
+      status 
+    });
+    clearSelection();
+  };
+
+  const bulkActions = [
+    {
+      label: 'Publish',
+      icon: Globe,
+      onClick: () => handleBulkStatus('published'),
+      variant: 'success' as const,
+    },
+    {
+      label: 'Draft',
+      icon: EyeOff,
+      onClick: () => handleBulkStatus('draft'),
+      variant: 'default' as const,
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      onClick: handleBulkDelete,
+      variant: 'danger' as const,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -58,6 +116,14 @@ function BlogAdmin() {
           <table className="w-full text-left border-collapse">
             <thead className="border-b border-(--color-border) bg-[rgba(255,255,255,0.02)]">
               <tr>
+                <th className="p-4 w-10">
+                  <input 
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 accent-(--color-ubuntu-orange)"
+                  />
+                </th>
                 <th className="p-4 font-mono text-xs uppercase tracking-wider text-(--color-text-secondary)">Title</th>
                 <th className="p-4 font-mono text-xs uppercase tracking-wider text-(--color-text-secondary)">Status</th>
                 <th className="p-4 font-mono text-xs uppercase tracking-wider text-(--color-text-secondary)">Metrics</th>
@@ -67,7 +133,15 @@ function BlogAdmin() {
             </thead>
             <tbody className="divide-y divide-(--color-border)">
               {posts?.map((post) => (
-                <tr key={post._id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                <tr key={post._id} className={`hover:bg-[rgba(255,255,255,0.02)] transition-colors group ${selectedIdsArray.includes(post._id) ? 'bg-(--color-surface-dark)' : ''}`}>
+                  <td className="p-4">
+                    <input 
+                      type="checkbox"
+                      checked={selectedIdsArray.includes(post._id)}
+                      onChange={() => toggleSelect(post._id)}
+                      className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 accent-(--color-ubuntu-orange)"
+                    />
+                  </td>
                   <td className="p-4">
                     <div className="font-bold text-(--color-text-primary)">{post.title}</div>
                     <div className="text-xs text-(--color-text-secondary) font-mono mt-1">/{post.slug}</div>
@@ -116,7 +190,7 @@ function BlogAdmin() {
               ))}
               {posts?.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-(--color-text-secondary) font-mono italic">
+                  <td colSpan={6} className="p-8 text-center text-(--color-text-secondary) font-mono italic">
                     NO_POSTS_IN_DATABASE
                   </td>
                 </tr>
@@ -148,6 +222,12 @@ function BlogAdmin() {
           <PenTool size={18} className="text-(--color-text-secondary) group-hover:text-(--color-ubuntu-orange)" />
         </Link>
       </div>
+
+      <BulkActionBar 
+        selectedCount={selectedCount}
+        onClear={clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }

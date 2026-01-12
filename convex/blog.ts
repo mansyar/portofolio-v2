@@ -1,7 +1,8 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { paginationOptsValidator } from "convex/server";
+import { internal } from "./_generated/api";
 
 // Utility to calculate reading time
 const calculateReadingTime = (content: string): number => {
@@ -22,15 +23,6 @@ export const listPublished = query({
     tagSlug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Basic implementation - filtering by category/tag would typically 
-    // utilize specific indexes or separate queries before pagination 
-    // if the dataset is large. For now, we'll keep it simple or assume 
-    // direct filtering if validation allows.
-    
-    // Note: Complex filtering with pagination in Convex often requires
-    // specific index design. We will start with standard pagination
-    // on the 'published' index for the main feed.
-
     if (args.categorySlug) {
       // Find category ID first
       const category = await ctx.db
@@ -67,16 +59,8 @@ export const listRecent = query({
     const limit = args.limit ?? 3;
     const posts = await ctx.db
       .query("blogPosts")
-      .withIndex("by_status") // We might need an index for status+publishedAt to sort correctly
       .filter((q) => q.eq(q.field("status"), "published"))
-      //.order("desc") // default behavior of query might not be sortable easily without index
       .collect();
-      
-    // Sort in memory for now if index is missing, or use index if available.
-    // Schema has index("by_status", ["status", "publishedAt"])?
-    // Let's check schema. If not, memory sort is fine for small set.
-    // Actually, "status" is not indexed in schema provided in context?
-    // Let's assume we do memory sort for now to be safe, or just take slice.
     
     return posts.sort((a, b) => (b.publishedAt || 0) - (a.publishedAt || 0)).slice(0, limit);
   },
@@ -94,9 +78,6 @@ export const bySlug = query({
       return null;
     }
 
-    // Enhance with Category and Tags if needed?
-    // Usually fetching them separately or doing a join here is fine.
-    // For simplicity, we just return the post document.
     return post;
   },
 });
@@ -204,7 +185,8 @@ export const createCategory = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    return await ctx.db.insert("blogCategories", args);
+    const id = await ctx.db.insert("blogCategories", args);
+    return id;
   },
 });
 
@@ -242,14 +224,25 @@ export const createPost = mutation({
     tagIds: v.array(v.id("blogTags")),
     status: v.union(v.literal("draft"), v.literal("published")),
     publishedAt: v.optional(v.number()),
+    scheduledAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
     const readingTime = calculateReadingTime(args.content);
-    return await ctx.db.insert("blogPosts", {
+    const id = await ctx.db.insert("blogPosts", {
       ...args,
       readingTime,
     });
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "create",
+      entityType: "blogPost",
+      entityId: id,
+      entityTitle: args.title,
+    });
+
+    return id;
   },
 });
 
@@ -265,14 +258,23 @@ export const updatePost = mutation({
     tagIds: v.array(v.id("blogTags")),
     status: v.union(v.literal("draft"), v.literal("published")),
     publishedAt: v.optional(v.number()),
+    scheduledAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
     const { id, ...data } = args;
     const readingTime = calculateReadingTime(data.content);
     await ctx.db.patch(id, {
       ...data,
       readingTime,
+    });
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "update",
+      entityType: "blogPost",
+      entityId: id,
+      entityTitle: args.title,
     });
   },
 });
@@ -280,15 +282,24 @@ export const updatePost = mutation({
 export const deletePost = mutation({
   args: { id: v.id("blogPosts") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
+    const post = await ctx.db.get(args.id);
     await ctx.db.delete(args.id);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "delete",
+      entityType: "blogPost",
+      entityId: args.id,
+      entityTitle: post?.title,
+    });
   },
 });
 
 export const togglePublish = mutation({
   args: { id: v.id("blogPosts") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
     const post = await ctx.db.get(args.id);
     if (!post) throw new Error("Post not found");
     
@@ -298,6 +309,14 @@ export const togglePublish = mutation({
     await ctx.db.patch(args.id, {
       status: newStatus,
       publishedAt,
+    });
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: newStatus === "published" ? "publish" : "unpublish",
+      entityType: "blogPost",
+      entityId: args.id,
+      entityTitle: post.title,
     });
   },
 });
@@ -331,5 +350,89 @@ export const deleteTag = mutation({
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     await ctx.db.delete(args.id);
+  },
+});
+
+export const removePostsBulk = mutation({
+  args: { ids: v.array(v.id("blogPosts")) },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    for (const id of args.ids) {
+      const post = await ctx.db.get(id);
+      await ctx.db.delete(id);
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "delete",
+        entityType: "blogPost",
+        entityId: id,
+        entityTitle: post?.title,
+        metadata: { bulk: true },
+      });
+    }
+  },
+});
+
+export const toggleStatusBulk = mutation({
+  args: { 
+    ids: v.array(v.id("blogPosts")), 
+    status: v.union(v.literal("draft"), v.literal("published")) 
+  },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    const publishedAt = args.status === "published" ? Date.now() : undefined;
+    
+    for (const id of args.ids) {
+      const post = await ctx.db.get(id);
+      if (post) {
+        await ctx.db.patch(id, { 
+          status: args.status,
+          publishedAt: args.status === "published" ? (post.publishedAt || publishedAt) : post.publishedAt
+        });
+
+        await ctx.runMutation(internal.activity.log, {
+          actorEmail: email,
+          action: args.status === "published" ? "publish" : "unpublish",
+          entityType: "blogPost",
+          entityId: id,
+          entityTitle: post.title,
+          metadata: { bulk: true },
+        });
+      }
+    }
+  },
+});
+
+export const publishScheduled = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    const scheduledPosts = await ctx.db
+      .query("blogPosts")
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("status"), "draft"),
+          q.neq(q.field("scheduledAt"), undefined),
+          q.lte(q.field("scheduledAt"), now)
+        )
+      )
+      .collect();
+
+    for (const post of scheduledPosts) {
+      await ctx.db.patch(post._id, {
+        status: "published",
+        publishedAt: post.scheduledAt || now,
+        scheduledAt: undefined,
+      });
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: "system@scheduler",
+        action: "publish",
+        entityType: "blogPost",
+        entityId: post._id,
+        entityTitle: post.title,
+        metadata: { scheduled: true },
+      });
+    }
   },
 });

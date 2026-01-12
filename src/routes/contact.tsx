@@ -10,6 +10,7 @@ import { Seo } from '../components/seo'
 import { Terminal, Send, CheckCircle, Mail, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
+import { toast } from 'sonner'
 
 // Server function to get client IP from Traefik headers
 const getClientIp = createServerFn({ method: "GET" }).handler(async () => {
@@ -37,7 +38,7 @@ const contactSchema = z.object({
 });
 
 function Contact() {
-  const submitMessage = useToastMutation(api.contact.submit, {
+  const { mutate: submitMessage, isPending } = useToastMutation(api.contact.submit, {
     successMessage: 'message sent successfully',
     errorMessage: 'failed to send message'
   });
@@ -50,16 +51,15 @@ function Contact() {
     website: '' // honeypot field
   });
   
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('submitting');
 
     // Validate
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
-      setStatus('error');
+      toast.error("$ Validation failed", { description: result.error.issues[0].message });
       return;
     }
 
@@ -76,10 +76,10 @@ function Contact() {
         clientIp
       });
       
-      setStatus('success');
+      setIsSuccess(true);
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
     } catch {
-      setStatus('error');
+      // Handled by toast
     }
   };
 
@@ -133,16 +133,16 @@ function Contact() {
 
         {/* Contact Form */}
         <Card title="Send Message" className="w-full">
-            {status === 'success' ? (
+            {isSuccess ? (
               <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-(--color-terminal-green)/20">
                   <CheckCircle className="text-(--color-terminal-green)" size={32} />
-                </div>
+                 </div>
                 <h3 className="text-xl font-bold">Message Sent!</h3>
                 <p className="text-(--color-text-secondary)">
                   Thanks for reaching out. I'll get back to you as soon as possible.
                 </p>
-                <Button onClick={() => setStatus('idle')} variant="secondary">Send another</Button>
+                <Button onClick={() => setIsSuccess(false)} variant="secondary">Send another</Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -211,10 +211,10 @@ function Contact() {
                 <Button 
                   type="submit" 
                   className="mt-2 w-full" 
-                  disabled={status === 'submitting'}
+                  disabled={isPending}
                   data-umami-event="contact-submit"
                 >
-                  {status === 'submitting' ? (
+                  {isPending ? (
                      <>Sending...</>
                   ) : (
                      <><Send size={16} className="mr-2" /> Send Message</>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { api } from '../../../convex/_generated/api';
 import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -25,42 +25,25 @@ interface SkillFormProps {
 
 export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   const router = useRouter();
-  const createSkill = useToastMutation(api.skills.create, {
+  const { mutate: createSkill, isPending: isCreating } = useToastMutation(api.skills.create, {
     successMessage: 'skill added successfully',
     errorMessage: 'failed to add skill'
   });
-  const updateSkill = useToastMutation(api.skills.update, {
+  const { mutate: updateSkill, isPending: isUpdating } = useToastMutation(api.skills.update, {
     successMessage: 'skill updated successfully',
     errorMessage: 'failed to update skill'
   });
 
-  const [formData, setFormData] = useState<SkillFormData>({
-    name: '',
-    category: 'frontend',
-    icon: '',
-    proficiency: 50,
-    yearsOfExperience: 0,
-    description: '',
-    displayOrder: 0,
-    isVisible: true,
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name,
-        category: initialData.category,
-        icon: initialData.icon || '',
-        proficiency: initialData.proficiency,
-        yearsOfExperience: initialData.yearsOfExperience || 0,
-        description: initialData.description || '',
-        displayOrder: initialData.displayOrder,
-        isVisible: initialData.isVisible,
-      });
-    }
-  }, [initialData]);
+  const [formData, setFormData] = useState<SkillFormData>(() => ({
+    name: initialData?.name || '',
+    category: initialData?.category || 'frontend',
+    icon: initialData?.icon || '',
+    proficiency: initialData?.proficiency ?? 50,
+    yearsOfExperience: initialData?.yearsOfExperience ?? 0,
+    description: initialData?.description || '',
+    displayOrder: initialData?.displayOrder ?? 0,
+    isVisible: initialData?.isVisible ?? true,
+  }));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -77,7 +60,6 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     try {
       if (mode === 'create') {
@@ -106,8 +88,6 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
       }
     } catch {
       // Handled by toast
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -275,10 +255,10 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isCreating || isUpdating}
             className="terminal-button"
           >
-            {isSubmitting ? 'Saving...' : (mode === 'create' ? 'Create Skill' : 'Update Skill')}
+            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Skill' : 'Update Skill')}
           </button>
         </div>
       </form>

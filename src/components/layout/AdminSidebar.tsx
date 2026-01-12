@@ -8,8 +8,10 @@ import {
   PenTool,
   User,
   Terminal,
+  Mail,
   Wrench,
-  Mail
+  Settings,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useQuery } from 'convex/react';
@@ -28,6 +30,8 @@ export function AdminSidebar() {
     { label: 'Messages', icon: Mail, path: '/admin/messages', badge: unreadMessagesCount },
     { label: 'Resume', icon: User, path: '/admin/resume' },
     { label: 'Media', icon: ImageIcon, path: '/admin/media' },
+    { label: 'Activity Log', icon: Activity, path: '/admin/activity' },
+    { label: 'Settings', icon: Settings, path: '/admin/settings' },
   ];
 
   return (

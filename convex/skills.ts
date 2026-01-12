@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
+import { internal } from "./_generated/api";
 
 // =============================================================================
 // Public Queries
@@ -123,14 +124,24 @@ export const create = mutation({
     isVisible: v.boolean(),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
 
     // Validate proficiency range
     if (args.proficiency < 0 || args.proficiency > 100) {
       throw new Error("Proficiency must be between 0 and 100");
     }
 
-    return await ctx.db.insert("skills", args);
+    const id = await ctx.db.insert("skills", args);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "create",
+      entityType: "skill",
+      entityId: id,
+      entityTitle: args.name,
+    });
+
+    return id;
   },
 });
 
@@ -158,7 +169,7 @@ export const update = mutation({
     isVisible: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
 
     const { id, ...updates } = args;
 
@@ -180,6 +191,16 @@ export const update = mutation({
     }
 
     await ctx.db.patch(id, cleanUpdates);
+
+    const skill = await ctx.db.get(id);
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "update",
+      entityType: "skill",
+      entityId: id,
+      entityTitle: skill?.name,
+      metadata: { fields: Object.keys(cleanUpdates) },
+    });
   },
 });
 
@@ -190,8 +211,17 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("skills") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
+    const skill = await ctx.db.get(args.id);
     await ctx.db.delete(args.id);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "delete",
+      entityType: "skill",
+      entityId: args.id,
+      entityTitle: skill?.name,
+    });
   },
 });
 
@@ -220,13 +250,63 @@ export const reorder = mutation({
 export const toggleVisibility = mutation({
   args: { id: v.id("skills") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
 
     const skill = await ctx.db.get(args.id);
     if (!skill) {
       throw new Error("Skill not found");
     }
 
-    await ctx.db.patch(args.id, { isVisible: !skill.isVisible });
+    const newVisibility = !skill.isVisible;
+    await ctx.db.patch(args.id, { isVisible: newVisibility });
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "toggle_visibility",
+      entityType: "skill",
+      entityId: args.id,
+      entityTitle: skill.name,
+      metadata: { isVisible: newVisibility },
+    });
+  },
+});
+
+export const removeBulk = mutation({
+  args: { ids: v.array(v.id("skills")) },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    for (const id of args.ids) {
+      const skill = await ctx.db.get(id);
+      await ctx.db.delete(id);
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "delete",
+        entityType: "skill",
+        entityId: id,
+        entityTitle: skill?.name,
+        metadata: { bulk: true },
+      });
+    }
+  },
+});
+
+export const toggleVisibilityBulk = mutation({
+  args: { ids: v.array(v.id("skills")), isVisible: v.boolean() },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    for (const id of args.ids) {
+      const skill = await ctx.db.get(id);
+      await ctx.db.patch(id, { isVisible: args.isVisible });
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "toggle_visibility",
+        entityType: "skill",
+        entityId: id,
+        entityTitle: skill?.name,
+        metadata: { isVisible: args.isVisible, bulk: true },
+      });
+    }
   },
 });

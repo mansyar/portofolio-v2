@@ -28,11 +28,13 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminUsesIndexRouteImport } from './routes/admin/uses/index'
 import { Route as AdminSkillsIndexRouteImport } from './routes/admin/skills/index'
+import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
 import { Route as AdminResumeIndexRouteImport } from './routes/admin/resume/index'
 import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
 import { Route as AdminMessagesIndexRouteImport } from './routes/admin/messages/index'
 import { Route as AdminMediaIndexRouteImport } from './routes/admin/media/index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin/blog/index'
+import { Route as AdminActivityIndexRouteImport } from './routes/admin/activity/index'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
@@ -146,6 +148,11 @@ const AdminSkillsIndexRoute = AdminSkillsIndexRouteImport.update({
   path: '/skills/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminResumeIndexRoute = AdminResumeIndexRouteImport.update({
   id: '/resume/',
   path: '/resume/',
@@ -169,6 +176,11 @@ const AdminMediaIndexRoute = AdminMediaIndexRouteImport.update({
 const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminActivityIndexRoute = AdminActivityIndexRouteImport.update({
+  id: '/activity/',
+  path: '/activity/',
   getParentRoute: () => AdminRoute,
 } as any)
 const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
@@ -288,11 +300,13 @@ export interface FileRoutesByFullPath {
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/activity': typeof AdminActivityIndexRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/media': typeof AdminMediaIndexRoute
   '/admin/messages': typeof AdminMessagesIndexRoute
   '/admin/projects': typeof AdminProjectsIndexRoute
   '/admin/resume': typeof AdminResumeIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/skills': typeof AdminSkillsIndexRoute
   '/admin/uses': typeof AdminUsesIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -328,11 +342,13 @@ export interface FileRoutesByTo {
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/activity': typeof AdminActivityIndexRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/media': typeof AdminMediaIndexRoute
   '/admin/messages': typeof AdminMessagesIndexRoute
   '/admin/projects': typeof AdminProjectsIndexRoute
   '/admin/resume': typeof AdminResumeIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
   '/admin/skills': typeof AdminSkillsIndexRoute
   '/admin/uses': typeof AdminUsesIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -372,11 +388,13 @@ export interface FileRoutesById {
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/admin/activity/': typeof AdminActivityIndexRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/media/': typeof AdminMediaIndexRoute
   '/admin/messages/': typeof AdminMessagesIndexRoute
   '/admin/projects/': typeof AdminProjectsIndexRoute
   '/admin/resume/': typeof AdminResumeIndexRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
   '/admin/skills/': typeof AdminSkillsIndexRoute
   '/admin/uses/': typeof AdminUsesIndexRoute
   '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
@@ -417,11 +435,13 @@ export interface FileRouteTypes {
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/activity'
     | '/admin/blog'
     | '/admin/media'
     | '/admin/messages'
     | '/admin/projects'
     | '/admin/resume'
+    | '/admin/settings'
     | '/admin/skills'
     | '/admin/uses'
     | '/demo/start/ssr/data-only'
@@ -457,11 +477,13 @@ export interface FileRouteTypes {
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/activity'
     | '/admin/blog'
     | '/admin/media'
     | '/admin/messages'
     | '/admin/projects'
     | '/admin/resume'
+    | '/admin/settings'
     | '/admin/skills'
     | '/admin/uses'
     | '/demo/start/ssr/data-only'
@@ -500,11 +522,13 @@ export interface FileRouteTypes {
     | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/admin/activity/'
     | '/admin/blog/'
     | '/admin/media/'
     | '/admin/messages/'
     | '/admin/projects/'
     | '/admin/resume/'
+    | '/admin/settings/'
     | '/admin/skills/'
     | '/admin/uses/'
     | '/demo/start/ssr/data-only'
@@ -669,6 +693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSkillsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/settings/': {
+      id: '/admin/settings/'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/resume/': {
       id: '/admin/resume/'
       path: '/resume'
@@ -702,6 +733,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/admin/blog'
       preLoaderRoute: typeof AdminBlogIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/activity/': {
+      id: '/admin/activity/'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/demo/start/server-funcs': {
@@ -839,11 +877,13 @@ interface AdminRouteChildren {
   AdminSkillsNewRoute: typeof AdminSkillsNewRoute
   AdminUsesIdRoute: typeof AdminUsesIdRoute
   AdminUsesNewRoute: typeof AdminUsesNewRoute
+  AdminActivityIndexRoute: typeof AdminActivityIndexRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminMediaIndexRoute: typeof AdminMediaIndexRoute
   AdminMessagesIndexRoute: typeof AdminMessagesIndexRoute
   AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
   AdminResumeIndexRoute: typeof AdminResumeIndexRoute
+  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
   AdminSkillsIndexRoute: typeof AdminSkillsIndexRoute
   AdminUsesIndexRoute: typeof AdminUsesIndexRoute
 }
@@ -861,11 +901,13 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSkillsNewRoute: AdminSkillsNewRoute,
   AdminUsesIdRoute: AdminUsesIdRoute,
   AdminUsesNewRoute: AdminUsesNewRoute,
+  AdminActivityIndexRoute: AdminActivityIndexRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminMediaIndexRoute: AdminMediaIndexRoute,
   AdminMessagesIndexRoute: AdminMessagesIndexRoute,
   AdminProjectsIndexRoute: AdminProjectsIndexRoute,
   AdminResumeIndexRoute: AdminResumeIndexRoute,
+  AdminSettingsIndexRoute: AdminSettingsIndexRoute,
   AdminSkillsIndexRoute: AdminSkillsIndexRoute,
   AdminUsesIndexRoute: AdminUsesIndexRoute,
 }

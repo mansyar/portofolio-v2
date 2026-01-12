@@ -72,11 +72,13 @@ export default defineSchema({
     status: v.union(v.literal("draft"), v.literal("published")),
     readingTime: v.optional(v.number()),
     publishedAt: v.optional(v.number()), // timestamp
+    scheduledAt: v.optional(v.number()), // timestamp for scheduled publish
   })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
     .index("by_published", ["publishedAt"])
-    .index("by_category", ["categoryId"]),
+    .index("by_category", ["categoryId"])
+    .index("by_scheduled", ["scheduledAt"]),
 
   // Uses Items
   usesItems: defineTable({
@@ -157,11 +159,39 @@ export default defineSchema({
     timestamp: v.number(), // When the action occurred
   }).index("by_identifier_action", ["identifier", "action"]),
 
-  // Site Settings (key-value store pattern)
   siteSettings: defineTable({
     key: v.string(),
     value: v.any(),
   }).index("by_key", ["key"]),
+
+  // Activity Logs (Audit Trail)
+  activityLogs: defineTable({
+    actorEmail: v.string(),
+    action: v.union(
+      v.literal("create"),
+      v.literal("update"),
+      v.literal("delete"),
+      v.literal("publish"),
+      v.literal("unpublish"),
+      v.literal("toggle_visibility"),
+      v.literal("bulk_delete"),
+      v.literal("bulk_update")
+    ),
+    entityType: v.union(
+      v.literal("project"),
+      v.literal("skill"),
+      v.literal("blogPost"),
+      v.literal("usesItem"),
+      v.literal("setting"),
+      v.literal("media")
+    ),
+    entityId: v.string(),
+    entityTitle: v.optional(v.string()),
+    metadata: v.optional(v.any()),
+    timestamp: v.number(),
+  })
+    .index("by_entity", ["entityType", "entityId"])
+    .index("by_timestamp", ["timestamp"]),
 
   // Media Files (metadata only, actual files in Convex Storage)
   mediaFiles: defineTable({
@@ -171,5 +201,10 @@ export default defineSchema({
     mimeType: v.string(),
     size: v.number(),
     altText: v.optional(v.string()),
+    optimizedStorageId: v.optional(v.id("_storage")),
+    thumbnailStorageId: v.optional(v.id("_storage")),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    isOptimized: v.optional(v.boolean()),
   }).index("by_filename", ["filename"]),
 });

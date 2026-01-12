@@ -1,6 +1,16 @@
 import { render } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { Seo } from '../seo'
+
+// Mock convex/react useQuery
+vi.mock('convex/react', () => ({
+  useQuery: () => ({
+    siteTitle: 'Test Site',
+    metaDescription: 'Test meta description',
+    defaultOgImage: '/og.jpg',
+    socialTwitter: '@test',
+  }),
+}))
 
 // Seo uses useLocation from @tanstack/react-router which we mocked in vitest.setup.tsx
 

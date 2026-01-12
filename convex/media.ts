@@ -1,67 +1,7 @@
-import { query, mutation, action } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
-import { api } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
-
-// =============================================================================
-// Admin Actions
-// =============================================================================
-
-import { 
-  ALLOWED_MIME_TYPES, 
-  MAX_FILE_SIZE, 
-  isAllowedMimeType, 
-  formatFileSize 
-} from "./lib/validation";
-
-/**
- * Upload a file directly via Convex action.
- * This bypasses CORS issues often found with the built-in storage upload URL
- * on self-hosted instances.
- */
-export const upload = action({
-  args: {
-    fileData: v.any(), // ArrayBuffer
-    filename: v.string(),
-    mimeType: v.string(),
-  },
-  handler: async (ctx, args): Promise<{ storageId: string; mediaId: string }> => {
-    await requireAdmin(ctx);
-
-    // 1. Validate file type
-    if (!isAllowedMimeType(args.mimeType)) {
-      throw new Error(
-        `Invalid file type: ${args.mimeType}. Allowed types: ${ALLOWED_MIME_TYPES.join(", ")}`
-      );
-    }
-
-    // 2. Validate file size
-    const fileSize = args.fileData.byteLength;
-    if (fileSize > MAX_FILE_SIZE) {
-      throw new Error(
-        `File too large: ${formatFileSize(fileSize)}. Maximum allowed: ${formatFileSize(MAX_FILE_SIZE)}`
-      );
-    }
-
-    // 3. Convert ArrayBuffer to Blob
-    // ctx.storage.store expects a Blob, but Convex actions receive ArrayBuffer for binary data
-    const blob = new Blob([args.fileData], { type: args.mimeType });
-
-    // 4. Store the file in Convex storage
-    const storageId = (await ctx.storage.store(blob)) as string;
-
-    // 5. Save metadata via mutation
-    const mediaId = (await ctx.runMutation(api.media.saveFile, {
-      storageId: storageId as Id<"_storage">,
-      filename: args.filename,
-      mimeType: args.mimeType,
-      size: fileSize,
-    })) as string;
-
-    return { storageId, mediaId };
-  },
-});
+import { internal } from "./_generated/api";
 
 // =============================================================================
 // Admin Mutations
@@ -69,7 +9,6 @@ export const upload = action({
 
 /**
  * Generate a short-lived URL for uploading a file to Convex storage.
- * Step 1 of the upload process.
  */
 export const generateUploadUrl = mutation({
   args: {},
@@ -81,33 +20,35 @@ export const generateUploadUrl = mutation({
 
 /**
  * Save metadata for an uploaded file.
- * Step 2 of the upload process (after client uploads to the URL).
  */
 export const saveFile = mutation({
   args: {
     storageId: v.id("_storage"),
-    username: v.optional(v.string()), // Optional user attribution
+    username: v.optional(v.string()), 
     filename: v.string(),
     mimeType: v.string(),
     size: v.number(),
     altText: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
-    // Extract username if needed for logging/attribution, but unused for now
-    // const { username } = args;
-
-    // Use original filename or generated one? Client sends filename.
-    // We'll store exactly what's passed.
+    const { email } = await requireAdmin(ctx);
     
     const id = await ctx.db.insert("mediaFiles", {
         storageId: args.storageId,
         filename: args.filename,
-        originalFilename: args.filename, // For now assume same
+        originalFilename: args.filename,
         mimeType: args.mimeType,
         size: args.size,
         altText: args.altText,
+    });
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "create",
+      entityType: "media", 
+      entityId: id,
+      entityTitle: args.filename,
+      metadata: { mimeType: args.mimeType },
     });
 
     return id;
@@ -120,7 +61,7 @@ export const saveFile = mutation({
 export const remove = mutation({
   args: { id: v.id("mediaFiles") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
 
     const file = await ctx.db.get(args.id);
     if (!file) {
@@ -132,6 +73,14 @@ export const remove = mutation({
 
     // Delete metadata
     await ctx.db.delete(args.id);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "delete",
+      entityType: "media", 
+      entityId: args.id,
+      entityTitle: file.filename,
+    });
   },
 });
 
@@ -152,9 +101,6 @@ export const list = query({
       .order("desc")
       .collect();
 
-    // Generate URLs for all files
-    // Note: This might be slow if there are many files.
-    // Pagination would be better for a large library.
     const filesWithUrls = await Promise.all(
       files.map(async (file) => ({
         ...file,

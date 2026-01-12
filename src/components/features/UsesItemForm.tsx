@@ -22,11 +22,11 @@ interface UsesItemFormProps {
 
 export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps) {
   const router = useRouter();
-  const createItem = useToastMutation(api.uses.create, {
+  const { mutate: createItem, isPending: isCreating } = useToastMutation(api.uses.create, {
     successMessage: 'item saved successfully',
     errorMessage: 'failed to save item'
   });
-  const updateItem = useToastMutation(api.uses.update, {
+  const { mutate: updateItem, isPending: isUpdating } = useToastMutation(api.uses.update, {
     successMessage: 'item updated successfully',
     errorMessage: 'failed to update item'
   });
@@ -41,7 +41,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
     isVisible: initialData?.isVisible ?? true,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -57,7 +56,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     try {
       if (mode === 'create') {
@@ -76,8 +74,6 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
       }
     } catch {
       // Handled by toast
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -225,10 +221,10 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isCreating || isUpdating}
             className="terminal-button"
           >
-            {isSubmitting ? 'Saving...' : (mode === 'create' ? 'Create Item' : 'Update Item')}
+            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Item' : 'Update Item')}
           </button>
         </div>
       </form>

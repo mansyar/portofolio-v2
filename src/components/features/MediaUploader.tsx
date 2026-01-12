@@ -13,9 +13,10 @@ const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
-  const uploadFileAction = useAction(api.media.upload);
+  const uploadFileAction = useAction(api.mediaActions.upload);
   
   const [isUploading, setIsUploading] = useState(false);
+  const [shouldOptimize, setShouldOptimize] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,15 +51,14 @@ export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
 
     try {
       // 1. Read file as ArrayBuffer
-      // This is necessary to send via Convex action
       const fileData = await file.arrayBuffer();
 
       // 2. Upload via Convex Action
-      // This bypasses CORS issues with the direct storage URL
       await uploadFileAction({
         fileData,
         filename: file.name,
         mimeType: file.type,
+        shouldOptimize,
       });
 
       if (onUploadComplete) {
@@ -104,6 +104,19 @@ export function MediaUploader({ onUploadComplete }: MediaUploaderProps) {
             <p className="mt-1 text-sm text-(--color-text-secondary) font-mono">
               Drag & drop or Click to browse
             </p>
+          </div>
+
+          <div className="flex items-center gap-2 py-2">
+            <input
+              type="checkbox"
+              id="should-optimize"
+              checked={shouldOptimize}
+              onChange={(e) => setShouldOptimize(e.target.checked)}
+              className="accent-(--color-ubuntu-orange)"
+            />
+            <label htmlFor="should-optimize" className="text-xs font-mono cursor-pointer select-none">
+              AUTO-OPTIMIZE IMAGES (WEBP)
+            </label>
           </div>
           
           {error && (

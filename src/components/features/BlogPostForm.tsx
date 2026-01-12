@@ -1,10 +1,10 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useQuery } from 'convex/react';
 import { useToastMutation } from '../../hooks/use-toast-mutation';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 import { useRouter } from '@tanstack/react-router';
-import { Terminal, Save, X, Globe, EyeOff } from 'lucide-react';
+import { Terminal, Save, X, Globe, EyeOff, Calendar } from 'lucide-react';
 
 const RichTextEditor = lazy(() => import('../editor/RichTextEditor').then(m => ({ default: m.RichTextEditor })));
 
@@ -26,6 +26,7 @@ interface BlogPostFormData {
   categoryId?: Id<"blogCategories">;
   tagIds: Id<"blogTags">[];
   status: 'draft' | 'published';
+  scheduledAt?: number;
 }
 
 interface BlogPostFormProps {
@@ -48,11 +49,11 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
   const categories = useQuery(api.blog.getCategories);
   const tags = useQuery(api.blog.getTags);
   
-  const createPost = useToastMutation(api.blog.createPost, {
+  const { mutate: createPost, isPending: isCreating } = useToastMutation(api.blog.createPost, {
     successMessage: 'post published successfully',
     errorMessage: 'failed to publish post'
   });
-  const updatePost = useToastMutation(api.blog.updatePost, {
+  const { mutate: updatePost, isPending: isUpdating } = useToastMutation(api.blog.updatePost, {
     successMessage: 'post updated successfully',
     errorMessage: 'failed to update post'
   });
@@ -66,16 +67,18 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
     categoryId: initialData?.categoryId,
     tagIds: initialData?.tagIds || [],
     status: initialData?.status || 'draft',
+    scheduledAt: initialData?.scheduledAt,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [autoSlug, setAutoSlug] = useState(mode === 'create');
 
-  useEffect(() => {
+  const handleTitleChange = (title: string) => {
     if (autoSlug && mode === 'create') {
-      setFormData((prev: BlogPostFormData) => ({ ...prev, slug: slugify(formData.title) }));
+      setFormData(prev => ({ ...prev, title, slug: slugify(title) }));
+    } else {
+      setFormData(prev => ({ ...prev, title }));
     }
-  }, [formData.title, autoSlug, mode]);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -97,7 +100,6 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     try {
       if (mode === 'create') {
@@ -108,8 +110,6 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
       router.navigate({ to: '/admin/blog' });
     } catch {
       // Handled by toast
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -126,7 +126,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
                 type="text"
                 name="title"
                 value={formData.title}
-                onChange={handleChange}
+                onChange={e => handleTitleChange(e.target.value)}
                 required
                 className="input"
                 placeholder="Blog post title..."
@@ -195,6 +195,33 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
             </div>
 
             <div className="input-container">
+              <label className="input-label flex items-center gap-2">
+                <Calendar size={12} />
+                Schedule Publish
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type="datetime-local"
+                  name="scheduledAt"
+                  value={formData.scheduledAt ? new Date(formData.scheduledAt).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      scheduledAt: val ? new Date(val).getTime() : undefined 
+                    }));
+                  }}
+                  className="input text-xs bg-transparent border-none w-full"
+                />
+              </div>
+              {formData.scheduledAt && (
+                <p className="text-[10px] text-(--color-ubuntu-orange) mt-1 font-mono">
+                  Post will go live automatically.
+                </p>
+              )}
+            </div>
+
+            <div className="input-container">
               <label className="input-label">Category</label>
               <select 
                 name="categoryId" 
@@ -248,10 +275,10 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           <div className="flex flex-col gap-3">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isCreating || isUpdating}
               className="terminal-button btn-primary w-full flex items-center justify-center gap-2"
             >
-              {isSubmitting ? (
+              {(isCreating || isUpdating) ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
                 <Save size={18} />

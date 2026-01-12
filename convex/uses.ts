@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
+import { internal } from "./_generated/api";
 
 // =============================================================================
 // Public Queries
@@ -66,8 +67,18 @@ export const create = mutation({
     isVisible: v.boolean(),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-    return await ctx.db.insert("usesItems", args);
+    const { email } = await requireAdmin(ctx);
+    const id = await ctx.db.insert("usesItems", args);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "create",
+      entityType: "usesItem",
+      entityId: id,
+      entityTitle: args.name,
+    });
+
+    return id;
   },
 });
 
@@ -83,27 +94,94 @@ export const update = mutation({
     isVisible: v.boolean(),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
     const { id, ...data } = args;
     await ctx.db.patch(id, data);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "update",
+      entityType: "usesItem",
+      entityId: id,
+      entityTitle: args.name,
+    });
   },
 });
 
 export const remove = mutation({
   args: { id: v.id("usesItems") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
+    const item = await ctx.db.get(args.id);
     await ctx.db.delete(args.id);
+
+    await ctx.runMutation(internal.activity.log, {
+      actorEmail: email,
+      action: "delete",
+      entityType: "usesItem",
+      entityId: args.id,
+      entityTitle: item?.name,
+    });
   },
 });
 
 export const toggleVisibility = mutation({
   args: { id: v.id("usesItems") },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
+    const { email } = await requireAdmin(ctx);
     const item = await ctx.db.get(args.id);
     if (item) {
-      await ctx.db.patch(args.id, { isVisible: !item.isVisible });
+      const newVisibility = !item.isVisible;
+      await ctx.db.patch(args.id, { isVisible: newVisibility });
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "toggle_visibility",
+        entityType: "usesItem",
+        entityId: args.id,
+        entityTitle: item.name,
+        metadata: { isVisible: newVisibility },
+      });
+    }
+  },
+});
+
+export const removeBulk = mutation({
+  args: { ids: v.array(v.id("usesItems")) },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    for (const id of args.ids) {
+      const item = await ctx.db.get(id);
+      await ctx.db.delete(id);
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "delete",
+        entityType: "usesItem",
+        entityId: id,
+        entityTitle: item?.name,
+        metadata: { bulk: true },
+      });
+    }
+  },
+});
+
+export const toggleVisibilityBulk = mutation({
+  args: { ids: v.array(v.id("usesItems")), isVisible: v.boolean() },
+  handler: async (ctx, args) => {
+    const { email } = await requireAdmin(ctx);
+    for (const id of args.ids) {
+      const item = await ctx.db.get(id);
+      await ctx.db.patch(id, { isVisible: args.isVisible });
+
+      await ctx.runMutation(internal.activity.log, {
+        actorEmail: email,
+        action: "toggle_visibility",
+        entityType: "usesItem",
+        entityId: id,
+        entityTitle: item?.name,
+        metadata: { isVisible: args.isVisible, bulk: true },
+      });
     }
   },
 });

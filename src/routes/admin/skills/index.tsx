@@ -3,6 +3,10 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
+import { useSelection } from '@/hooks/use-selection';
+import { BulkActionBar } from '@/components/ui/BulkActionBar';
+import { Trash2, Eye, EyeOff } from 'lucide-react';
+import { useToastMutation } from '@/hooks/use-toast-mutation';
 
 export const Route = createFileRoute('/admin/skills/')({
   component: AdminSkillsList,
@@ -13,6 +17,25 @@ function AdminSkillsList() {
   const toggleVisibility = useMutation(api.skills.toggleVisibility);
   const removeSkill = useMutation(api.skills.remove);
   
+  const { mutate: removeMany } = useToastMutation(api.skills.removeBulk, {
+    successMessage: 'skills deleted successfully',
+    errorMessage: 'failed to delete skills'
+  });
+  
+  const { mutate: toggleVisibilityMany } = useToastMutation(api.skills.toggleVisibilityBulk, {
+    successMessage: 'visibility updated successfully',
+    errorMessage: 'failed to update visibility'
+  });
+
+  const { 
+    selectedCount, 
+    selectedIdsArray, 
+    toggleSelect, 
+    toggleSelectAll, 
+    isAllSelected, 
+    clearSelection 
+  } = useSelection(skills);
+  
   const [deletingId, setDeletingId] = useState<Id<"skills"> | null>(null);
 
   const handleDelete = async (id: Id<"skills">) => {
@@ -22,12 +45,47 @@ function AdminSkillsList() {
         await removeSkill({ id });
       } catch (error) {
         console.error('Failed to delete skill:', error);
-        alert('Failed to delete skill');
       } finally {
         setDeletingId(null);
       }
     }
   };
+
+  const handleBulkDelete = async () => {
+    if (confirm(`Are you sure you want to delete ${selectedCount} skills? This action cannot be undone.`)) {
+      await removeMany({ ids: selectedIdsArray as Id<"skills">[] });
+      clearSelection();
+    }
+  };
+
+  const handleBulkVisibility = async (isVisible: boolean) => {
+    await toggleVisibilityMany({ 
+      ids: selectedIdsArray as Id<"skills">[], 
+      isVisible 
+    });
+    clearSelection();
+  };
+
+  const bulkActions = [
+    {
+      label: 'Show',
+      icon: Eye,
+      onClick: () => handleBulkVisibility(true),
+      variant: 'success' as const,
+    },
+    {
+      label: 'Hide',
+      icon: EyeOff,
+      onClick: () => handleBulkVisibility(false),
+      variant: 'default' as const,
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      onClick: handleBulkDelete,
+      variant: 'danger' as const,
+    },
+  ];
 
   const handleToggleVisibility = async (id: Id<"skills">) => {
     try {
@@ -66,6 +124,14 @@ function AdminSkillsList() {
         <table className="admin-table">
           <thead>
             <tr>
+              <th className="w-10">
+                <input 
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={toggleSelectAll}
+                  className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 accent-(--color-ubuntu-orange)"
+                />
+              </th>
               <th className="w-16">Ord</th>
               <th>Name</th>
               <th>Category</th>
@@ -77,13 +143,21 @@ function AdminSkillsList() {
           <tbody>
             {skills.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-(--color-text-secondary)">
+                <td colSpan={7} className="text-center py-8 text-(--color-text-secondary)">
                   No skills found. Add your first skill to get started.
                 </td>
               </tr>
             ) : (
               skills.map((skill) => (
-                <tr key={skill._id}>
+                <tr key={skill._id} className={selectedIdsArray.includes(skill._id) ? 'bg-(--color-surface-dark)' : ''}>
+                  <td>
+                    <input 
+                      type="checkbox"
+                      checked={selectedIdsArray.includes(skill._id)}
+                      onChange={() => toggleSelect(skill._id)}
+                      className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 accent-(--color-ubuntu-orange)"
+                    />
+                  </td>
                   <td className="font-mono text-xs">{skill.displayOrder}</td>
                   <td className="font-medium">
                     <div className="flex items-center gap-2">
@@ -139,6 +213,12 @@ function AdminSkillsList() {
           </tbody>
         </table>
       </div>
+
+      <BulkActionBar 
+        selectedCount={selectedCount}
+        onClear={clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }
