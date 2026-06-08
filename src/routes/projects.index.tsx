@@ -18,8 +18,8 @@ function Projects() {
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
       <Seo 
-        title="Projects | Portfolio" 
-        description="A showcase of my recent work, side projects, and open source contributions." 
+        title="Projects | Muhammad Ansyar Rafi Putra" 
+        description="A showcase of projects by Muhammad Ansyar Rafi Putra — web applications, infrastructure automation, and open source contributions." 
       />
 
       <div className="flex flex-col gap-4">

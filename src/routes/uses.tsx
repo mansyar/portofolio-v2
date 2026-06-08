@@ -18,8 +18,8 @@ function Uses() {
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
       <Seo 
-        title="Uses | Portfolio" 
-        description="A list of hardware, software, and tools I use on a daily basis." 
+        title="Uses | Muhammad Ansyar Rafi Putra" 
+        description="A list of hardware, software, and tools Muhammad Ansyar Rafi Putra uses on a daily basis." 
       />
 
       <div className="flex flex-col gap-4">

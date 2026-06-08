@@ -18,6 +18,7 @@ interface SeoProps {
   type?: "website" | "article" | "profile";
   publishedTime?: string;
   author?: string;
+  keywords?: string[];
   jsonLd?: Record<string, unknown>;
 }
 
@@ -27,7 +28,8 @@ export function Seo({
   image,
   type = "website",
   publishedTime,
-  author = "Ansyar",
+  author = "Muhammad Ansyar Rafi Putra",
+  keywords,
   jsonLd,
 }: SeoProps) {
   const rawSettings = useQuery(api.settings.getPublic);
@@ -38,19 +40,31 @@ export function Seo({
   const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
   const url = `${siteUrl}${location.pathname}`;
   
-  const siteName = settings?.siteTitle || "Ansyar's Portfolio";
+  const siteName = settings?.siteTitle || "Muhammad Ansyar Rafi Putra | Portfolio";
   const fullTitle = `${title} | ${siteName}`;
-  const metaDescription = description || settings?.metaDescription || "Ansyar's work and thoughts.";
+  const metaDescription = description || settings?.metaDescription || "Portfolio of Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer.";
   
   const defaultImage = settings?.defaultOgImage || `${siteUrl}/og-image.jpg`;
   const ogImage = image ? (image.startsWith("http") ? image : `${siteUrl}${image}`) : defaultImage;
   
   const twitterHandle = settings?.socialTwitter ? `@${settings.socialTwitter.replace('@', '')}` : "@ansyar";
 
+  const defaultKeywords = [
+    "Muhammad Ansyar Rafi Putra",
+    "Ansyar",
+    "Full-Stack Developer",
+    "DevOps Engineer",
+    "React Developer",
+    "Portfolio",
+  ];
+  const allKeywords = keywords ? [...keywords, ...defaultKeywords] : defaultKeywords;
+
   return (
     <>
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
+      <meta name="keywords" content={allKeywords.join(", ")} />
+      <meta name="author" content={author} />
       <link rel="canonical" href={url} />
       <link rel="alternate" type="application/rss+xml" title="Ansyar's Dev Log" href="/feed.xml" />
 
@@ -82,6 +96,7 @@ export function Seo({
           author: {
             "@type": "Person",
             name: author,
+            url: siteUrl,
           },
           image: ogImage,
           ...jsonLd,

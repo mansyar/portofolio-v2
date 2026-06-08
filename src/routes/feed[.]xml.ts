@@ -17,8 +17,8 @@ export const Route = createFileRoute('/feed.xml' as any)({
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ansyar's Dev Log</title>
-    <description>Technical blog posts about DevOps, web development, and software engineering</description>
+    <title>Muhammad Ansyar Rafi Putra - Dev Log</title>
+    <description>Technical blog posts by Muhammad Ansyar Rafi Putra about DevOps, web development, and software engineering</description>
     <link>${siteUrl}/blog</link>
     <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>

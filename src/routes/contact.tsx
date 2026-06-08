@@ -90,8 +90,8 @@ function Contact() {
   return (
     <div className="container mx-auto flex max-w-5xl flex-col gap-12 px-4 pt-10 pb-20 md:px-6">
       <Seo 
-        title="Contact | Portfolio" 
-        description="Get in touch for freelance opportunities or just to say hi." 
+        title="Contact | Muhammad Ansyar Rafi Putra" 
+        description="Get in touch with Muhammad Ansyar Rafi Putra for freelance opportunities, collaborations, or just to say hi." 
       />
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">

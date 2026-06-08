@@ -44,8 +44,8 @@ function Skills() {
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
       <Seo 
-        title="Skills & Tech Stack | Portfolio" 
-        description="My technical skills and proficiency in web development, DevOps, and cloud infrastructure." 
+        title="Skills & Tech Stack | Muhammad Ansyar Rafi Putra" 
+        description="Technical skills and proficiency of Muhammad Ansyar Rafi Putra in web development, DevOps, and cloud infrastructure." 
       />
 
       <div className="flex flex-col gap-4">

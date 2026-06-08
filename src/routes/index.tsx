@@ -31,7 +31,7 @@ function App() {
     <div className="animate-fade-in flex flex-col gap-16 pb-20 md:gap-24">
       <Seo 
         title="Home" 
-        description="Senior Full-Stack Developer & DevOps Engineer. Building scalable applications with React, TanStack Start, Convex, and modern infrastructure. Explore my projects and technical deep dives."
+        description="Muhammad Ansyar Rafi Putra — Senior Full-Stack Developer & DevOps Engineer. Building scalable applications with React, TanStack Start, Convex, and modern infrastructure. Explore my projects and technical deep dives."
       />
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-10 pb-10 md:pt-20 lg:pt-32">
@@ -44,7 +44,7 @@ function App() {
             </div>
             
             <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-              Full-Stack Developer <br />
+              Muhammad Ansyar Rafi Putra<br />
               <span className="text-(--color-ubuntu-orange)">
                 & <TypingEffect text="DevOps Engineer" speed={100} startDelay={200} />
               </span>
@@ -79,7 +79,7 @@ function App() {
                   </div>
                   <CodeBlock 
                     code={`interface Developer {
-  name: "Ansyar";
+  name: "Muhammad Ansyar Rafi Putra";
   role: "Full Stack Developer";
   stack: ["React", "Convex", "DevOps"];
   passion: "Building great software";

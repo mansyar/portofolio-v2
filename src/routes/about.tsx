@@ -23,8 +23,8 @@ function About() {
   return (
     <div className="flex flex-col gap-12 pb-20">
       <Seo 
-        title="About Me | Portfolio" 
-        description="My professional journey from Full-Stack Development to DevOps. Explore my experience, technical skills, and educational background." 
+        title="About Me | Muhammad Ansyar Rafi Putra" 
+        description="Learn about Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer. Explore my professional journey, experience, technical skills, and educational background."
       />
 
       <Suspense fallback={
