@@ -1,5 +1,6 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
+import { requireAdmin } from "./lib/auth";
 
 /**
  * Convex action to proxy Umami API requests.
@@ -10,7 +11,12 @@ export const getStats = action({
     startAt: v.number(),
     endAt: v.number(),
   },
-  handler: async (_ctx, { startAt, endAt }) => {
+  handler: async (ctx, { startAt, endAt }) => {
+    // Authorization first, and outside the `try` below: that catch returns
+    // `null`, which would swallow the rejection. Running before the env check
+    // also stops an anonymous caller learning whether Umami is configured.
+    await requireAdmin(ctx);
+
     const umamiUrl = process.env.UMAMI_URL;
     const websiteId = process.env.UMAMI_WEBSITE_ID;
     const username = process.env.UMAMI_USERNAME;

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation, action, query } from "./_generated/server";
-import { api } from "./_generated/api";
+import { mutation, internalAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { Resend } from "resend";
 
 export const subscribe = mutation({
@@ -34,13 +34,13 @@ export const subscribe = mutation({
     }
 
     // Trigger welcome email action
-    await ctx.scheduler.runAfter(0, api.newsletter.sendWelcomeEmail, { email });
+    await ctx.scheduler.runAfter(0, internal.newsletter.sendWelcomeEmail, { email });
 
     return { success: true, alreadySubscribed: false };
   },
 });
 
-export const sendWelcomeEmail = action({
+export const sendWelcomeEmail = internalAction({
   args: { email: v.string() },
   handler: async (_ctx, { email }) => {
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -69,13 +69,5 @@ export const sendWelcomeEmail = action({
     } catch (error) {
       console.error("Failed to send welcome email:", error);
     }
-  },
-});
-
-export const listSubscribers = query({
-  args: {},
-  handler: async (ctx) => {
-    // Only admin should call this - you might add auth check if needed
-    return await ctx.db.query("newsletterSubscribers").collect();
   },
 });
