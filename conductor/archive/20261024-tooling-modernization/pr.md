@@ -20,6 +20,7 @@ Unifies the toolchain on one pinned, modern baseline: Node 24 and pnpm 12.4.1 ac
 | 4: Dependency refresh | Current within majors | verified | `cdb7afd` | 41 packages moved, 0 major changes. Five TanStack Router packages held at exact pre-track versions because `react-start` 1.169 requires Vite 8. |
 | 5: TypeScript 7 and documentation sync | TS 7.0.2 type-checks clean, docs match | verified | `8cbe026` | Only change needed was removing `baseUrl` (TS5102). No source file under `src/` or `convex/` changed. |
 | R1: Review fixes | Resolve review findings | verified | `3252ab6` | 10 findings, all fixed. |
+| Post-review: CI and line endings | Enforce the merge gate and make the format gate platform-independent | verified | `a7785ff` | `.gitattributes` + LF normalization; `deploy.yml` gained a `pull_request` trigger with deploy jobs gated to `push`. |
 
 ## Requirements
 
@@ -38,7 +39,7 @@ Unifies the toolchain on one pinned, modern baseline: Node 24 and pnpm 12.4.1 ac
 - [x] `NFR-1` — zero product behavior change (AST equivalence + one error-narrowing helper)
 - [x] `NFR-2` — at most 4 test workers
 - [x] `NFR-3` — every phase independently green and revertable
-- [x] `NFR-4` — CI green including the Docker build stage (verified in CI; not locally reproducible)
+- [x] `NFR-4` — CI green including the Docker build stage (the `test` job passes on this PR; `build-and-push` runs only on merge to `main`)
 - [x] `NFR-5` — `noExplicitAny` still an error; no new a11y gap; no committed secrets
 - [x] `AC-1` … `AC-12` — see `verification/integrated.md`
 
@@ -53,6 +54,7 @@ Unifies the toolchain on one pinned, modern baseline: Node 24 and pnpm 12.4.1 ac
 | unit | `pnpm test` | pass — 12 files, 31 tests | same |
 | unit | `pnpm test:coverage` | pass — 3.91% stmts, 3.49% fn, 3.96% lines (floor 3/3) | same |
 | build | `pnpm build` | pass — `.output/nitro.json` generated | same |
+| CI | GitHub Actions `test` job | pass — 1m0s, `build-and-push` and `deploy` skipped | run `40171009088` |
 
 ## Review
 
@@ -68,6 +70,8 @@ Unifies the toolchain on one pinned, modern baseline: Node 24 and pnpm 12.4.1 ac
 - **99 Biome warnings remain.** Mostly a11y (`useButtonType` 39, `noLabelWithoutControl` 31) plus `noArrayIndexKey` and `noNonNullAssertion`. Pre-existing, surfaced rather than introduced, demoted to warnings so they do not block the build, and recorded as debt with a promotion order.
 - **`nitro@3.0.1-alpha.1` is a prerelease.** There is no stable 3.x line, so the version the project was already running is pinned exactly rather than floated. Confirmed building under Node 24 by a full production build.
 - **Docker build is CI-only.** It cannot be reproduced locally; the CI `build-and-push` job is the authority for NFR-4.
+- **`deploy.yml` was changed beyond the spec's scope.** It only ran on push to `main`, so the "CI must pass before merge" rule was unenforceable. A `pull_request` trigger was added, the `test` job now also runs `format:check` and `build`, and `build-and-push`/`deploy` are gated with `if: github.event_name == 'push'`. Merging behavior is unchanged.
+- **Line endings were normalized to LF.** Repository blobs were LF while the Windows working tree was CRLF, so the format gate passed locally and failed on Linux CI. `.gitattributes` now pins `eol=lf`, `biome.json` uses `lineEnding: "lf"`, and 183 files were converted. Content is unchanged — verified with `git diff --ignore-cr-at-eol` returning zero.
 
 ## Follow-ups
 
@@ -82,4 +86,4 @@ Unifies the toolchain on one pinned, modern baseline: Node 24 and pnpm 12.4.1 ac
 git revert --no-edit <squash-commit>
 ```
 
-No migration, feature flag, or data change is involved. Reverting restores ESLint, Prettier, Vitest 3, and TypeScript 5. The `pnpm-workspace.yaml` `allowBuilds` entry and the `.nvmrc` disappear with the revert; a Node 20 environment would then be required again.
+No migration, feature flag, or data change is involved. Reverting restores ESLint, Prettier, Vitest 3, and TypeScript 5. The `pnpm-workspace.yaml` `allowBuilds` entry, `.nvmrc`, and `.gitattributes` disappear with the revert; a Node 20 environment would then be required again.
