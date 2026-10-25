@@ -86,25 +86,79 @@ permissions:
     effect: allow
   # --- PROJECT COMMANDS START ---
   - action: shell
+    resource: "pnpm install"
+    effect: allow
+  - action: shell
     resource: "pnpm install *"
     effect: allow
   - action: shell
     resource: "npx convex dev *"
     effect: allow
   - action: shell
+    resource: "pnpm dev"
+    effect: allow
+  - action: shell
     resource: "pnpm dev *"
+    effect: allow
+  - action: shell
+    resource: "pnpm test"
     effect: allow
   - action: shell
     resource: "pnpm test *"
     effect: allow
   - action: shell
+    resource: "pnpm test:coverage"
+    effect: allow
+  - action: shell
+    resource: "pnpm test:coverage *"
+    effect: allow
+  - action: shell
+    resource: "pnpm lint"
+    effect: allow
+  - action: shell
     resource: "pnpm lint *"
+    effect: allow
+  - action: shell
+    resource: "pnpm format"
+    effect: allow
+  - action: shell
+    resource: "pnpm format *"
+    effect: allow
+  - action: shell
+    resource: "pnpm format:check"
+    effect: allow
+  - action: shell
+    resource: "pnpm format:check *"
+    effect: allow
+  - action: shell
+    resource: "pnpm type-check"
     effect: allow
   - action: shell
     resource: "pnpm type-check *"
     effect: allow
   - action: shell
+    resource: "pnpm build"
+    effect: allow
+  - action: shell
     resource: "pnpm build *"
+    effect: allow
+  - action: shell
+    resource: "pnpm outdated"
+    effect: allow
+  - action: shell
+    resource: "pnpm outdated *"
+    effect: allow
+  - action: shell
+    resource: "pnpm update"
+    effect: allow
+  - action: shell
+    resource: "pnpm update *"
+    effect: allow
+  - action: shell
+    resource: "pnpm list *"
+    effect: allow
+  - action: shell
+    resource: "pnpm exec biome *"
     effect: allow
   # --- PROJECT COMMANDS END ---
 ---
@@ -151,15 +205,15 @@ Conductor track. The primary agent remains responsible for Conductor state.
 
 ## Project notes
 
-- **Verification is three commands, run separately:** `pnpm type-check`, then
-  `pnpm lint`, then `pnpm test`. `pnpm build` additionally runs on the final
+- **Verification commands, run separately:** `pnpm type-check`, `pnpm lint`,
+  `pnpm format:check`, `pnpm test`. `pnpm build` additionally runs on the final
   phase of a track. Do not attempt a chained `&&` form.
-- **`pnpm test:coverage` and `pnpm format` do not exist in this project.** Do not
-  run them, and do not fail a phase because they are unavailable.
+- **`pnpm test:coverage` exists** (Vitest 5 with a 3% ratchet floor) and
+  **`pnpm format` exists** (Biome, write mode). Both are available.
 - **`convex/_generated/` and `src/routeTree.gen.ts` are generated.** Never hand-edit
   them. For a schema change, `npx convex dev --once` regenerates the Convex types.
-- **Do not upgrade dependencies** as part of a feature task. Modernization
-  (Biome, TypeScript 7, Node 24) is a separate track.
+- **Do not upgrade dependencies** as part of a feature task. Modernization is a
+  separate track; Node 24, pnpm 12.4.1, Biome, and Vitest 5 have already landed.
 - **Tokens before literals:** no raw hex colors or spacing values in stylesheets;
   use the CSS custom properties from `src/styles/variables.css`.
 - **Accessibility is enforced for new code:** visible focus, reduced-motion

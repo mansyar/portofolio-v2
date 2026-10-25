@@ -47,10 +47,25 @@ permissions:
     effect: allow
   # --- PROJECT CHECKS START ---
   - action: shell
+    resource: "pnpm type-check"
+    effect: allow
+  - action: shell
     resource: "pnpm type-check *"
     effect: allow
   - action: shell
+    resource: "pnpm lint"
+    effect: allow
+  - action: shell
     resource: "pnpm lint *"
+    effect: allow
+  - action: shell
+    resource: "pnpm format:check"
+    effect: allow
+  - action: shell
+    resource: "pnpm format:check *"
+    effect: allow
+  - action: shell
+    resource: "pnpm test"
     effect: allow
   - action: shell
     resource: "pnpm test *"
