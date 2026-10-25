@@ -1,0 +1,149 @@
+# Harden Public Convex Functions - Implementation Plan
+
+> **Branch:** `fix/20261025-harden-public-convex-functions`
+> **Base:** `main` @ `6d475db55790679499b9af9cdbb72b881785b499`
+>
+> Phase states are `pending`, `in_progress`, `verified`, `failed`, or `blocked`.
+> Only the primary agent writes this file. Phase subagents report results and the
+> primary records them.
+>
+> **Test dependency note:** `convex-test@0.0.41` is the newest version whose peer
+> range (`convex: ^1.16.4`) covers the pinned `convex@1.31.2`. `0.0.43` requires
+> `^1.32.0` and `0.0.45`+ requires `^1.43.0`, so the pin is the constraint. Do
+> not upgrade `convex` to satisfy `convex-test`.
+
+## Phase 1: Test infrastructure and the failing regression tests
+
+- **Goal:** `convex-test` runs real Convex handlers under Vitest, and four
+  regression tests exist that currently fail because the guards are missing.
+- **Depends on:** none
+- **Covers:** FR-6, AC-6
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `vitest.setup.tsx`,
+  `convex/__tests__/**`
+- **Verification:** `pnpm test` (expected to FAIL on the new guard tests at this
+  stage — record the failures as the proof the bug is real)
+- **Status:** pending
+
+- [ ] **P1.T1: Install convex-test at a version compatible with convex 1.31.2** - covers: FR-6
+  - [ ] **P1.T1.1: Add `convex-test@0.0.41` and `@edge-runtime/vm` as devDependencies**
+  - [ ] **P1.T1.2: Confirm `pnpm install` exits 0 with no peer-dependency error, and record the resolved versions**
+- [ ] **P1.T2: Make the Convex test environment work alongside jsdom** - covers: FR-6
+  - [ ] **P1.T2.1: Determine whether `convex-test` needs the `edge-runtime` environment and configure it per-file or via a Vitest project, without changing the global `jsdom` setting for component tests**
+  - [ ] **P1.T2.2: Confirm the existing 12 test files still pass in their current environment**
+- [ ] **P1.T3: Write the failing regression tests** - covers: FR-1, FR-2, FR-3, FR-4
+  - [ ] **P1.T3.1: `analytics.getStats` called with no identity throws**
+  - [ ] **P1.T3.2: `newsletter.listSubscribers` is not reachable (assert the generated API has no such export)**
+  - [ ] **P1.T3.3: `newsletter.sendWelcomeEmail` cannot be invoked as a public action**
+  - [ ] **P1.T3.4: `newsletter.subscribe` rejects the 6th call in an hour from one IP**
+  - [ ] **P1.T3.5: Run `pnpm test` and record which of these fail — every one of them must fail before Phase 2 begins**
+
+<!--
+The primary appends after acceptance:
+**Result:** verified
+**Checkpoint:** <short-sha>
+**Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-1.md
+-->
+
+## Phase 2: Close the authorization gaps
+
+- **Goal:** The three unguarded functions are no longer anonymously callable,
+  and the Phase 1 guard tests pass.
+- **Depends on:** Phase 1
+- **Covers:** FR-1, FR-2, FR-3, AC-1, AC-2, AC-3
+- **Touches:** `convex/analytics.ts`, `convex/newsletter.ts`,
+  `convex/_generated/**`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
+- **Status:** pending
+
+- [ ] **P2.T1: Guard `analytics.getStats` with `requireAdmin`** - covers: FR-1
+  - [ ] **P2.T1.1: Call `await requireAdmin(ctx)` as the first statement in the handler, before the Umami env-var check, so an anonymous caller cannot distinguish configured from unconfigured**
+  - [ ] **P2.T1.2: Confirm the admin dashboard path still works — the action signature and return type are unchanged**
+- [ ] **P2.T2: Delete `newsletter.listSubscribers`** - covers: FR-2
+  - [ ] **P2.T2.1: Remove the query and regenerate the Convex API types**
+  - [ ] **P2.T2.2: Confirm no reference remains in `src/`, and record that the subscriber admin screen is a future track**
+- [ ] **P2.T3: Make `sendWelcomeEmail` internal** - covers: FR-3
+  - [ ] **P2.T3.1: Change `action` to `internalAction`**
+  - [ ] **P2.T3.2: Update the `subscribe` scheduler call to `internal.newsletter.sendWelcomeEmail`**
+- [ ] **P2.T4: Verify the guard tests now pass** - covers: AC-1, AC-2, AC-3
+  - [ ] **P2.T4.1: Run `pnpm test` and confirm the Phase 1 failures are now green**
+
+<!--
+The primary appends after acceptance:
+**Result:** verified
+**Checkpoint:** <short-sha>
+**Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-2.md
+-->
+
+## Phase 3: Rate-limit newsletter subscribe
+
+- **Goal:** `newsletter.subscribe` rejects the 6th attempt per hour per IP, keyed
+  on a server-resolved address, and the Phase 1 rate-limit test passes.
+- **Depends on:** Phase 2
+- **Covers:** FR-4, FR-5, AC-4, AC-5
+- **Touches:** `convex/newsletter.ts`, `src/components/features/NewsletterForm.tsx`,
+  `src/components/features/NewsletterForm.css`, `convex/__tests__/**`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
+- **Status:** pending
+
+- [ ] **P3.T1: Add the rate-limit check to `subscribe`** - covers: FR-4
+  - [ ] **P3.T1.1: Accept `clientIp` as a required argument, mirroring `contact.submit`**
+  - [ ] **P3.T1.2: Query `rateLimits` via `by_identifier_action` with `action: "newsletter_subscribe"` and reject at 5 attempts in the last hour**
+  - [ ] **P3.T1.3: Throw before any insert or scheduled email, so a blocked attempt has no side effects**
+  - [ ] **P3.T1.4: Record each allowed attempt in `rateLimits`**
+- [ ] **P3.T2: Resolve the caller's IP server-side in the form** - covers: FR-5
+  - [ ] **P3.T2.1: Add a `createServerFn` that resolves the request IP, following `src/routes/contact.tsx`**
+  - [ ] **P3.T2.2: Pass the resolved IP to `subscribe` as `clientIp`**
+  - [ ] **P3.T2.3: Degrade gracefully when the IP cannot be resolved — signup must still work rather than break**
+- [ ] **P3.T3: Confirm the rate-limit test passes and the form still subscribes** - covers: AC-4, AC-5
+  - [ ] **P3.T3.1: Run `pnpm test` and confirm the 6th-attempt test is green and `rateLimits` contains 5 rows for the IP**
+
+<!--
+The primary appends after acceptance:
+**Result:** verified
+**Checkpoint:** <short-sha>
+**Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-3.md
+-->
+
+## Phase 4: Replace the placeholder tests and audit the surface
+
+- **Goal:** No placeholder assertions remain under `convex/__tests__/`, every
+  Convex function is classified by access model, and the full gate is green.
+- **Depends on:** Phase 3
+- **Covers:** FR-7, NFR-2, NFR-3, AC-6, AC-7, AC-9
+- **Touches:** `convex/__tests__/**`,
+  `conductor/tracks/20261025-harden-public-convex-functions/verification/**`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Status:** pending
+
+- [ ] **P4.T1: Replace the remaining placeholder tests** - covers: NFR-2, AC-6
+  - [ ] **P4.T1.1: Give `discovery.test.ts` and `helpers.test.ts` real assertions, or mark them explicitly as unimplemented rather than leaving `expect(true).toBe(true)`**
+  - [ ] **P4.T1.2: Confirm no file under `convex/__tests__/` contains `expect(true).toBe(true)`**
+- [ ] **P4.T2: Classify every Convex function by access model** - covers: FR-7, AC-7
+  - [ ] **P4.T2.1: Produce a table of every exported function in `convex/` marked public-by-design, admin-guarded, or internal**
+  - [ ] **P4.T2.2: Note the audit method so the check can be repeated when functions are added**
+- [ ] **P4.T3: Full verification** - covers: NFR-3, AC-9
+  - [ ] **P4.T3.1: Run the full five-command gate and record every exit code**
+  - [ ] **P4.T3.2: Run `pnpm test:coverage` and confirm coverage stays at or above the 3% ratchet**
+  - [ ] **P4.T3.3: Confirm the test count is at least 31 and that the number rose because assertions were added, not because files were deleted**
+
+<!--
+The primary appends after acceptance:
+**Result:** verified
+**Checkpoint:** <short-sha>
+**Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-4.md
+-->
+
+<!--
+Review fixes are appended by `conductor-review` as:
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review findings ...
+- **Depends on:** Phase 4
+- **Covers:** review findings
+- **Touches:** ...
+- **Verification:** ...
+- **Status:** pending
+
+- [ ] **R1.T1: Resolve <finding ID>** - covers: <finding ID>
+-->
