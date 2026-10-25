@@ -108,7 +108,7 @@
 - **Touches:** `convex/__tests__/**`,
   `conductor/tracks/20261025-harden-public-convex-functions/verification/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P4.T1: Replace the remaining placeholder tests** - covers: NFR-2, AC-6
   - [ ] **P4.T1.1: Give `contact.test.ts` and `uses.test.ts` real assertions — these are the only two files that assert `expect(true).toBe(true)`; `helpers.test.ts` and `discovery.test.ts` already contain real logic tests and are out of scope**
