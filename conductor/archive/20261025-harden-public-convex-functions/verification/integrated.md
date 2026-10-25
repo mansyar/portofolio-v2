@@ -128,3 +128,33 @@ Unchanged from the previous track and still consistent:
 6. **`convex-test@0.0.41` does not enforce public/internal visibility.** It will happily call
    an `internalAction`. The `sendWelcomeEmail` test therefore asserts on the `isInternal`
    flag rather than on a rejected call.
+
+## Post-merge verification
+
+Merged as `8933afa` (PR #2, squash). CI run `40222549668`: `test` success, `build-and-push` success, `deploy` success.
+
+### Live endpoint probe
+
+The tests prove the gaps are closed inside a test harness. This proves it on the deployment
+that actually serves traffic. All calls go to `https://api.ansyar-world.top/api/query` — the
+same endpoint, the same anonymous identity a stranger has.
+
+| Call | Expected after the fix | Observed |
+|---|---|---|
+| `sitemap:getSitemapData` (public) | succeeds | **success** — real blog slugs returned |
+| `uses:listVisible` (public) | succeeds | **success** — real rows returned |
+| `newsletter:listSubscribers` | unreachable | **error** — no such function |
+| `analytics:getStats` | rejected | **error** — `Unauthorized` from `requireAdmin` |
+| `newsletter:sendWelcomeEmail` | unreachable | **error** — internal, not client-callable |
+
+The two public queries succeeding is the control. Convex returns a generic `Server Error` for
+both a deleted function and a rejected guard, so an error alone proves nothing — but the same
+endpoint returning real data for public functions, and errors for exactly the three hardened
+ones, does. Before this track, `listSubscribers` returned every subscriber email from this
+same URL.
+
+### Site health
+
+`/health` 200 · `/` 200 · `/blog` 200 · `/sitemap.xml` 200.
+
+**Result: verified in production.**
