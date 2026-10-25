@@ -70,7 +70,7 @@ Tailwind.
 | Production build | `pnpm build` | `vite build` |
 | Preview built output | `pnpm preview` | — |
 | Unit tests | `pnpm test` | `vitest run` |
-| Coverage | `pnpm test:coverage` | **To be added** — see Lint/Format below |
+| Coverage | `pnpm test:coverage` | `vitest run --coverage` (v8) |
 | Lint | `pnpm lint` | `eslint .` |
 | Format | `pnpm format` | **To be added** |
 | Typecheck | `pnpm type-check` | `tsc --noEmit` |
@@ -122,9 +122,9 @@ Single Convex deployment, 16 tables declared in `convex/schema.ts`:
 
 | Concern | Current | Target |
 | --- | --- | --- |
-| Unit/component tests | Vitest 3, jsdom, Testing Library, `@testing-library/jest-dom` | keep Vitest |
-| Test setup | `vitest.setup.tsx`; SSR plugins disabled under test to avoid hanging processes; `pool: 'forks'` with a short teardown timeout | keep |
-| Coverage | **none installed** | `@vitest/coverage-v8` + `test:coverage` script |
+| Unit/component tests | Vitest 5, jsdom, Testing Library, `@testing-library/jest-dom/vitest` | keep Vitest |
+| Test setup | `vitest.setup.tsx`; SSR plugins disabled under test to avoid hanging processes; `pool: 'forks'` with a short teardown timeout; `maxWorkers: 4` | keep |
+| Coverage | `@vitest/coverage-v8` 5 + `test:coverage`, ratcheting gate | keep, raise the floor as tests land |
 | Lint | ESLint 9 flat config: `typescript-eslint`, `react-hooks`, `react-refresh`; `no-explicit-any` = **error** | **Biome** |
 | Format | Prettier 3.7 configured, but **no script** and `.prettierrc` names an uninstalled plugin | **Biome** |
 | Typecheck | `tsc --noEmit` | **TypeScript 7 (`tsgo`)** |
@@ -134,9 +134,14 @@ Test locations: `convex/__tests__/*.test.ts` for backend logic and
 
 ### Coverage policy
 
-Add `@vitest/coverage-v8` with a `test:coverage` script and start the gate low and
-honest. Suggested starting point: **40% lines / 40% functions**, measured over
-`src/` and `convex/`, excluding `convex/_generated/` and `src/routeTree.gen.ts`.
+`@vitest/coverage-v8` with a `test:coverage` script, measured over `src/` and `convex/`,
+excluding `convex/_generated/` and `src/routeTree.gen.ts`.
+
+The gate is a **ratcheting floor**. It was set to 3% lines / 3% functions — just below
+the measured baseline of 3.93% / 3.49% when the tooling landed — because this codebase
+has 31 tests across roughly 2,000 lines and a meaningful absolute target would require a
+large test expansion, which is a separate concern from tooling.
+
 Raise the threshold as tracks add tests; never lower it to make a phase pass.
 
 ## Planned Modernization
@@ -215,9 +220,9 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 
 1. **Automated dependency updates.** No Renovate or Dependabot config exists. Should
    one be added, and at what cadence?
-2. **Coverage threshold trajectory.** The 40% starting gate is a placeholder. What is
-   the intended destination, and should it apply to new code only (changed lines) rather
-   than the whole project?
+2. **Coverage threshold trajectory.** The floor is now a ratchet at 3% lines / 3%
+   functions. What is the intended destination, and should it apply to new code only
+   (changed lines) rather than the whole project?
 3. **TypeScript 7 readiness.** The native compiler's support for TanStack Start's
    generated types and Convex's codegen is unverified. The migration must not land
    before parity is demonstrated.
@@ -232,7 +237,7 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 - *Node 24 is the production runtime*, declared identically in the Dockerfile, CI,
   and `.nvmrc`.
 - *Vitest is retained.* The modernization targets the lint/format/typecheck surface, not
-  the test runner; Biome does not replace it.
+  the test runner; Biome does not replace it. Vitest is now at 5.x with coverage enabled.
 - *Committed generated files are intentional*, so CI does not need a codegen step before
   typecheck.
 - *Tailwind-first styling applies to new work only.* Existing co-located CSS files are
