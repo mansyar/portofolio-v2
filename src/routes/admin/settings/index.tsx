@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Terminal, Save, Globe, Share2, Info, Loader2 } from 'lucide-react';
-import { useToastMutation } from '@/hooks/use-toast-mutation';
+import { useState, useMemo } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Terminal, Save, Globe, Share2, Info, Loader2 } from "lucide-react";
+import { useToastMutation } from "@/hooks/use-toast-mutation";
 
-export const Route = createFileRoute('/admin/settings/')({
+export const Route = createFileRoute("/admin/settings/")({
   component: AdminSettings,
 });
 
@@ -17,18 +17,17 @@ function AdminSettings() {
     errorMessage: "Failed to save configurations.",
   });
 
-
   const [localSettings, setLocalSettings] = useState<Record<string, string> | null>(null);
-  const [activeTab, setActiveTab] = useState<'general' | 'seo' | 'social'>('general');
+  const [activeTab, setActiveTab] = useState<"general" | "seo" | "social">("general");
 
   const settings = useMemo(() => {
     const defaults = {
-      siteTitle: '',
-      metaDescription: '',
-      defaultOgImage: '',
-      socialTwitter: '',
-      socialLinkedIn: '',
-      socialGitHub: '',
+      siteTitle: "",
+      metaDescription: "",
+      defaultOgImage: "",
+      socialTwitter: "",
+      socialLinkedIn: "",
+      socialGitHub: "",
     };
     if (localSettings) return localSettings;
     if (currentSettings) return { ...defaults, ...currentSettings };
@@ -36,7 +35,7 @@ function AdminSettings() {
   }, [currentSettings, localSettings]);
 
   const updateSetting = (key: string, value: string) => {
-    setLocalSettings(prev => ({
+    setLocalSettings((prev) => ({
       ...(prev || settings),
       [key]: value,
     }));
@@ -80,9 +79,11 @@ function AdminSettings() {
         {/* Tabs */}
         <div className="flex border-b border-(--color-border) bg-[rgba(255,255,255,0.02)]">
           <button
-            onClick={() => setActiveTab('general')}
+            onClick={() => setActiveTab("general")}
             className={`px-6 py-3 font-mono text-sm transition-colors border-r border-(--color-border) ${
-              activeTab === 'general' ? 'bg-(--color-surface) text-(--color-ubuntu-orange)' : 'text-(--color-text-secondary) hover:text-(--color-text-primary)'
+              activeTab === "general"
+                ? "bg-(--color-surface) text-(--color-ubuntu-orange)"
+                : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
             }`}
           >
             <span className="flex items-center gap-2">
@@ -91,9 +92,11 @@ function AdminSettings() {
             </span>
           </button>
           <button
-            onClick={() => setActiveTab('seo')}
+            onClick={() => setActiveTab("seo")}
             className={`px-6 py-3 font-mono text-sm transition-colors border-r border-(--color-border) ${
-              activeTab === 'seo' ? 'bg-(--color-surface) text-(--color-ubuntu-orange)' : 'text-(--color-text-secondary) hover:text-(--color-text-primary)'
+              activeTab === "seo"
+                ? "bg-(--color-surface) text-(--color-ubuntu-orange)"
+                : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
             }`}
           >
             <span className="flex items-center gap-2">
@@ -102,9 +105,11 @@ function AdminSettings() {
             </span>
           </button>
           <button
-            onClick={() => setActiveTab('social')}
+            onClick={() => setActiveTab("social")}
             className={`px-6 py-3 font-mono text-sm transition-colors ${
-              activeTab === 'social' ? 'bg-(--color-surface) text-(--color-ubuntu-orange)' : 'text-(--color-text-secondary) hover:text-(--color-text-primary)'
+              activeTab === "social"
+                ? "bg-(--color-surface) text-(--color-ubuntu-orange)"
+                : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
             }`}
           >
             <span className="flex items-center gap-2">
@@ -116,7 +121,7 @@ function AdminSettings() {
 
         {/* Tab Content */}
         <div className="p-8 space-y-6">
-          {activeTab === 'general' && (
+          {activeTab === "general" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="space-y-1">
                 <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
@@ -125,7 +130,7 @@ function AdminSettings() {
                 <input
                   type="text"
                   value={settings.siteTitle}
-                  onChange={e => updateSetting('siteTitle', e.target.value)}
+                  onChange={(e) => updateSetting("siteTitle", e.target.value)}
                   className="terminal-input w-full"
                   placeholder="e.g. Ansyar's Portfolio"
                 />
@@ -136,7 +141,7 @@ function AdminSettings() {
             </div>
           )}
 
-          {activeTab === 'seo' && (
+          {activeTab === "seo" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="space-y-1">
                 <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
@@ -144,7 +149,7 @@ function AdminSettings() {
                 </label>
                 <textarea
                   value={settings.metaDescription}
-                  onChange={e => updateSetting('metaDescription', e.target.value)}
+                  onChange={(e) => updateSetting("metaDescription", e.target.value)}
                   className="terminal-input w-full min-h-[100px] py-2"
                   placeholder="Default SEO description for the entire site"
                 />
@@ -156,7 +161,7 @@ function AdminSettings() {
                 <input
                   type="text"
                   value={settings.defaultOgImage}
-                  onChange={e => updateSetting('defaultOgImage', e.target.value)}
+                  onChange={(e) => updateSetting("defaultOgImage", e.target.value)}
                   className="terminal-input w-full"
                   placeholder="https://example.com/og-image.jpg"
                 />
@@ -167,46 +172,46 @@ function AdminSettings() {
             </div>
           )}
 
-          {activeTab === 'social' && (
+          {activeTab === "social" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
-                      &gt; Twitter URL
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.socialTwitter}
-                      onChange={e => updateSetting('socialTwitter', e.target.value)}
-                      className="terminal-input w-full"
-                      placeholder="https://x.com/username"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
-                      &gt; LinkedIn URL
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.socialLinkedIn}
-                      onChange={e => updateSetting('socialLinkedIn', e.target.value)}
-                      className="terminal-input w-full"
-                      placeholder="https://linkedin.com/in/username"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
-                      &gt; GitHub URL
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.socialGitHub}
-                      onChange={e => updateSetting('socialGitHub', e.target.value)}
-                      className="terminal-input w-full"
-                      placeholder="https://github.com/username"
-                    />
-                  </div>
-               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                    &gt; Twitter URL
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.socialTwitter}
+                    onChange={(e) => updateSetting("socialTwitter", e.target.value)}
+                    className="terminal-input w-full"
+                    placeholder="https://x.com/username"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                    &gt; LinkedIn URL
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.socialLinkedIn}
+                    onChange={(e) => updateSetting("socialLinkedIn", e.target.value)}
+                    className="terminal-input w-full"
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                    &gt; GitHub URL
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.socialGitHub}
+                    onChange={(e) => updateSetting("socialGitHub", e.target.value)}
+                    className="terminal-input w-full"
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -215,7 +220,9 @@ function AdminSettings() {
       <div className="card p-4 bg-black/20 font-mono text-xs text-(--color-text-secondary)">
         <p className="flex items-center gap-2">
           <Info size={14} className="text-(--color-terminal-yellow)" />
-          <span>Note: Changes here affect the global state. Public routes will reactively update.</span>
+          <span>
+            Note: Changes here affect the global state. Public routes will reactively update.
+          </span>
         </p>
       </div>
     </div>

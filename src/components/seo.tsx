@@ -35,19 +35,24 @@ export function Seo({
   const rawSettings = useQuery(api.settings.getPublic);
   const settings = rawSettings as SiteSettings | undefined;
   const location = useLocation();
-  
+
   // Use environment variable for site URL or fallback
   const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
   const url = `${siteUrl}${location.pathname}`;
-  
+
   const siteName = settings?.siteTitle || "Muhammad Ansyar Rafi Putra | Portfolio";
   const fullTitle = `${title} | ${siteName}`;
-  const metaDescription = description || settings?.metaDescription || "Portfolio of Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer.";
-  
+  const metaDescription =
+    description ||
+    settings?.metaDescription ||
+    "Portfolio of Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer.";
+
   const defaultImage = settings?.defaultOgImage || `${siteUrl}/og-image.jpg`;
   const ogImage = image ? (image.startsWith("http") ? image : `${siteUrl}${image}`) : defaultImage;
-  
-  const twitterHandle = settings?.socialTwitter ? `@${settings.socialTwitter.replace('@', '')}` : "@ansyar";
+
+  const twitterHandle = settings?.socialTwitter
+    ? `@${settings.socialTwitter.replace("@", "")}`
+    : "@ansyar";
 
   const defaultKeywords = [
     "Muhammad Ansyar Rafi Putra",

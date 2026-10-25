@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery, useMutation } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { format } from 'date-fns';
-import { Mail, MailOpen, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { format } from "date-fns";
+import { Mail, MailOpen, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
-export const Route = createFileRoute('/admin/messages/')({
+export const Route = createFileRoute("/admin/messages/")({
   component: AdminMessagesInbox,
 });
 
@@ -14,7 +14,7 @@ function AdminMessagesInbox() {
   const messages = useQuery(api.contact.listAll);
   const markAsRead = useMutation(api.contact.markAsRead);
   const removeMessage = useMutation(api.contact.remove);
-  
+
   const [expandedId, setExpandedId] = useState<Id<"contactSubmissions"> | null>(null);
   const [deletingId, setDeletingId] = useState<Id<"contactSubmissions"> | null>(null);
 
@@ -22,19 +22,19 @@ function AdminMessagesInbox() {
     try {
       await markAsRead({ id, isRead: !currentRead });
     } catch (error) {
-      console.error('Failed to update read status:', error);
+      console.error("Failed to update read status:", error);
     }
   };
 
   const handleDelete = async (id: Id<"contactSubmissions">) => {
-    if (confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+    if (confirm("Are you sure you want to delete this message? This action cannot be undone.")) {
       setDeletingId(id);
       try {
         await removeMessage({ id });
         if (expandedId === id) setExpandedId(null);
       } catch (error) {
-        console.error('Failed to delete message:', error);
-        alert('Failed to delete message');
+        console.error("Failed to delete message:", error);
+        alert("Failed to delete message");
       } finally {
         setDeletingId(null);
       }
@@ -91,11 +91,11 @@ function AdminMessagesInbox() {
               messages.map((msg) => {
                 const isExpanded = expandedId === msg._id;
                 const date = new Date(msg._creationTime);
-                
+
                 return (
                   <React.Fragment key={msg._id}>
-                    <tr 
-                      className={`cursor-pointer transition-colors ${!msg.isRead ? 'bg-(--color-terminal-green) bg-opacity-5 font-bold text-(--color-text-primary)' : 'text-(--color-text-secondary)'} hover:bg-(--color-terminal-bg)`}
+                    <tr
+                      className={`cursor-pointer transition-colors ${!msg.isRead ? "bg-(--color-terminal-green) bg-opacity-5 font-bold text-(--color-text-primary)" : "text-(--color-text-secondary)"} hover:bg-(--color-terminal-bg)`}
                       onClick={() => toggleExpand(msg._id, msg.isRead)}
                     >
                       <td className="text-center">
@@ -108,17 +108,22 @@ function AdminMessagesInbox() {
                       <td>
                         <div className="flex flex-col">
                           <span>{msg.name}</span>
-                          <span className="text-[10px] font-mono opacity-60 font-normal">{msg.email}</span>
+                          <span className="text-[10px] font-mono opacity-60 font-normal">
+                            {msg.email}
+                          </span>
                         </div>
                       </td>
                       <td className="truncate max-w-[300px]">{msg.subject}</td>
-                      <td className="text-xs font-mono">{format(date, 'MMM dd, HH:mm')}</td>
+                      <td className="text-xs font-mono">{format(date, "MMM dd, HH:mm")}</td>
                       <td className="text-right">
-                        <div className="flex items-center justify-end gap-3" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center justify-end gap-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <button
                             onClick={() => handleToggleRead(msg._id, msg.isRead)}
                             className="text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors"
-                            title={msg.isRead ? 'Mark as unread' : 'Mark as read'}
+                            title={msg.isRead ? "Mark as unread" : "Mark as read"}
                           >
                             {msg.isRead ? <Mail size={16} /> : <MailOpen size={16} />}
                           </button>
@@ -143,19 +148,22 @@ function AdminMessagesInbox() {
                             <div className="flex justify-between items-start border-b border-(--color-border) pb-4">
                               <div className="space-y-1">
                                 <p className="text-sm font-bold text-(--color-text-primary)">
-                                  {msg.name} <span className="font-normal text-(--color-text-secondary) ml-2">&lt;{msg.email}&gt;</span>
+                                  {msg.name}{" "}
+                                  <span className="font-normal text-(--color-text-secondary) ml-2">
+                                    &lt;{msg.email}&gt;
+                                  </span>
                                 </p>
                                 <p className="text-lg text-(--color-text-primary)">{msg.subject}</p>
                               </div>
                               <p className="text-xs font-mono text-(--color-text-secondary)">
-                                {format(date, 'PPPP p')}
+                                {format(date, "PPPP p")}
                               </p>
                             </div>
                             <div className="whitespace-pre-wrap font-sans text-(--color-text-primary) leading-relaxed">
                               {msg.message}
                             </div>
                             <div className="pt-4 flex gap-4">
-                              <a 
+                              <a
                                 href={`mailto:${msg.email}?subject=Re: ${msg.subject}`}
                                 className="terminal-button primary text-xs"
                               >
@@ -178,4 +186,4 @@ function AdminMessagesInbox() {
 }
 
 // Add React fragment import if needed, or just use <></>
-import React from 'react';
+import React from "react";

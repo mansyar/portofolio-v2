@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { UsesItemForm } from '../../../components/features/UsesItemForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { UsesItemForm } from "../../../components/features/UsesItemForm";
 
-export const Route = createFileRoute('/admin/uses/new')({
+export const Route = createFileRoute("/admin/uses/new")({
   component: NewUsesItemPage,
 });
 
@@ -20,14 +20,14 @@ function NewUsesItemPage() {
         </p>
       </div>
 
-      <UsesItemForm 
-        mode="create" 
+      <UsesItemForm
+        mode="create"
         initialData={{
-          name: '',
-          category: '',
+          name: "",
+          category: "",
           displayOrder: nextDisplayOrder,
-          isVisible: true
-        }} 
+          isVisible: true,
+        }}
       />
     </div>
   );

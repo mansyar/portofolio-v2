@@ -13,8 +13,8 @@ this file as correct and raise the drift.
 
 ### Type safety
 
-- **`any` is a build error**, not a warning — `@typescript-eslint/no-explicit-any` is set
-  to `error`. Use `unknown` plus a type guard.
+- **`any` is a build error**, not a warning - Biome's `noExplicitAny` is set to `error`.
+  Use `unknown` plus a type guard.
 - **Validators are split by boundary:** Convex validators (`v.*`) on the backend, Zod on
   client-side input. Never validate the same input twice with two different libraries.
 - **Explicit return types on async functions.** Inferred returns on a `query`/`mutation`
@@ -63,8 +63,8 @@ this file as correct and raise the drift.
 
 - Routes live in `src/routes/` using TanStack file-based conventions: `index.tsx`,
   `$slug.tsx`, `_layout.tsx`, and `route.lazy.tsx` variants.
-- `src/routeTree.gen.ts` is **generated** — never edit it, never lint-fix it, and it is
-  excluded from ESLint and from coverage.
+- `src/routeTree.gen.ts` is **generated** - never edit it, never lint-fix it, and it is
+  excluded from Biome and from coverage.
 - **Admin code does not leak into public bundles.** A component used only by
   `src/routes/admin/**` must not be imported from a public route.
 - Hooks go in `src/hooks/`, pure helpers in `src/lib/`. A helper used by exactly one
@@ -95,13 +95,17 @@ them**:
 
 ```bash
 pnpm type-check     # tsc --noEmit
-pnpm lint           # eslint .
+pnpm lint           # biome check .
+pnpm format         # biome check --write .
+pnpm format:check   # biome check . (no writes)
 pnpm test           # vitest run
+pnpm test:coverage  # vitest run --coverage
 pnpm build          # vite build
 ```
 
-`pnpm format` and `pnpm test:coverage` are **not yet defined** — see `tech-stack.md`.
-Do not invoke them as if they exist.
+Biome is the single formatter and linter. There is no ESLint or Prettier - do not add
+`eslint-disable` or `prettier-ignore` comments. Use `// biome-ignore lint/<group>/<rule>: <reason>`
+when a finding is a genuine false positive, and always give the reason.
 
 ## Comments
 

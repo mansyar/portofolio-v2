@@ -1,4 +1,5 @@
 import { internalMutation } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 
 export const seedData = internalMutation({
   args: {},
@@ -16,21 +17,21 @@ export const seedData = internalMutation({
     for (const p of posts) await ctx.db.delete(p._id);
 
     // 2. Seed Skills
-    await ctx.db.insert("skills", { 
-      name: "React", 
-      category: "frontend", 
-      proficiency: 90, 
-      displayOrder: 1, 
+    await ctx.db.insert("skills", {
+      name: "React",
+      category: "frontend",
+      proficiency: 90,
+      displayOrder: 1,
       isVisible: true,
-      icon: "react"
+      icon: "react",
     });
-    await ctx.db.insert("skills", { 
-      name: "Convex", 
-      category: "backend", 
-      proficiency: 85, 
-      displayOrder: 2, 
+    await ctx.db.insert("skills", {
+      name: "Convex",
+      category: "backend",
+      proficiency: 85,
+      displayOrder: 2,
       isVisible: true,
-      icon: "database"
+      icon: "database",
     });
 
     // 3. Seed Projects
@@ -59,14 +60,14 @@ export const seedData = internalMutation({
     // 4. Seed Blog
     // Create categories first
     const existingCats = await ctx.db.query("blogCategories").collect();
-    let techCatId;
+    let techCatId: Id<"blogCategories">;
     if (existingCats.length > 0) {
       techCatId = existingCats[0]._id;
     } else {
       techCatId = await ctx.db.insert("blogCategories", {
         name: "Tech",
         slug: "tech",
-        displayOrder: 1
+        displayOrder: 1,
       });
     }
 

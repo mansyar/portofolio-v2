@@ -7,12 +7,12 @@ import { Terminal } from "lucide-react";
 export function ExperienceSection() {
   const { data: work } = useSuspenseQuery(convexQuery(api.resume.getExperiences, {}));
 
-  const workItems = work.map(w => ({
+  const workItems = work.map((w) => ({
     _id: w._id,
     year: w.startDate.slice(0, 4),
     title: w.role,
     subtitle: w.company,
-    description: w.description
+    description: w.description,
   }));
 
   return (

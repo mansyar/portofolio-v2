@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom/vitest'
-import { vi } from 'vitest'
+import "@testing-library/jest-dom/vitest";
+import { vi } from "vitest";
 
 // Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -14,22 +14,24 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock Convex
-vi.mock('convex/browser', () => ({
+vi.mock("convex/browser", () => ({
   ConvexClient: vi.fn().mockImplementation(() => ({
     query: vi.fn(),
     mutation: vi.fn(),
   })),
-}))
+}));
 
 // Mock TanStack Router
-vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual('@tanstack/react-router')
+vi.mock("@tanstack/react-router", async () => {
+  const actual = await vi.importActual("@tanstack/react-router");
   return {
     ...actual,
-    useLocation: vi.fn().mockReturnValue({ pathname: '/' }),
-    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-  }
-})
+    useLocation: vi.fn().mockReturnValue({ pathname: "/" }),
+    Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
+      <a href={to}>{children}</a>
+    ),
+  };
+});

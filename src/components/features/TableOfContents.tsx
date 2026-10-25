@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
-import { List } from 'lucide-react';
-import './TableOfContents.css';
+import { useEffect, useState, useMemo } from "react";
+import { List } from "lucide-react";
+import "./TableOfContents.css";
 
 interface Heading {
   id: string;
@@ -13,26 +13,26 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ content }: TableOfContentsProps) {
-  const [activeId, setActiveId] = useState<string>('');
-  
+  const [activeId, setActiveId] = useState<string>("");
+
   const headings = useMemo<Heading[]>(() => {
-    if (typeof document === 'undefined') return [];
-    
+    if (typeof document === "undefined") return [];
+
     const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/html');
-    const headingElements = doc.querySelectorAll('h2, h3');
-    
+    const doc = parser.parseFromString(content, "text/html");
+    const headingElements = doc.querySelectorAll("h2, h3");
+
     return Array.from(headingElements).map((el) => {
-      const text = el.textContent || '';
+      const text = el.textContent || "";
       const id = text
         .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
-      
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+
       return {
         id,
         text,
-        level: parseInt(el.tagName.replace('H', ''), 10),
+        level: parseInt(el.tagName.replace("H", ""), 10),
       };
     });
   }, [content]);
@@ -46,7 +46,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
           }
         });
       },
-      { rootMargin: '0% 0% -80% 0%' }
+      { rootMargin: "0% 0% -80% 0%" }
     );
 
     headings.forEach((heading) => {
@@ -69,16 +69,14 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         {headings.map((heading) => (
           <li
             key={heading.id}
-            className={`toc-item level-${heading.level} ${
-              activeId === heading.id ? 'active' : ''
-            }`}
+            className={`toc-item level-${heading.level} ${activeId === heading.id ? "active" : ""}`}
           >
             <a
               href={`#${heading.id}`}
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById(heading.id)?.scrollIntoView({
-                  behavior: 'smooth',
+                  behavior: "smooth",
                 });
                 setActiveId(heading.id);
               }}

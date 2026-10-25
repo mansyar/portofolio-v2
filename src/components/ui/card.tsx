@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "../../lib/utils";
 import "./card.css";
 
@@ -8,18 +8,9 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "terminal";
 }
 
-export function Card({ 
-  title, 
-  children, 
-  className, 
-  variant = "default",
-  ...props 
-}: Props) {
+export function Card({ title, children, className, variant = "default", ...props }: Props) {
   return (
-    <div 
-      className={cn("card", `card--${variant}`, className)} 
-      {...props}
-    >
+    <div className={cn("card", `card--${variant}`, className)} {...props}>
       <div className="card__titlebar">
         <div className="card__dots">
           <span className="card__dot card__dot--close" />

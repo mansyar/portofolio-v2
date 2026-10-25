@@ -1,16 +1,26 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { common, createLowlight } from 'lowlight';
-import { 
-  Bold, Italic, List, ListOrdered, Quote, 
-  Code, Link as LinkIcon, Image as ImageIcon, 
-  Heading1, Heading2, Heading3, Undo, Redo, 
-  Terminal
-} from 'lucide-react';
-import './RichTextEditor.css';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { common, createLowlight } from "lowlight";
+import {
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  Heading1,
+  Heading2,
+  Heading3,
+  Undo,
+  Redo,
+  Terminal,
+} from "lucide-react";
+import "./RichTextEditor.css";
 
 const lowlight = createLowlight(common);
 
@@ -30,12 +40,12 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'editor-link',
+          class: "editor-link",
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'editor-image',
+          class: "editor-image",
         },
       }),
       CodeBlockLowlight.configure({
@@ -48,7 +58,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
     },
     editorProps: {
       attributes: {
-        class: 'editor-content',
+        class: "editor-content",
       },
     },
   });
@@ -58,14 +68,14 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
   }
 
   const addLink = () => {
-    const url = window.prompt('URL');
+    const url = window.prompt("URL");
     if (url) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
     }
   };
 
   const addImage = () => {
-    const url = window.prompt('Image URL');
+    const url = window.prompt("Image URL");
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
@@ -79,7 +89,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            className={`toolbar-btn ${editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("heading", { level: 1 }) ? "is-active" : ""}`}
             title="Heading 1"
           >
             <Heading1 size={18} />
@@ -87,7 +97,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            className={`toolbar-btn ${editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("heading", { level: 2 }) ? "is-active" : ""}`}
             title="Heading 2"
           >
             <Heading2 size={18} />
@@ -95,7 +105,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            className={`toolbar-btn ${editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("heading", { level: 3 }) ? "is-active" : ""}`}
             title="Heading 3"
           >
             <Heading3 size={18} />
@@ -106,7 +116,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`toolbar-btn ${editor.isActive('bold') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("bold") ? "is-active" : ""}`}
             title="Bold"
           >
             <Bold size={18} />
@@ -114,7 +124,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`toolbar-btn ${editor.isActive('italic') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("italic") ? "is-active" : ""}`}
             title="Italic"
           >
             <Italic size={18} />
@@ -122,7 +132,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleCode().run()}
-            className={`toolbar-btn ${editor.isActive('code') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("code") ? "is-active" : ""}`}
             title="Inline Code"
           >
             <Code size={18} />
@@ -133,7 +143,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`toolbar-btn ${editor.isActive('bulletList') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("bulletList") ? "is-active" : ""}`}
             title="Bullet List"
           >
             <List size={18} />
@@ -141,7 +151,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`toolbar-btn ${editor.isActive('orderedList') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("orderedList") ? "is-active" : ""}`}
             title="Ordered List"
           >
             <ListOrdered size={18} />
@@ -149,7 +159,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`toolbar-btn ${editor.isActive('blockquote') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("blockquote") ? "is-active" : ""}`}
             title="Blockquote"
           >
             <Quote size={18} />
@@ -157,7 +167,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`toolbar-btn ${editor.isActive('codeBlock') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("codeBlock") ? "is-active" : ""}`}
             title="Code Block"
           >
             <Terminal size={18} />
@@ -168,17 +178,12 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
           <button
             type="button"
             onClick={addLink}
-            className={`toolbar-btn ${editor.isActive('link') ? 'is-active' : ''}`}
+            className={`toolbar-btn ${editor.isActive("link") ? "is-active" : ""}`}
             title="Add Link"
           >
             <LinkIcon size={18} />
           </button>
-          <button
-            type="button"
-            onClick={addImage}
-            className="toolbar-btn"
-            title="Add Image"
-          >
+          <button type="button" onClick={addImage} className="toolbar-btn" title="Add Image">
             <ImageIcon size={18} />
           </button>
 

@@ -1,21 +1,32 @@
-import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { convexQuery } from '@convex-dev/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../../convex/_generated/api';
-import { Seo } from '../components/seo';
-import { ChevronLeft, ExternalLink, Github, Code2, Layers, Target, Lightbulb, CheckCircle } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { TerminalWindow } from '../components/ui/terminal-window';
-import { lazy, Suspense } from 'react';
-import { ErrorFallback } from '../components/ui/error-fallback';
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../convex/_generated/api";
+import { Seo } from "../components/seo";
+import {
+  ChevronLeft,
+  ExternalLink,
+  Github,
+  Code2,
+  Layers,
+  Target,
+  Lightbulb,
+  CheckCircle,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { TerminalWindow } from "../components/ui/terminal-window";
+import { lazy, Suspense } from "react";
+import { ErrorFallback } from "../components/ui/error-fallback";
 
-const MarkdownContent = lazy(() => import('../components/ui/markdown-content').then(m => ({ default: m.MarkdownContent })));
+const MarkdownContent = lazy(() =>
+  import("../components/ui/markdown-content").then((m) => ({ default: m.MarkdownContent }))
+);
 
-import { OptimizedImage } from '../components/ui/optimized-image';
-import { RelatedProjects } from '../components/features/RelatedProjects';
+import { OptimizedImage } from "../components/ui/optimized-image";
+import { RelatedProjects } from "../components/features/RelatedProjects";
 
-export const Route = createFileRoute('/projects/$slug')({
+export const Route = createFileRoute("/projects/$slug")({
   component: ProjectDetail,
   loader: async ({ context, params: { slug } }) => {
     const project = await context.queryClient.ensureQueryData(
@@ -24,30 +35,26 @@ export const Route = createFileRoute('/projects/$slug')({
     if (!project) throw notFound();
   },
   errorComponent: ({ error, reset }) => (
-    <ErrorFallback 
-      error={error} 
-      reset={reset} 
-      title="PROJECT_FETCH_FAILED" 
-    />
+    <ErrorFallback error={error} reset={reset} title="PROJECT_FETCH_FAILED" />
   ),
 });
 
 function ProjectDetail() {
   const { slug } = Route.useParams();
   const { data: project } = useSuspenseQuery(convexQuery(api.projects.bySlug, { slug }));
-  
+
   if (!project) return null;
 
   return (
     <div className="container px-4 pt-10 pb-20 md:px-6">
-      <Seo 
-        title={`${project.title} | Projects`} 
-        description={project.shortDescription || ''}
-        image={project.thumbnailUrl || ''}
+      <Seo
+        title={`${project.title} | Projects`}
+        description={project.shortDescription || ""}
+        image={project.thumbnailUrl || ""}
       />
 
-      <Link 
-        to="/projects" 
+      <Link
+        to="/projects"
         className="mb-8 flex items-center gap-2 text-sm text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors font-mono"
       >
         <ChevronLeft size={16} />
@@ -100,8 +107,13 @@ function ProjectDetail() {
                 <Code2 size={20} />
                 PROJECT_OVERVIEW
               </h2>
-              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
-                <MarkdownContent content={project.fullDescription} className="text-(--color-text-secondary)" />
+              <Suspense
+                fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}
+              >
+                <MarkdownContent
+                  content={project.fullDescription}
+                  className="text-(--color-text-secondary)"
+                />
               </Suspense>
             </div>
           )}
@@ -112,8 +124,13 @@ function ProjectDetail() {
                 <Target size={20} />
                 THE_CHALLENGE
               </h2>
-              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
-                <MarkdownContent content={project.challenge} className="text-(--color-text-secondary)" />
+              <Suspense
+                fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}
+              >
+                <MarkdownContent
+                  content={project.challenge}
+                  className="text-(--color-text-secondary)"
+                />
               </Suspense>
             </div>
           )}
@@ -124,8 +141,13 @@ function ProjectDetail() {
                 <Lightbulb size={20} />
                 OUR_APPROACH
               </h2>
-              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
-                <MarkdownContent content={project.approach} className="text-(--color-text-secondary)" />
+              <Suspense
+                fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}
+              >
+                <MarkdownContent
+                  content={project.approach}
+                  className="text-(--color-text-secondary)"
+                />
               </Suspense>
             </div>
           )}
@@ -136,8 +158,13 @@ function ProjectDetail() {
                 <CheckCircle size={20} />
                 THE_OUTCOME
               </h2>
-              <Suspense fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}>
-                <MarkdownContent content={project.outcome} className="text-(--color-text-secondary)" />
+              <Suspense
+                fallback={<div className="h-32 animate-pulse rounded bg-(--color-surface)" />}
+              >
+                <MarkdownContent
+                  content={project.outcome}
+                  className="text-(--color-text-secondary)"
+                />
               </Suspense>
             </div>
           )}
@@ -147,12 +174,12 @@ function ProjectDetail() {
           <TerminalWindow title={`project-preview://${project.slug}`} className="sticky top-24">
             {project.thumbnailUrl ? (
               <div className="overflow-hidden rounded border border-(--color-border) bg-(--color-surface)">
-                <OptimizedImage 
-                  src={project.thumbnailUrl} 
-                  alt={project.title} 
+                <OptimizedImage
+                  src={project.thumbnailUrl}
+                  alt={project.title}
                   aspectRatio="16/9"
                   priority
-                  className="transition-transform duration-500 hover:scale-105" 
+                  className="transition-transform duration-500 hover:scale-105"
                 />
               </div>
             ) : (
@@ -160,23 +187,27 @@ function ProjectDetail() {
                 NO_PREVIEW_AVAILABLE
               </div>
             )}
-            
+
             <div className="mt-6 grid grid-cols-2 gap-4">
-              {project.images?.filter(img => img !== project.thumbnailUrl).map((img, idx) => (
-                <OptimizedImage 
-                  key={idx}
-                  src={img} 
-                  alt={`${project.title} screenshot ${idx + 1}`} 
-                  aspectRatio="16/9"
-                  className="rounded border border-(--color-border)"
-                />
-              ))}
+              {project.images
+                ?.filter((img) => img !== project.thumbnailUrl)
+                .map((img, idx) => (
+                  <OptimizedImage
+                    key={idx}
+                    src={img}
+                    alt={`${project.title} screenshot ${idx + 1}`}
+                    aspectRatio="16/9"
+                    className="rounded border border-(--color-border)"
+                  />
+                ))}
             </div>
           </TerminalWindow>
         </div>
       </div>
 
-      <Suspense fallback={<div className="h-48 animate-pulse bg-(--color-surface) rounded mt-16" />}>
+      <Suspense
+        fallback={<div className="h-48 animate-pulse bg-(--color-surface) rounded mt-16" />}
+      >
         <RelatedProjects currentProjectId={project._id} />
       </Suspense>
     </div>

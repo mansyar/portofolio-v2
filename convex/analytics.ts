@@ -6,9 +6,9 @@ import { v } from "convex/values";
  * This avoids CORS issues and keeps credentials server-side.
  */
 export const getStats = action({
-  args: { 
-    startAt: v.number(), 
-    endAt: v.number() 
+  args: {
+    startAt: v.number(),
+    endAt: v.number(),
   },
   handler: async (_ctx, { startAt, endAt }) => {
     const umamiUrl = process.env.UMAMI_URL;
@@ -52,12 +52,9 @@ export const getStats = action({
       const stats = await statsResponse.json();
 
       // 3. Fetch active visitors
-      const activeResponse = await fetch(
-        `${baseUrl}/api/websites/${websiteId}/active`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const activeResponse = await fetch(`${baseUrl}/api/websites/${websiteId}/active`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       let activeVisitors = 0;
       if (activeResponse.ok) {

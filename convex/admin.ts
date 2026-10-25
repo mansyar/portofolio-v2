@@ -15,15 +15,17 @@ export const getUserEmail = internalQuery({
     if (user?.email) return user.email;
 
     // Check authAccounts if email not in user doc
-    type FilterBuilder = { 
-      eq: (a: unknown, b: unknown) => unknown; 
-      field: (f: string) => unknown 
+    type FilterBuilder = {
+      eq: (a: unknown, b: unknown) => unknown;
+      field: (f: string) => unknown;
     };
-    const authAccount = await (ctx.db.query("authAccounts") as unknown as { 
-      filter: (cb: (q: FilterBuilder) => unknown) => { 
-        first: () => Promise<{ providerAccountId: string } | null> 
-      } 
-    })
+    const authAccount = await (
+      ctx.db.query("authAccounts") as unknown as {
+        filter: (cb: (q: FilterBuilder) => unknown) => {
+          first: () => Promise<{ providerAccountId: string } | null>;
+        };
+      }
+    )
       .filter((q) => q.eq(q.field("userId"), userId))
       .first();
 

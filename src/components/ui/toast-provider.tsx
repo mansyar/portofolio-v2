@@ -1,4 +1,4 @@
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 
 export function ToastProvider() {
   return (
@@ -8,16 +8,16 @@ export function ToastProvider() {
       richColors
       toastOptions={{
         style: {
-          fontFamily: 'var(--font-mono)',
-          background: 'var(--color-surface)',
-          color: 'var(--color-text-primary)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '4px',
+          fontFamily: "var(--font-mono)",
+          background: "var(--color-surface)",
+          color: "var(--color-text-primary)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "4px",
         },
         classNames: {
-          success: 'toast-success',
-          error: 'toast-error',
-          title: 'font-bold',
+          success: "toast-success",
+          error: "toast-error",
+          title: "font-bold",
         },
       }}
     />

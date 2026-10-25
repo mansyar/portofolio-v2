@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useQuery, useMutation } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { useSelection } from '@/hooks/use-selection';
-import { BulkActionBar } from '@/components/ui/BulkActionBar';
-import { Trash2, Eye, EyeOff } from 'lucide-react';
-import { useToastMutation } from '@/hooks/use-toast-mutation';
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { useSelection } from "@/hooks/use-selection";
+import { BulkActionBar } from "@/components/ui/BulkActionBar";
+import { Trash2, Eye, EyeOff } from "lucide-react";
+import { useToastMutation } from "@/hooks/use-toast-mutation";
 
-export const Route = createFileRoute('/admin/uses/')({
+export const Route = createFileRoute("/admin/uses/")({
   component: AdminUsesList,
 });
 
@@ -16,35 +16,35 @@ function AdminUsesList() {
   const items = useQuery(api.uses.listAll);
   const toggleVisibility = useMutation(api.uses.toggleVisibility);
   const removeItem = useMutation(api.uses.remove);
-  
+
   const { mutate: removeMany } = useToastMutation(api.uses.removeBulk, {
-    successMessage: 'items deleted successfully',
-    errorMessage: 'failed to delete items'
-  });
-  
-  const { mutate: toggleVisibilityMany } = useToastMutation(api.uses.toggleVisibilityBulk, {
-    successMessage: 'visibility updated successfully',
-    errorMessage: 'failed to update visibility'
+    successMessage: "items deleted successfully",
+    errorMessage: "failed to delete items",
   });
 
-  const { 
-    selectedCount, 
-    selectedIdsArray, 
-    toggleSelect, 
-    toggleSelectAll, 
-    isAllSelected, 
-    clearSelection 
+  const { mutate: toggleVisibilityMany } = useToastMutation(api.uses.toggleVisibilityBulk, {
+    successMessage: "visibility updated successfully",
+    errorMessage: "failed to update visibility",
+  });
+
+  const {
+    selectedCount,
+    selectedIdsArray,
+    toggleSelect,
+    toggleSelectAll,
+    isAllSelected,
+    clearSelection,
   } = useSelection(items);
-  
+
   const [deletingId, setDeletingId] = useState<Id<"usesItems"> | null>(null);
 
   const handleDelete = async (id: Id<"usesItems">) => {
-    if (confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+    if (confirm("Are you sure you want to delete this item? This action cannot be undone.")) {
       setDeletingId(id);
       try {
         await removeItem({ id });
       } catch (error) {
-        console.error('Failed to delete item:', error);
+        console.error("Failed to delete item:", error);
       } finally {
         setDeletingId(null);
       }
@@ -52,38 +52,42 @@ function AdminUsesList() {
   };
 
   const handleBulkDelete = async () => {
-    if (confirm(`Are you sure you want to delete ${selectedCount} items? This action cannot be undone.`)) {
+    if (
+      confirm(
+        `Are you sure you want to delete ${selectedCount} items? This action cannot be undone.`
+      )
+    ) {
       await removeMany({ ids: selectedIdsArray as Id<"usesItems">[] });
       clearSelection();
     }
   };
 
   const handleBulkVisibility = async (isVisible: boolean) => {
-    await toggleVisibilityMany({ 
-      ids: selectedIdsArray as Id<"usesItems">[], 
-      isVisible 
+    await toggleVisibilityMany({
+      ids: selectedIdsArray as Id<"usesItems">[],
+      isVisible,
     });
     clearSelection();
   };
 
   const bulkActions = [
     {
-      label: 'Show',
+      label: "Show",
       icon: Eye,
       onClick: () => handleBulkVisibility(true),
-      variant: 'success' as const,
+      variant: "success" as const,
     },
     {
-      label: 'Hide',
+      label: "Hide",
       icon: EyeOff,
       onClick: () => handleBulkVisibility(false),
-      variant: 'default' as const,
+      variant: "default" as const,
     },
     {
-      label: 'Delete',
+      label: "Delete",
       icon: Trash2,
       onClick: handleBulkDelete,
-      variant: 'danger' as const,
+      variant: "danger" as const,
     },
   ];
 
@@ -91,7 +95,7 @@ function AdminUsesList() {
     try {
       await toggleVisibility({ id });
     } catch (error) {
-      console.error('Failed to toggle visibility:', error);
+      console.error("Failed to toggle visibility:", error);
     }
   };
 
@@ -112,10 +116,7 @@ function AdminUsesList() {
             Manage your hardware, software, and gear
           </p>
         </div>
-        <Link 
-          to="/admin/uses/new" 
-          className="terminal-button"
-        >
+        <Link to="/admin/uses/new" className="terminal-button">
           + Add Item
         </Link>
       </div>
@@ -125,7 +126,7 @@ function AdminUsesList() {
           <thead>
             <tr>
               <th className="w-10">
-                <input 
+                <input
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={toggleSelectAll}
@@ -148,9 +149,12 @@ function AdminUsesList() {
               </tr>
             ) : (
               items.map((item) => (
-                <tr key={item._id} className={selectedIdsArray.includes(item._id) ? 'bg-(--color-surface-dark)' : ''}>
+                <tr
+                  key={item._id}
+                  className={selectedIdsArray.includes(item._id) ? "bg-(--color-surface-dark)" : ""}
+                >
                   <td>
-                    <input 
+                    <input
                       type="checkbox"
                       checked={selectedIdsArray.includes(item._id)}
                       onChange={() => toggleSelect(item._id)}
@@ -176,9 +180,9 @@ function AdminUsesList() {
                   <td>
                     <button
                       onClick={() => handleToggleVisibility(item._id)}
-                      className={`admin-badge ${item.isVisible ? 'success' : 'neutral'} cursor-pointer hover:opacity-80 transition-opacity`}
+                      className={`admin-badge ${item.isVisible ? "success" : "neutral"} cursor-pointer hover:opacity-80 transition-opacity`}
                     >
-                      {item.isVisible ? 'Visible' : 'Hidden'}
+                      {item.isVisible ? "Visible" : "Hidden"}
                     </button>
                   </td>
                   <td className="text-right">
@@ -195,7 +199,7 @@ function AdminUsesList() {
                         disabled={deletingId === item._id}
                         className="text-xs text-(--color-text-secondary) hover:text-(--color-terminal-red) transition-colors font-mono disabled:opacity-50"
                       >
-                        {deletingId === item._id ? '[...]' : '[del]'}
+                        {deletingId === item._id ? "[...]" : "[del]"}
                       </button>
                     </div>
                   </td>
@@ -206,11 +210,7 @@ function AdminUsesList() {
         </table>
       </div>
 
-      <BulkActionBar 
-        selectedCount={selectedCount}
-        onClear={clearSelection}
-        actions={bulkActions}
-      />
+      <BulkActionBar selectedCount={selectedCount} onClear={clearSelection} actions={bulkActions} />
     </div>
   );
 }

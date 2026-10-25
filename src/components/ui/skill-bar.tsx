@@ -15,23 +15,22 @@ export function SkillBar({ name, proficiency, icon, className }: SkillBarProps) 
     const totalBlocks = 20; // 20 blocks means each block is 5%
     const filledBlocks = Math.round((proficiency / 100) * totalBlocks);
     const emptyBlocks = totalBlocks - filledBlocks;
-    
+
     return `[${"█".repeat(filledBlocks)}${"░".repeat(emptyBlocks)}]`;
   }, [proficiency]);
 
-  const isUrl = icon?.startsWith('http') || icon?.startsWith('/');
+  const isUrl = icon?.startsWith("http") || icon?.startsWith("/");
 
   return (
     <div className={cn("font-mono text-sm sm:text-base", className)}>
       <div className="mb-1 flex items-end justify-between">
         <div className="flex items-center gap-2">
-          {icon && (
-            isUrl ? (
+          {icon &&
+            (isUrl ? (
               <img src={icon} alt="" className="h-5 w-5" />
             ) : (
               <IconResolver iconName={icon} size={20} className="text-(--color-ubuntu-orange)" />
-            )
-          )}
+            ))}
           <span className="font-bold text-(--color-text-primary)">{name}</span>
         </div>
         <span className="text-(--color-ubuntu-orange)">{proficiency}%</span>

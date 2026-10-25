@@ -14,7 +14,10 @@ export function ProjectsSection() {
           <h2 className="mb-2 text-2xl font-bold md:text-3xl">Featured Projects</h2>
           <p className="text-(--color-text-secondary)">Recent work and case studies</p>
         </div>
-        <Link to="/projects" className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex">
+        <Link
+          to="/projects"
+          className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex"
+        >
           view_all_projects() &gt;
         </Link>
       </div>

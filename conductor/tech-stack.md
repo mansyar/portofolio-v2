@@ -71,8 +71,8 @@ Tailwind.
 | Preview built output | `pnpm preview` | — |
 | Unit tests | `pnpm test` | `vitest run` |
 | Coverage | `pnpm test:coverage` | `vitest run --coverage` (v8) |
-| Lint | `pnpm lint` | `eslint .` |
-| Format | `pnpm format` | **To be added** |
+| Lint | `pnpm lint` | `biome check .` |
+| Format | `pnpm format` | `biome check --write .` (check-only: `pnpm format:check`) |
 | Typecheck | `pnpm type-check` | `tsc --noEmit` |
 | Convex schema push (dev) | `npx convex dev --once` | No npm script wrapper today |
 | Convex deploy (prod) | `pnpm exec convex deploy` | Run by CI only |
@@ -125,8 +125,8 @@ Single Convex deployment, 16 tables declared in `convex/schema.ts`:
 | Unit/component tests | Vitest 5, jsdom, Testing Library, `@testing-library/jest-dom/vitest` | keep Vitest |
 | Test setup | `vitest.setup.tsx`; SSR plugins disabled under test to avoid hanging processes; `pool: 'forks'` with a short teardown timeout; `maxWorkers: 4` | keep |
 | Coverage | `@vitest/coverage-v8` 5 + `test:coverage`, ratcheting gate | keep, raise the floor as tests land |
-| Lint | ESLint 9 flat config: `typescript-eslint`, `react-hooks`, `react-refresh`; `no-explicit-any` = **error** | **Biome** |
-| Format | Prettier 3.7 configured, but **no script** and `.prettierrc` names an uninstalled plugin | **Biome** |
+| Lint | **Biome 2.6** - `noExplicitAny` = **error**; pre-existing a11y and style debt = warnings | **Biome** |
+| Format | **Biome 2.6** - `biome check --write .`, CRLF preserved | **Biome** |
 | Typecheck | `tsc --noEmit` | **TypeScript 7 (`tsgo`)** |
 
 Test locations: `convex/__tests__/*.test.ts` for backend logic and
@@ -151,7 +151,7 @@ each needs verification before adoption — the notes below record what must be 
 
 | Change | From | To | Verification required |
 | --- | --- | --- | --- |
-| Toolchain consolidation | ESLint 9 + Prettier 3.7 | Biome | Confirm Biome covers `no-explicit-any`, the `react-hooks` rules in use, import ordering, and `ignores` for generated files. Keep a lint rule set at least as strict as today. |
+| Toolchain consolidation | ESLint 9 + Prettier 3.7 | Biome | **Done** - closed by track `20261024-tooling-modernization`. ESLint and Prettier removed; `noExplicitAny` remains an error, pre-existing a11y/style debt demoted to warnings rather than silenced. |
 | Typecheck | `tsc` 5.7 | TypeScript 7 native compiler | Confirm TanStack Start, Convex codegen, and `vite-tsconfig-paths` typecheck cleanly; keep both paths available until parity is proven. |
 | Runtime | Node 20 (Dockerfile + CI) | Node 24 | **Done** - closed by track `20261024-tooling-modernization`: `node:24-alpine`, CI `node-version: 24`, `.nvmrc`, and `packageManager` all in place. |
 | Dependency freshness | mixed | current majors | Bump in reviewable groups, not one sweeping commit. |
@@ -181,8 +181,8 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 
 - **Self-hosting is load-bearing.** Convex, R2, Umami, and Coolify are all
   owner-operated. There is no managed fallback for any of them.
-- **No `any`.** Enforced at error level today by ESLint; the Biome migration must
-  preserve this as an error, not a warning.
+- **No `any`.** Enforced at error level by Biome (`noExplicitAny`); keep it an error,
+  never a warning.
 - **Committed generated code.** `convex/_generated/` and `src/routeTree.gen.ts` are
   tracked, so CI typechecks without a codegen step — but they must never be edited by
   hand.
@@ -226,9 +226,10 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 3. **TypeScript 7 readiness.** The native compiler's support for TanStack Start's
    generated types and Convex's codegen is unverified. The migration must not land
    before parity is demonstrated.
-4. **Biome rule parity.** The exact Biome equivalents for the current ESLint rule set
-   (including `react-refresh/only-export-components` and the custom `argsIgnorePattern`)
-   have not been mapped.
+4. **Pre-existing lint debt.** Biome's `recommended` preset found 100 findings ESLint never
+   checked - mostly a11y (`useButtonType`, `noLabelWithoutControl`) and `noArrayIndexKey`.
+   They are warnings today, not errors. Which should be promoted back to errors, and in
+   what order?
 5. **`convex` script wrapper.** `convex dev` and `convex deploy` are invoked directly by
    README and CI. Should they get `package.json` scripts?
 

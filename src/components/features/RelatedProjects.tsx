@@ -1,9 +1,9 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../../../convex/_generated/api';
-import { Id } from '../../../convex/_generated/dataModel';
-import { ProjectCard } from '../ui/project-card';
-import { Folder } from 'lucide-react';
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { ProjectCard } from "../ui/project-card";
+import { Folder } from "lucide-react";
 
 interface Props {
   currentProjectId: Id<"projects">;
@@ -24,8 +24,8 @@ export function RelatedProjects({ currentProjectId }: Props) {
       </h2>
       <div className="grid gap-6 md:grid-cols-3">
         {projects.map((project) => (
-          <ProjectCard 
-            key={project._id} 
+          <ProjectCard
+            key={project._id}
             title={project.title}
             slug={project.slug}
             shortDescription={project.shortDescription}

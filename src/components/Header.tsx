@@ -32,11 +32,9 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => {
-            const isActive = 
-              link.path === "/" 
-                ? currentPath === "/" 
-                : currentPath.startsWith(link.path);
-            
+            const isActive =
+              link.path === "/" ? currentPath === "/" : currentPath.startsWith(link.path);
+
             return (
               <Link
                 key={link.path}
@@ -51,16 +49,16 @@ export default function Header() {
               </Link>
             );
           })}
-          
+
           <div className="ml-2 border-l border-(--color-border) pl-2">
-             <ThemeToggle />
+            <ThemeToggle />
           </div>
         </nav>
 
         {/* Mobile Nav Placeholder - for now just ThemeToggle */}
         <div className="flex items-center gap-4 md:hidden">
-           <ThemeToggle />
-           {/* Mobile menu toggle would go here */}
+          <ThemeToggle />
+          {/* Mobile menu toggle would go here */}
         </div>
       </div>
     </header>

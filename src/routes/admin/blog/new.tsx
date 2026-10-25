@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { BlogPostForm } from '../../../components/features/BlogPostForm';
-import { Terminal } from 'lucide-react';
+import { createFileRoute } from "@tanstack/react-router";
+import { BlogPostForm } from "../../../components/features/BlogPostForm";
+import { Terminal } from "lucide-react";
 
-export const Route = createFileRoute('/admin/blog/new')({
+export const Route = createFileRoute("/admin/blog/new")({
   component: NewBlogPost,
 });
 

@@ -1,15 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { ProjectForm } from '../../../components/features/ProjectForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { ProjectForm } from "../../../components/features/ProjectForm";
 
-export const Route = createFileRoute('/admin/projects/new')({
+export const Route = createFileRoute("/admin/projects/new")({
   component: NewProjectPage,
 });
 
 function NewProjectPage() {
   const projects = useQuery(api.projects.listAll);
-  
+
   const nextDisplayOrder = projects ? projects.length : 0;
 
   return (
@@ -21,22 +21,22 @@ function NewProjectPage() {
         </p>
       </div>
 
-      <ProjectForm 
-        mode="create" 
+      <ProjectForm
+        mode="create"
         initialData={{
-          title: '',
-          slug: '',
-          shortDescription: '',
-          fullDescription: '',
-          thumbnailUrl: '',
+          title: "",
+          slug: "",
+          shortDescription: "",
+          fullDescription: "",
+          thumbnailUrl: "",
           images: [],
           techStack: [],
-          liveDemoUrl: '',
-          githubUrl: '',
+          liveDemoUrl: "",
+          githubUrl: "",
           isFeatured: false,
           displayOrder: nextDisplayOrder,
           isVisible: true,
-        }} 
+        }}
       />
     </div>
   );

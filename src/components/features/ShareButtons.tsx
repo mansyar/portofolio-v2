@@ -1,7 +1,7 @@
-import { Share2, Twitter, Linkedin, Link as LinkIcon, Check } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import './ShareButtons.css';
+import { Share2, Twitter, Linkedin, Link as LinkIcon, Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import "./ShareButtons.css";
 
 interface ShareButtonsProps {
   url: string;
@@ -10,7 +10,7 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ url, title }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  
+
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 
@@ -23,10 +23,10 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success('URL_COPIED_TO_CLIPBOARD');
+      toast.success("URL_COPIED_TO_CLIPBOARD");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('FAILED_TO_COPY_URL');
+      toast.error("FAILED_TO_COPY_URL");
     }
   };
 
@@ -57,7 +57,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         </a>
         <button
           onClick={copyToClipboard}
-          className={`share-button copy ${copied ? 'copied' : ''}`}
+          className={`share-button copy ${copied ? "copied" : ""}`}
           title="Copy Link"
         >
           {copied ? <Check size={18} /> : <LinkIcon size={18} />}

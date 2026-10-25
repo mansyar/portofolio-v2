@@ -4,12 +4,12 @@ import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { api } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
-import { 
-  ALLOWED_MIME_TYPES, 
-  MAX_FILE_SIZE, 
-  isAllowedMimeType, 
-  formatFileSize 
+import type { Id } from "./_generated/dataModel";
+import {
+  ALLOWED_MIME_TYPES,
+  MAX_FILE_SIZE,
+  isAllowedMimeType,
+  formatFileSize,
 } from "./lib/validation";
 
 /**
@@ -46,7 +46,11 @@ export const upload = action({
     let finalSize = fileSize;
 
     // 3. Optional Image Optimization
-    if (args.shouldOptimize && args.mimeType.startsWith("image/") && args.mimeType !== "image/svg+xml") {
+    if (
+      args.shouldOptimize &&
+      args.mimeType.startsWith("image/") &&
+      args.mimeType !== "image/svg+xml"
+    ) {
       try {
         const sharp = (await import("sharp")).default;
         const buffer = Buffer.from(args.fileData);
@@ -54,7 +58,7 @@ export const upload = action({
           .resize({ width: 1600, withoutEnlargement: true })
           .webp({ quality: 80 })
           .toBuffer();
-        
+
         finalFileData = optimizedBuffer.buffer;
         finalMimeType = "image/webp";
         finalSize = optimizedBuffer.byteLength;

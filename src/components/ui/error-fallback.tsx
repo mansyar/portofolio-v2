@@ -1,6 +1,6 @@
-import { Terminal, RefreshCw, Home, AlertCircle } from 'lucide-react';
-import { Button } from './button';
-import { Link } from '@tanstack/react-router';
+import { Terminal, RefreshCw, Home, AlertCircle } from "lucide-react";
+import { Button } from "./button";
+import { Link } from "@tanstack/react-router";
 
 interface ErrorFallbackProps {
   error: Error & { digest?: string };
@@ -8,7 +8,7 @@ interface ErrorFallbackProps {
   title?: string;
 }
 
-export function ErrorFallback({ error, reset, title = 'SYSTEM_ERROR' }: ErrorFallbackProps) {
+export function ErrorFallback({ error, reset, title = "SYSTEM_ERROR" }: ErrorFallbackProps) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
       <div className="mb-6 rounded-full border border-(--color-border) bg-(--color-surface-dark) p-4 shadow-lg shadow-red-500/10">
@@ -29,11 +29,9 @@ export function ErrorFallback({ error, reset, title = 'SYSTEM_ERROR' }: ErrorFal
           <span>error_stack.log</span>
         </div>
         <pre className="overflow-x-auto font-mono text-xs leading-relaxed text-(--color-terminal-red)">
-          <code>{error.message || 'An unexpected error occurred.'}</code>
+          <code>{error.message || "An unexpected error occurred."}</code>
           {error.digest && (
-            <div className="mt-2 text-(--color-text-secondary)">
-              Digest: {error.digest}
-            </div>
+            <div className="mt-2 text-(--color-text-secondary)">Digest: {error.digest}</div>
           )}
         </pre>
       </div>
@@ -54,6 +52,7 @@ export function ErrorFallback({ error, reset, title = 'SYSTEM_ERROR' }: ErrorFal
       </div>
 
       <div className="mt-12 font-mono text-[10px] text-(--color-text-secondary) opacity-50">
+        {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-style status line, not a code comment */}
         ERROR_HANDLER_V2.0.0 // STATUS: STANDBY
       </div>
     </div>

@@ -1,29 +1,29 @@
-import { useState } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery, useMutation } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { MediaUploader } from '../../../components/features/MediaUploader';
-import { Copy, Trash2, ExternalLink } from 'lucide-react';
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { MediaUploader } from "../../../components/features/MediaUploader";
+import { Copy, Trash2, ExternalLink } from "lucide-react";
 
-export const Route = createFileRoute('/admin/media/')({
+export const Route = createFileRoute("/admin/media/")({
   component: MediaLibraryPage,
 });
 
 function MediaLibraryPage() {
   const files = useQuery(api.media.list);
   const deleteFile = useMutation(api.media.remove);
-  
+
   const [deletingId, setDeletingId] = useState<Id<"mediaFiles"> | null>(null);
 
   const handleDelete = async (id: Id<"mediaFiles">) => {
-    if (confirm('Permanently delete this file?')) {
+    if (confirm("Permanently delete this file?")) {
       setDeletingId(id);
       try {
         await deleteFile({ id });
       } catch (error) {
-        console.error('Failed to delete file:', error);
-        alert('Failed to delete file');
+        console.error("Failed to delete file:", error);
+        alert("Failed to delete file");
       } finally {
         setDeletingId(null);
       }
@@ -62,16 +62,16 @@ function MediaLibraryPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {files.map((file) => (
-              <div 
-                key={file._id} 
+              <div
+                key={file._id}
                 className="group relative rounded-lg border border-(--color-border) bg-(--color-surface) overflow-hidden"
               >
                 {/* Preview */}
                 <div className="aspect-square w-full bg-[#111] flex items-center justify-center overflow-hidden">
-                  {file.mimeType.startsWith('image/') && file.url ? (
-                    <img 
-                      src={file.url} 
-                      alt={file.altText || file.filename} 
+                  {file.mimeType.startsWith("image/") && file.url ? (
+                    <img
+                      src={file.url}
+                      alt={file.altText || file.filename}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
@@ -83,7 +83,7 @@ function MediaLibraryPage() {
 
                 {/* Overlay Actions */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                   {file.url && (
+                  {file.url && (
                     <button
                       onClick={() => copyToClipboard(file.url!)}
                       className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
@@ -91,9 +91,9 @@ function MediaLibraryPage() {
                     >
                       <Copy size={16} />
                     </button>
-                   )}
-                   {file.url && (
-                     <a
+                  )}
+                  {file.url && (
+                    <a
                       href={file.url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -102,8 +102,8 @@ function MediaLibraryPage() {
                     >
                       <ExternalLink size={16} />
                     </a>
-                   )}
-                   <button
+                  )}
+                  <button
                     onClick={() => handleDelete(file._id)}
                     disabled={deletingId === file._id}
                     className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors"
@@ -115,12 +115,15 @@ function MediaLibraryPage() {
 
                 {/* Footer Info */}
                 <div className="p-2 text-xs border-t border-(--color-border)">
-                  <div className="font-medium truncate text-(--color-text-primary)" title={file.filename}>
+                  <div
+                    className="font-medium truncate text-(--color-text-primary)"
+                    title={file.filename}
+                  >
                     {file.filename}
                   </div>
                   <div className="text-[10px] text-(--color-text-secondary) flex justify-between mt-1">
                     <span>{(file.size / 1024).toFixed(1)} KB</span>
-                    <span className="uppercase">{file.mimeType.split('/')[1]}</span>
+                    <span className="uppercase">{file.mimeType.split("/")[1]}</span>
                   </div>
                 </div>
               </div>

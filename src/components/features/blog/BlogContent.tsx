@@ -14,7 +14,7 @@ export function BlogContent({ page, category, tag }: BlogContentProps) {
   const { data: allPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 100 }));
 
   const ITEMS_PER_PAGE = 9;
-  const filteredPosts = allPosts.filter(post => {
+  const filteredPosts = allPosts.filter((post) => {
     // If we have a category, filter by category slug (assuming it's the first part of the post slug)
     // or if we have a tag, filter by tag slug (same assumption for now as placeholder)
     if (category && post.slug.includes(category)) return true;
@@ -47,10 +47,10 @@ export function BlogContent({ page, category, tag }: BlogContentProps) {
       </div>
 
       {totalPages > 1 && (
-        <Pagination 
-          currentPage={page} 
-          totalPages={totalPages} 
-          baseUrl="/blog" 
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          baseUrl="/blog"
           searchParams={{ category, tag }}
           className="mt-8"
         />

@@ -10,15 +10,15 @@ export function NotFound() {
             <AlertTriangle size={48} className="text-(--color-terminal-red)" />
           </div>
         </div>
-        
+
         <h1 className="text-3xl font-bold mb-2">404: Page Not Found</h1>
         <p className="text-(--color-text-secondary) mb-8">
           The page you are looking for doesn't exist or has been moved.
         </p>
-        
+
         <div className="flex justify-center">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="px-6 py-2 bg-(--color-ubuntu-orange) text-white font-bold rounded hover:opacity-90 transition-opacity"
           >
             Return Home

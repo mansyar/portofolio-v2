@@ -32,10 +32,10 @@ commands:
   test: "pnpm test"
   coverage: "pnpm test:coverage"
   lint: "pnpm lint"
-  format: ""                          # NOT YET DEFINED — no script, broken .prettierrc plugin
+  format: "pnpm format:check"
   typecheck: "pnpm type-check"
   build: "pnpm build"
-  verify_phase: "pnpm type-check && pnpm lint && pnpm test"
+  verify_phase: "pnpm type-check && pnpm lint && pnpm format:check && pnpm test"
 coverage:
   gate: true
   thresholds:
@@ -84,13 +84,12 @@ test expansion that is out of scope for the tooling track.
 A phase that drops coverage below the floor has introduced untested code and must
 either add a test or justify the drop explicitly in its evidence.
 
-### Format is intentionally empty
+### Format is enforced by Biome
 
-There is no `pnpm format` script, and `.prettierrc` declares a
-`prettier-plugin-tailwindcss` plugin that is not installed — so `npx prettier --check .`
-fails for reasons unrelated to code quality. **Formatting is not a verification layer**
-until the Biome migration resolves this. Style is still enforced by review against
-`conductor/code_styleguides/`.
+`pnpm format:check` runs `biome check .` and fails on any unformatted file.
+`pnpm format` applies the fixes. Biome is the single formatter and linter - ESLint and
+Prettier are removed. Style is still adjudicated by review against
+`conductor/code_styleguides/`; the formatter only settles whitespace and quoting.
 
 ## Development Commands
 
@@ -404,7 +403,6 @@ approval, and must say what merging will deploy.
 ## Continuous Improvement
 
 - Review this workflow after each track.
-- Update commands and verification layers when the tooling changes — especially when the
-  Biome migration lands and `format` becomes real.
+- Update commands and verification layers when the tooling changes.
 - Record recurring review findings as process improvements.
 - Keep the process as small as the project allows.

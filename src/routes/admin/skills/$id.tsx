@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { SkillForm, SkillCategory } from '../../../components/features/SkillForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { SkillForm, type SkillCategory } from "../../../components/features/SkillForm";
 
-export const Route = createFileRoute('/admin/skills/$id')({
+export const Route = createFileRoute("/admin/skills/$id")({
   component: EditSkillPage,
 });
 
@@ -24,10 +24,7 @@ function EditSkillPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4 text-(--color-text-secondary)">
         <p className="font-mono">Skill not found</p>
-        <button 
-          onClick={() => history.back()}
-          className="terminal-button"
-        >
+        <button onClick={() => history.back()} className="terminal-button">
           Go Back
         </button>
       </div>
@@ -43,19 +40,19 @@ function EditSkillPage() {
         </p>
       </div>
 
-      <SkillForm 
-        mode="edit" 
+      <SkillForm
+        mode="edit"
         initialData={{
-            id: skill._id,
-            name: skill.name,
-            category: skill.category as SkillCategory, // Cast assuming DB matches type
-            icon: skill.icon,
-            proficiency: skill.proficiency,
-            yearsOfExperience: skill.yearsOfExperience,
-            description: skill.description,
-            displayOrder: skill.displayOrder,
-            isVisible: skill.isVisible,
-        }} 
+          id: skill._id,
+          name: skill.name,
+          category: skill.category as SkillCategory, // Cast assuming DB matches type
+          icon: skill.icon,
+          proficiency: skill.proficiency,
+          yearsOfExperience: skill.yearsOfExperience,
+          description: skill.description,
+          displayOrder: skill.displayOrder,
+          isVisible: skill.isVisible,
+        }}
       />
     </div>
   );

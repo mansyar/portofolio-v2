@@ -1,10 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from "react";
 
 export function useSelection<T extends { _id: string }>(items: T[] | undefined) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = useCallback((id: string) => {
-    setSelectedIds(prev => {
+    setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
@@ -17,7 +17,7 @@ export function useSelection<T extends { _id: string }>(items: T[] | undefined) 
 
   const selectAll = useCallback(() => {
     if (!items) return;
-    setSelectedIds(new Set(items.map(item => item._id)));
+    setSelectedIds(new Set(items.map((item) => item._id)));
   }, [items]);
 
   const clearSelection = useCallback(() => {
@@ -26,7 +26,7 @@ export function useSelection<T extends { _id: string }>(items: T[] | undefined) 
 
   const isAllSelected = useMemo(() => {
     if (!items || items.length === 0) return false;
-    return items.every(item => selectedIds.has(item._id));
+    return items.every((item) => selectedIds.has(item._id));
   }, [items, selectedIds]);
 
   const isSomeSelected = useMemo(() => {

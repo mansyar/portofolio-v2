@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { UsesItemForm } from '../../../components/features/UsesItemForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { UsesItemForm } from "../../../components/features/UsesItemForm";
 
-export const Route = createFileRoute('/admin/uses/$id')({
+export const Route = createFileRoute("/admin/uses/$id")({
   component: EditUsesItemPage,
 });
 
@@ -24,10 +24,7 @@ function EditUsesItemPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4 text-(--color-text-secondary)">
         <p className="font-mono">Item not found</p>
-        <button 
-          onClick={() => history.back()}
-          className="terminal-button"
-        >
+        <button onClick={() => history.back()} className="terminal-button">
           Go Back
         </button>
       </div>
@@ -43,8 +40,8 @@ function EditUsesItemPage() {
         </p>
       </div>
 
-      <UsesItemForm 
-        mode="edit" 
+      <UsesItemForm
+        mode="edit"
         initialData={{
           id: item._id,
           name: item.name,
@@ -54,7 +51,7 @@ function EditUsesItemPage() {
           imageUrl: item.imageUrl,
           displayOrder: item.displayOrder,
           isVisible: item.isVisible,
-        }} 
+        }}
       />
     </div>
   );
