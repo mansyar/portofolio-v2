@@ -18,31 +18,28 @@
   regression tests exist that currently fail because the guards are missing.
 - **Depends on:** none
 - **Covers:** FR-6, AC-6
-- **Touches:** `package.json`, `pnpm-lock.yaml`, `vitest.setup.tsx`,
-  `convex/__tests__/**`
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `convex/__tests__/**`
 - **Verification:** `pnpm test` (expected to FAIL on the new guard tests at this
   stage — record the failures as the proof the bug is real)
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Install convex-test at a version compatible with convex 1.31.2** - covers: FR-6
-  - [ ] **P1.T1.1: Add `convex-test@0.0.41` and `@edge-runtime/vm` as devDependencies**
-  - [ ] **P1.T1.2: Confirm `pnpm install` exits 0 with no peer-dependency error, and record the resolved versions**
-- [ ] **P1.T2: Make the Convex test environment work alongside jsdom** - covers: FR-6
-  - [ ] **P1.T2.1: Determine whether `convex-test` needs the `edge-runtime` environment and configure it per-file or via a Vitest project, without changing the global `jsdom` setting for component tests**
-  - [ ] **P1.T2.2: Confirm the existing 12 test files still pass in their current environment**
-- [ ] **P1.T3: Write the failing regression tests** - covers: FR-1, FR-2, FR-3, FR-4
-  - [ ] **P1.T3.1: `analytics.getStats` called with no identity throws**
-  - [ ] **P1.T3.2: `newsletter.listSubscribers` is not reachable (assert the generated API has no such export)**
-  - [ ] **P1.T3.3: `newsletter.sendWelcomeEmail` cannot be invoked as a public action**
-  - [ ] **P1.T3.4: `newsletter.subscribe` rejects the 6th call in an hour from one IP**
-  - [ ] **P1.T3.5: Run `pnpm test` and record which of these fail — every one of them must fail before Phase 2 begins**
+- [x] **P1.T1: Install convex-test at a version compatible with convex 1.31.2** - covers: FR-6
+  - [x] **P1.T1.1: Add `convex-test@0.0.41` and `@edge-runtime/vm` as devDependencies**
+  - [x] **P1.T1.2: Confirm `pnpm install` exits 0 with no peer-dependency error, and record the resolved versions**
+- [x] **P1.T2: Make the Convex test environment work alongside jsdom** - covers: FR-6
+  - [x] **P1.T2.1: Determine whether `convex-test` needs the `edge-runtime` environment and configure it per-file or via a Vitest project, without changing the global `jsdom` setting for component tests**
+  - [x] **P1.T2.2: Confirm the existing 12 test files still pass in their current environment**
+- [x] **P1.T3: Write the failing regression tests** - covers: FR-1, FR-2, FR-3, FR-4
+  - [x] **P1.T3.1: `analytics.getStats` called with no identity throws**
+  - [x] **P1.T3.2: `newsletter.listSubscribers` is not reachable — asserted on the module export and the deployment path, not on `api`, which is a proxy that resolves every property**
+  - [x] **P1.T3.3: `newsletter.sendWelcomeEmail` cannot be invoked as a public action**
+  - [x] **P1.T3.4: `newsletter.subscribe` rejects the 6th call in an hour from one IP**
+  - [x] **P1.T3.5: Run `pnpm test` and record which of these fail — every one of them must fail before Phase 2 begins**
 
-<!--
-The primary appends after acceptance:
 **Result:** verified
-**Checkpoint:** <short-sha>
+**Checkpoint:** 7ba1f96
 **Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-1.md
--->
+**Deviation:** `vitest.setup.tsx` was listed in Touches but deliberately left unchanged — the predicted crash under `edge-runtime` does not occur, because Vitest's edge environment exposes `window` as an alias of `globalThis` and only `document` is undefined, so the `matchMedia` stub runs harmlessly. The per-file `// @vitest-environment edge-runtime` directive was sufficient. The subagent's scratch probe could not be deleted under its permission set, so the primary kept it as a legitimate harness test and renamed it `__probe.test.ts` → `convexTest.harness.test.ts`.
 
 ## Phase 2: Close the authorization gaps
 
