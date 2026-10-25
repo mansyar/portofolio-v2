@@ -152,19 +152,24 @@ and the files carrying the five source-level lint fixes were outside the origina
 - **Goal:** TypeScript 7.0.2 type-checks clean, and the context docs match reality.
 - **Depends on:** Phase 4
 - **Covers:** FR-11, FR-12, AC-11, AC-12
-- **Touches:** `package.json`, `pnpm-lock.yaml`, `src/**`, `convex/**`, `conductor/tech-stack.md`
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `src/**`, `convex/**`, `conductor/tech-stack.md`, `tsconfig.json`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P5.T1: Upgrade to TypeScript 7.0.2** - covers: FR-11
-  - [ ] Bump `typescript` to `7.0.2`
-  - [ ] Run the type check and fix errors mechanically, recording each fix
-- [ ] **P5.T2: Final documentation consistency pass** - covers: FR-12
-  - [ ] `conductor/tech-stack.md`: mark the modernization table done, update versions, resolve the open questions
-  - [ ] Confirm every Workflow Config command resolves to a real script
-- [ ] **P5.T3: Full verification and evidence** - covers: AC-11, AC-12
-  - [ ] Run the complete gate including `pnpm build`
-  - [ ] Record evidence for every acceptance criterion
+- [x] **P5.T1: Upgrade to TypeScript 7.0.2** - covers: FR-11
+  - [x] Bump `typescript` to `7.0.2`
+  - [x] Run the type check and fix errors mechanically, recording each fix
+- [x] **P5.T2: Final documentation consistency pass** - covers: FR-12
+  - [x] `conductor/tech-stack.md`: mark the modernization table done, update versions, resolve the open questions
+  - [x] Confirm every Workflow Config command resolves to a real script
+- [x] **P5.T3: Full verification and evidence** - covers: AC-11, AC-12
+  - [x] Run the complete gate including `pnpm build`
+  - [x] Record evidence for every acceptance criterion
+
+**Result:** verified
+**Checkpoint:** 8cbe026
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/phase-5.md
+**Deviation:** `tsconfig.json` was edited outside the brief's `Touches`: TypeScript 7 removed `baseUrl` and refuses to type-check while it is present (`TS5102`), so deleting the one line was unavoidable. No strictness flag was weakened and no source file under `src/` or `convex/` needed changes. `conductor/tech-stack.md` was updated by the primary rather than the executor, because the executor's permission set denied it despite the brief allowing it. This closes the spec's highest-risk open question: `nitro@3.0.1-alpha.1` builds under Node 24, confirmed by a full production build.
 
 <!--
 Review fixes are appended by `conductor-review` as:
