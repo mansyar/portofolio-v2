@@ -62,7 +62,7 @@ The primary appends after acceptance:
 - **Covers:** FR-5, FR-6, FR-7, AC-5, AC-6, AC-7
 - **Touches:** `package.json`, `pnpm-lock.yaml`, `vite.config.ts`, `conductor/workflow.md`
 - **Verification:** `pnpm test && pnpm test:coverage`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Upgrade Vitest from 3 to 5** - covers: FR-5
   - [ ] Bump `vitest` to `^5.0.5`
