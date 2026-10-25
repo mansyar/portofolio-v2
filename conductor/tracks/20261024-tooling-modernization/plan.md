@@ -95,7 +95,7 @@ Vitest 5.
 - **Covers:** FR-8, FR-9, AC-8, AC-9
 - **Touches:** `package.json`, `pnpm-lock.yaml`, `biome.json`, `eslint.config.js`, `.prettierrc`, `src/**`, `convex/**`, `conductor/workflow.md`, `conductor/code_styleguides/project.md`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Install and configure Biome** - covers: FR-8
   - [ ] Add `@biomejs/biome@^2.6.2`
