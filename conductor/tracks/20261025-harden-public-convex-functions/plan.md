@@ -50,7 +50,7 @@
 - **Touches:** `convex/analytics.ts`, `convex/newsletter.ts`,
   `convex/_generated/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Guard `analytics.getStats` with `requireAdmin`** - covers: FR-1
   - [ ] **P2.T1.1: Call `await requireAdmin(ctx)` as the first statement in the handler, before the Umami env-var check, so an anonymous caller cannot distinguish configured from unconfigured**
