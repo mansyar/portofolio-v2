@@ -79,26 +79,25 @@
 - **Touches:** `convex/newsletter.ts`, `src/components/features/NewsletterForm.tsx`,
   `src/components/features/NewsletterForm.css`, `convex/__tests__/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Add the rate-limit check to `subscribe`** - covers: FR-4
-  - [ ] **P3.T1.1: Accept `clientIp` as a required argument, mirroring `contact.submit`**
-  - [ ] **P3.T1.2: Query `rateLimits` via `by_identifier_action` with `action: "newsletter_subscribe"` and reject at 5 attempts in the last hour**
-  - [ ] **P3.T1.3: Throw before any insert or scheduled email, so a blocked attempt has no side effects**
-  - [ ] **P3.T1.4: Record each allowed attempt in `rateLimits`**
-- [ ] **P3.T2: Resolve the caller's IP server-side in the form** - covers: FR-5
-  - [ ] **P3.T2.1: Add a `createServerFn` that resolves the request IP, following `src/routes/contact.tsx`**
-  - [ ] **P3.T2.2: Pass the resolved IP to `subscribe` as `clientIp`**
-  - [ ] **P3.T2.3: Degrade gracefully when the IP cannot be resolved — signup must still work rather than break**
-- [ ] **P3.T3: Confirm the rate-limit test passes and the form still subscribes** - covers: AC-4, AC-5
-  - [ ] **P3.T3.1: Run `pnpm test` and confirm the 6th-attempt test is green and `rateLimits` contains 5 rows for the IP**
+- [x] **P3.T1: Add the rate-limit check to `subscribe`** - covers: FR-4
+  - [x] **P3.T1.1: Accept `clientIp` as a required argument, mirroring `contact.submit`**
+  - [x] **P3.T1.2: Query `rateLimits` via `by_identifier_action` with `action: "newsletter_subscribe"` and reject at 5 attempts in the last hour**
+  - [x] **P3.T1.3: Throw before any insert or scheduled email, so a blocked attempt has no side effects**
+  - [x] **P3.T1.4: Record each allowed attempt in `rateLimits`** - inserted before the existing-subscriber lookup, so the `alreadySubscribed` early return cannot be used to bypass the limit
+- [x] **P3.T2: Resolve the caller's IP server-side in the form** - covers: FR-5
+  - [x] **P3.T2.1: Add a `createServerFn` that resolves the request IP, following `src/routes/contact.tsx`** - kept inside `NewsletterForm.tsx`; extracting a shared module would require editing `contact.tsx`, outside Touches
+  - [x] **P3.T2.2: Pass the resolved IP to `subscribe` as `clientIp`**
+  - [x] **P3.T2.3: Degrade gracefully when the IP cannot be resolved - signup must still work rather than break**
+- [x] **P3.T3: Confirm the rate-limit test passes and the form still subscribes** - covers: AC-4, AC-5
+  - [x] **P3.T3.1: Run `pnpm test` and confirm the 6th-attempt test is green and `rateLimits` contains 5 rows for the IP** - 40 passed, 0 failed; test 2 asserts the row count, identifier, action string and scheduled-call count directly
 
-<!--
-The primary appends after acceptance:
 **Result:** verified
-**Checkpoint:** <short-sha>
+**Checkpoint:** 3f11da9
 **Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-3.md
--->
+
+**Deviation:** `NewsletterForm.css` was listed in Touches but left untouched - the markup did not change, so no styling was needed. The IP resolver is now duplicated between `src/routes/contact.tsx` and `NewsletterForm.tsx`; extracting it is correct but would have required editing a file outside Touches, so it is recorded as follow-up debt instead.
 
 ## Phase 4: Replace the placeholder tests and audit the surface
 
