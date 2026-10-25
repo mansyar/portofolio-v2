@@ -22,7 +22,7 @@
   `convex/__tests__/**`
 - **Verification:** `pnpm test` (expected to FAIL on the new guard tests at this
   stage — record the failures as the proof the bug is real)
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Install convex-test at a version compatible with convex 1.31.2** - covers: FR-6
   - [ ] **P1.T1.1: Add `convex-test@0.0.41` and `@edge-runtime/vm` as devDependencies**
