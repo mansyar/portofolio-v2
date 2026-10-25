@@ -1,0 +1,146 @@
+# Tooling Modernization - Implementation Plan
+
+> **Branch:** `chore/20261024-tooling-modernization`
+> **Base:** `main` @ `de0e4b51f56e9c1aa3ee8e714ffc4d3b4978fc64`
+>
+> Phase states are `pending`, `in_progress`, `verified`, `failed`, or `blocked`.
+> Only the primary agent writes this file. Phase subagents report results and the
+> primary records them.
+>
+> **Verification gate grows as tools come online.** Phases 1-2 run
+> `pnpm type-check && pnpm lint && pnpm test`. From Phase 3 onward the gate is
+> `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`, because
+> `format:check` does not exist before Biome lands.
+>
+> **Machine constraint:** this host runs four concurrent projects. Test runs must
+> never exceed 4 workers (NFR-2).
+
+## Phase 1: Runtime and dependency pinning
+
+- **Goal:** Node 24 everywhere, pnpm 12.4.1 everywhere, `nitro` pinned, and `pnpm install` exits 0.
+- **Depends on:** none
+- **Covers:** FR-1, FR-2, FR-3, FR-4, AC-1, AC-2, AC-3, AC-4
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.github/workflows/deploy.yml`, `docker/Dockerfile`, `conductor/tech-stack.md`, `conductor/workflow.md`
+- **Verification:** `pnpm install --frozen-lockfile && pnpm type-check && pnpm lint && pnpm test`
+- **Status:** pending
+
+- [ ] **P1.T1: Move CI and the Dockerfile to Node 24** - covers: FR-1
+  - [ ] Change `node-version: 20` to `24` in `.github/workflows/deploy.yml`
+  - [ ] Change `FROM node:20-alpine AS base` to `node:24-alpine` in `docker/Dockerfile`
+- [ ] **P1.T2: Unify pnpm on 12.4.1** - covers: FR-2
+  - [ ] Add `"packageManager": "pnpm@12.4.1"` to `package.json`
+  - [ ] Change `pnpm/action-setup` version from `10` to `12.4.1` in CI
+  - [ ] Change `corepack prepare pnpm@10.1.0` to `pnpm@12.4.1` in the Dockerfile
+- [ ] **P1.T3: Pin nitro to an exact version** - covers: FR-3
+  - [ ] Change `"nitro": "latest"` to `"nitro": "3.0.1-alpha.1"`
+- [ ] **P1.T4: Record the build-script allowlist** - covers: FR-4
+  - [ ] Create `pnpm-workspace.yaml` with `allowBuilds` set to `true` for `esbuild` and `sharp`
+  - [ ] Confirm `pnpm install --frozen-lockfile` exits 0 with no `ERR_PNPM_IGNORED_BUILDS`
+- [ ] **P1.T5: Update context docs for Node 24 and pnpm 12.4.1** - covers: FR-12
+  - [ ] `conductor/tech-stack.md`: Languages/Runtimes and Tooling rows
+  - [ ] `conductor/workflow.md`: any Node or pnpm version references
+
+**Risk:** `nitro@3.0.1-alpha.1` under Node 24 is the unknown in this track. If the
+build fails, fall back to pinning the stable `3.0.0` release and record the change.
+
+<!--
+The primary appends after acceptance:
+**Result:** verified
+**Checkpoint:** <short-sha>
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/phase-1.md
+-->
+
+## Phase 2: Vitest 5, coverage, and worker cap
+
+- **Goal:** Tests pass on Vitest 5, coverage is measured and gated at 40%, and concurrency is capped at 4.
+- **Depends on:** Phase 1
+- **Covers:** FR-5, FR-6, FR-7, AC-5, AC-6, AC-7
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `vite.config.ts`, `conductor/workflow.md`
+- **Verification:** `pnpm test && pnpm test:coverage`
+- **Status:** pending
+
+- [ ] **P2.T1: Upgrade Vitest from 3 to 5** - covers: FR-5
+  - [ ] Bump `vitest` to `^5.0.5`
+  - [ ] Resolve any config breakage; confirm all 31 tests still pass
+  - [ ] Confirm the new `clearMocks` default does not affect the form tests
+- [ ] **P2.T2: Add coverage tooling and the 40% gate** - covers: FR-6
+  - [ ] Add `@vitest/coverage-v8@^5.0.5` and a `test:coverage` script
+  - [ ] Configure `coverage.include` as `["src", "convex"]` and exclude `convex/_generated/**` and `src/routeTree.gen.ts`
+  - [ ] Set thresholds to 40% lines and 40% functions
+  - [ ] Report the measured baseline before enabling the gate. If it is below 40%, stop and escalate rather than lowering the threshold.
+- [ ] **P2.T3: Cap test workers at 4** - covers: FR-7
+  - [ ] Set `maxWorkers: 4` in the Vitest config, so a bare `pnpm test` respects it without a CLI flag
+- [ ] **P2.T4: Enable the coverage gate in workflow.md** - covers: FR-12
+  - [ ] Set `coverage.gate: true` and record the 40% threshold
+
+## Phase 3: Biome replaces ESLint and Prettier
+
+- **Goal:** One formatter and linter, with `pnpm lint` and `pnpm format:check` both passing.
+- **Depends on:** Phase 2
+- **Covers:** FR-8, FR-9, AC-8, AC-9
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `biome.json`, `eslint.config.js`, `.prettierrc`, `src/**`, `convex/**`, `conductor/workflow.md`, `conductor/code_styleguides/project.md`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
+- **Status:** pending
+
+- [ ] **P3.T1: Install and configure Biome** - covers: FR-8
+  - [ ] Add `@biomejs/biome@^2.6.2`
+  - [ ] Create `biome.json` preserving current intent: double quotes, 2-space indent, width 100, semicolons, `noExplicitAny` as an error, unused variables as a warning with leading-underscore arguments exempt
+  - [ ] Ignore `dist`, `.output`, `.tanstack`, `node_modules`, `convex/_generated`, and `src/routeTree.gen.ts`
+- [ ] **P3.T2: Rewire scripts and remove the old tooling** - covers: FR-8
+  - [ ] `lint` runs Biome check, `format` runs Biome check with write, and `format:check` runs Biome check
+  - [ ] Delete `eslint.config.js` and `.prettierrc`
+  - [ ] Remove eslint and prettier devDependencies, including the unresolvable `prettier-plugin-tailwindcss` reference
+- [ ] **P3.T3: Apply formatting and resolve lint findings** - covers: FR-8
+  - [ ] Run the formatter and review the diff for semantic changes
+- [ ] **P3.T4: Add the format check to the verification gate** - covers: FR-9
+  - [ ] Set `verify_phase` to include `pnpm format:check`
+  - [ ] Fill the `format` command key in the Workflow Config block
+  - [ ] Update `conductor/code_styleguides/project.md` to name Biome as the enforcing tool
+
+## Phase 4: Dependency refresh
+
+- **Goal:** Remaining dependencies current within their majors, repository still green.
+- **Depends on:** Phase 3
+- **Covers:** FR-10, AC-10
+- **Touches:** `package.json`, `pnpm-lock.yaml`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Status:** pending
+
+- [ ] **P4.T1: Update dependencies within current majors** - covers: FR-10
+  - [ ] Run a within-major update; confirm no major version changed
+- [ ] **P4.T2: Record what was deliberately held back** - covers: FR-10
+  - [ ] List every package left at its current version with the reason
+
+## Phase 5: TypeScript 7 and documentation sync
+
+- **Goal:** TypeScript 7.0.2 type-checks clean, and the context docs match reality.
+- **Depends on:** Phase 4
+- **Covers:** FR-11, FR-12, AC-11, AC-12
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `src/**`, `convex/**`, `conductor/tech-stack.md`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Status:** pending
+
+- [ ] **P5.T1: Upgrade to TypeScript 7.0.2** - covers: FR-11
+  - [ ] Bump `typescript` to `7.0.2`
+  - [ ] Run the type check and fix errors mechanically, recording each fix
+- [ ] **P5.T2: Final documentation consistency pass** - covers: FR-12
+  - [ ] `conductor/tech-stack.md`: mark the modernization table done, update versions, resolve the open questions
+  - [ ] Confirm every Workflow Config command resolves to a real script
+- [ ] **P5.T3: Full verification and evidence** - covers: AC-11, AC-12
+  - [ ] Run the complete gate including `pnpm build`
+  - [ ] Record evidence for every acceptance criterion
+
+<!--
+Review fixes are appended by `conductor-review` as:
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review findings ...
+- **Depends on:** Phase 5
+- **Covers:** review findings
+- **Touches:** ...
+- **Verification:** ...
+- **Status:** pending
+
+- [ ] **R1.T1: Resolve <finding ID>** - covers: <finding ID>
+-->
