@@ -79,7 +79,7 @@
 - **Touches:** `convex/newsletter.ts`, `src/components/features/NewsletterForm.tsx`,
   `src/components/features/NewsletterForm.css`, `convex/__tests__/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Add the rate-limit check to `subscribe`** - covers: FR-4
   - [ ] **P3.T1.1: Accept `clientIp` as a required argument, mirroring `contact.submit`**
