@@ -154,7 +154,7 @@ and the files carrying the five source-level lint fixes were outside the origina
 - **Covers:** FR-11, FR-12, AC-11, AC-12
 - **Touches:** `package.json`, `pnpm-lock.yaml`, `src/**`, `convex/**`, `conductor/tech-stack.md`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P5.T1: Upgrade to TypeScript 7.0.2** - covers: FR-11
   - [ ] Bump `typescript` to `7.0.2`
