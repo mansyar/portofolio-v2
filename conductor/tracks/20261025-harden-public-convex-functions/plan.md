@@ -116,7 +116,7 @@ The primary appends after acceptance:
 - **Status:** pending
 
 - [ ] **P4.T1: Replace the remaining placeholder tests** - covers: NFR-2, AC-6
-  - [ ] **P4.T1.1: Give `discovery.test.ts` and `helpers.test.ts` real assertions, or mark them explicitly as unimplemented rather than leaving `expect(true).toBe(true)`**
+  - [ ] **P4.T1.1: Give `contact.test.ts` and `uses.test.ts` real assertions — these are the only two files that assert `expect(true).toBe(true)`; `helpers.test.ts` and `discovery.test.ts` already contain real logic tests and are out of scope**
   - [ ] **P4.T1.2: Confirm no file under `convex/__tests__/` contains `expect(true).toBe(true)`**
 - [ ] **P4.T2: Classify every Convex function by access model** - covers: FR-7, AC-7
   - [ ] **P4.T2.1: Produce a table of every exported function in `convex/` marked public-by-design, admin-guarded, or internal**
