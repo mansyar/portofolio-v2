@@ -30,9 +30,13 @@ describe("newsletter.sendWelcomeEmail", () => {
     expect(Object.hasOwn(newsletter.sendWelcomeEmail, "isInternal")).toBe(true);
   });
 
-  it("still exists as a callable action for the subscribe mutation", async () => {
+  it("is still callable as an action so the subscribe scheduler can reach it", async () => {
     // The fix must convert the action, not delete it: `subscribe` schedules it
-    // to deliver the welcome email.
+    // to deliver the welcome email. This test only proves the export still
+    // exists and runs - it says nothing about reachability, because
+    // `convex-test@0.0.41` does not enforce public/internal visibility and
+    // would happily call it either way. The sibling test above is what pins
+    // the visibility.
     vi.stubEnv("RESEND_API_KEY", "");
 
     expect(Object.hasOwn(newsletter, "sendWelcomeEmail")).toBe(true);

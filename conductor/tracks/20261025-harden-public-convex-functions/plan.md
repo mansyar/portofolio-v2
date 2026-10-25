@@ -127,17 +127,34 @@
 
 **Deviation:** none in scope. One finding was reported rather than fixed, per this phase's rules: `convex/projects.ts` `remove` calls `requireAdmin` *after* `ctx.db.delete`, the only handler in the audit whose guard is not the first statement. It is not exploitable today because Convex mutations are transactional, but it is guard-last and would become a real gap if the activity log moved to `ctx.scheduler.runAfter`. Changing it is outside this track's spec (which puts `projects.ts` out of scope), so it is recorded as follow-up debt.
 
-<!--
-Review fixes are appended by `conductor-review` as:
-
 ## Phase R1: Review Fixes
 
-- **Goal:** Resolve review findings ...
+- **Goal:** Resolve the five findings from the track review. No product behaviour changes beyond tightening the newsletter rate limit.
 - **Depends on:** Phase 4
-- **Covers:** review findings
-- **Touches:** ...
-- **Verification:** ...
-- **Status:** pending
+- **Covers:** F1, F2, F3, F4, F5
+- **Touches:** `convex/newsletter.ts`, `convex/__tests__/analytics.getStats.test.ts`, `convex/__tests__/newsletter.subscribe.rateLimit.test.ts`, `convex/__tests__/newsletter.sendWelcomeEmail.test.ts`, `docs/PRD.md`, `docs/PROGRESS.md`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Status:** verified
 
-- [ ] **R1.T1: Resolve <finding ID>** - covers: <finding ID>
--->
+- [x] **R1.T1: Add an address-keyed rate limit alongside the IP limit** - covers: F1
+  - [x] Normalize the address (`trim().toLowerCase()`) and check a second bucket, action `"newsletter_subscribe_email"`, same 5/hour window
+  - [x] Write both attempt rows before the subscriber lookup so neither limit can be skipped
+- [x] **R1.T2: Test the address-keyed limit** - covers: F1
+  - [x] Six attempts against one address with a different IP each time — the sixth rejected
+  - [x] Differently-cased forms of one address share a bucket
+- [x] **R1.T3: Test the production admin path** - covers: F2
+  - [x] Seed a `users` row and present `subject: userId|session` with no email claim
+  - [x] Mutation-tested: seeding a non-admin address fails the test
+- [x] **R1.T4: Record the guard-last finding as debt** - covers: F3
+  - [x] Not fixed — `projects.ts` is out of scope; verified not exploitable
+- [x] **R1.T5: Sync docs and correct the overstated guarantee** - covers: F4
+  - [x] PROGRESS changelog row for the hardening work
+  - [x] PRD paragraph names both keys and the transport-trusted caveat
+- [x] **R1.T6: Rename the misleading test** - covers: F5
+  - [x] Name and body now state that visibility is pinned by the sibling test
+
+**Result:** verified
+**Checkpoint:** pending
+**Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/review-fixes.md
+
+**Deviation:** F3 was recorded rather than fixed, because `convex/projects.ts` is explicitly outside this track's scope. `contact.submit` keeps its IP-only limit for the same reason — the reviewer's fix was scoped to the newsletter, and changing contact's behaviour is outside the phase's Touches. Both are listed as deferred debt in `review.md`.

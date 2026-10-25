@@ -870,7 +870,7 @@ export const create = mutation({
 | `api.settings.getPublic`     | Query    | Public settings for SEO         |
 | `api.sitemap.getSitemapData` | Query    | Sitemap and RSS source data     |
 
-Public queries are intentionally anonymous and return only published content. The two public mutations are rate limited: `contact.submit` at 3 per hour per IP and `newsletter.subscribe` at 5 per hour per IP, both keyed through the `rateLimits` table. `newsletter.sendWelcomeEmail` is an `internalAction` and is not callable from the client.
+Public queries are intentionally anonymous and return only published content. The two public mutations are rate limited: `contact.submit` at 3 per hour per IP and `newsletter.subscribe` at 5 per hour on two independent keys — the caller's IP and the normalized address — so neither rotating the IP nor replaying one address defeats it. Both use the `rateLimits` table. The IP half is transport-trusted: the address is resolved from request headers and then supplied by the client, so it bounds honest volume rather than a determined caller; tightening it needs the Convex HTTP layer. `newsletter.sendWelcomeEmail` is an `internalAction` and is not callable from the client.
 
 ### Admin API (Protected Convex Mutations)
 

@@ -68,4 +68,30 @@ describe("analytics.getStats authorization", () => {
 
     expect(result).toBeNull();
   });
+
+  it("resolves an admin whose identity carries no email claim", async () => {
+    // This is the path production actually takes. Convex Auth's JWT carries
+    // only `sub` (formatted `userId|sessionId`) and this version exposes no
+    // custom-claims hook, so `identity.email` is undefined in production and
+    // `requireAdmin` has to resolve the address from the `users` table - or,
+    // in an action context like this one, through
+    // `internal.admin.getUserEmail`. The test above supplies an email on the
+    // identity, which production never does; if the lookup regressed, the
+    // sole admin would lose the analytics widget and nothing would fail.
+    vi.stubEnv("UMAMI_URL", "");
+    vi.stubEnv("UMAMI_WEBSITE_ID", "");
+    vi.stubEnv("UMAMI_USERNAME", "");
+    vi.stubEnv("UMAMI_PASSWORD", "");
+
+    const t = convexTest(schema, modules);
+
+    const userId = await t.run((ctx) => ctx.db.insert("users", { email: ADMIN_EMAIL }));
+
+    // Deliberately no `email` field on the identity.
+    const result = await t
+      .withIdentity({ subject: `${userId}|session` })
+      .action(api.analytics.getStats, { startAt: 0, endAt: 1 });
+
+    expect(result).toBeNull();
+  });
 });

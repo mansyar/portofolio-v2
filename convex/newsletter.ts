@@ -11,10 +11,22 @@ export const subscribe = mutation({
       throw new Error("Invalid email address");
     }
 
-    // Rate limiting (max 5 attempts per hour per IP). `subscribe` is public by
-    // design, so the limit - not auth - is what stops enumeration and mail-bombing.
+    // Rate limiting. `subscribe` is public by design, so the limit - not auth -
+    // is what stops enumeration and mail-bombing. It is enforced on two
+    // independent keys, because either one alone is escapable:
+    //
+    //   - the caller's IP bounds total volume from one source, but the address
+    //     is resolved from request headers and then supplied by the client, so
+    //     a caller who varies it gets unlimited attempts;
+    //   - the address bounds attempts against one inbox, and cannot be varied
+    //     without targeting a different inbox.
+    //
+    // Together they mean neither rotating the IP nor replaying one address
+    // defeats the limit.
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
-    const recentAttempts = await ctx.db
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const recentFromIp = await ctx.db
       .query("rateLimits")
       .withIndex("by_identifier_action", (q) =>
         q.eq("identifier", clientIp).eq("action", "newsletter_subscribe")
@@ -22,15 +34,28 @@ export const subscribe = mutation({
       .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
       .collect();
 
-    if (recentAttempts.length >= 5) {
+    const recentForEmail = await ctx.db
+      .query("rateLimits")
+      .withIndex("by_identifier_action", (q) =>
+        q.eq("identifier", normalizedEmail).eq("action", "newsletter_subscribe_email")
+      )
+      .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
+      .collect();
+
+    if (recentFromIp.length >= 5 || recentForEmail.length >= 5) {
       throw new Error("Too many attempts. Please try again later.");
     }
 
     // Logged before the subscriber write so that a repeat subscribe to an
-    // already-active address still counts against the limit.
+    // already-active address still counts against both limits.
     await ctx.db.insert("rateLimits", {
       identifier: clientIp,
       action: "newsletter_subscribe",
+      timestamp: Date.now(),
+    });
+    await ctx.db.insert("rateLimits", {
+      identifier: normalizedEmail,
+      action: "newsletter_subscribe_email",
       timestamp: Date.now(),
     });
 

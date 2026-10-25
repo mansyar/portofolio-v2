@@ -85,4 +85,34 @@ describe("newsletter.subscribe rate limiting", () => {
     expect(blocked.subscribers).toHaveLength(1);
     expect(blocked.scheduled).toHaveLength(allowed.scheduled.length);
   });
+
+  it("rejects the sixth attempt against one address even when every IP differs", async () => {
+    // The IP limit alone only binds an honest client: the address is resolved
+    // from request headers and then supplied by the caller, so varying it
+    // resets the bucket. The address-keyed limit is what makes enumeration and
+    // per-inbox mail-bombing cost something regardless of the IP supplied.
+    const t = convexTest(schema, modules);
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const args = { email: EMAIL, clientIp: `198.51.100.${attempt + 1}` };
+      await t.mutation(api.newsletter.subscribe, args);
+    }
+
+    const blockedArgs = { email: EMAIL, clientIp: "198.51.100.99" };
+    await expect(t.mutation(api.newsletter.subscribe, blockedArgs)).rejects.toThrow(/too many/i);
+  });
+
+  it("treats differently-cased forms of one address as the same bucket", async () => {
+    // Otherwise `User@Example.com` and `user@example.com` would each get a
+    // fresh allowance for the same inbox.
+    const t = convexTest(schema, modules);
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const args = { email: `  ${EMAIL.toUpperCase()}  `, clientIp: `203.0.113.${attempt + 1}` };
+      await t.mutation(api.newsletter.subscribe, args);
+    }
+
+    const blockedArgs = { email: EMAIL, clientIp: "203.0.113.99" };
+    await expect(t.mutation(api.newsletter.subscribe, blockedArgs)).rejects.toThrow(/too many/i);
+  });
 });
