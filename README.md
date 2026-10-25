@@ -98,6 +98,7 @@ convex/
 ├── blog.ts              # Blog queries/mutations
 ├── resume.ts            # Resume queries/mutations
 ├── contact.ts           # Contact form handling (with rate limiting)
+├── newsletter.ts        # Newsletter subscribe (rate limited) + welcome email
 ├── media.ts             # Media file management
 └── lib/auth.ts          # requireAdmin authorization helper
 ```
