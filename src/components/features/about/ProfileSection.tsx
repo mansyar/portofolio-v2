@@ -18,24 +18,37 @@ export function ProfileSection() {
             </div>
             <div className="pointer-events-none absolute inset-0 bg-(--color-ubuntu-orange)/10 opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-100"></div>
           </div>
-          
+
           <div className="mt-6 flex flex-col gap-3">
-            <a href={`mailto:${profile?.email}`} className="flex items-center gap-2 text-(--color-text-secondary) transition-colors hover:text-(--color-ubuntu-orange)">
+            <a
+              href={`mailto:${profile?.email}`}
+              className="flex items-center gap-2 text-(--color-text-secondary) transition-colors hover:text-(--color-ubuntu-orange)"
+            >
               <Mail size={16} />
-              <span>{profile?.email || 'email@example.com'}</span>
+              <span>{profile?.email || "email@example.com"}</span>
             </a>
             <div className="flex items-center gap-2 text-(--color-text-secondary)">
               <MapPin size={16} />
-              <span>{profile?.location || 'Location'}</span>
+              <span>{profile?.location || "Location"}</span>
             </div>
             <div className="mt-2 flex gap-4">
               {profile?.githubUrl && (
-                <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="rounded border border-(--color-border) p-2 transition-colors hover:border-(--color-ubuntu-orange) hover:text-(--color-ubuntu-orange)">
+                <a
+                  href={profile.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded border border-(--color-border) p-2 transition-colors hover:border-(--color-ubuntu-orange) hover:text-(--color-ubuntu-orange)"
+                >
                   <Github size={20} />
                 </a>
               )}
               {profile?.linkedinUrl && (
-                <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="rounded border border-(--color-border) p-2 transition-colors hover:border-(--color-ubuntu-orange) hover:text-(--color-ubuntu-orange)">
+                <a
+                  href={profile.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded border border-(--color-border) p-2 transition-colors hover:border-(--color-ubuntu-orange) hover:text-(--color-ubuntu-orange)"
+                >
                   <Linkedin size={20} />
                 </a>
               )}
@@ -43,11 +56,15 @@ export function ProfileSection() {
             <DownloadResumeButton />
           </div>
         </div>
-        
+
         <div className="flex-1">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl">{profile?.fullName || 'Full Name'}</h1>
-          <h2 className="mb-6 font-mono text-xl text-(--color-ubuntu-orange) md:text-2xl">{profile?.title || 'Developer'}</h2>
-          
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+            {profile?.fullName || "Full Name"}
+          </h1>
+          <h2 className="mb-6 font-mono text-xl text-(--color-ubuntu-orange) md:text-2xl">
+            {profile?.title || "Developer"}
+          </h2>
+
           <div className="prose prose-invert max-w-none text-(--color-text-primary)">
             <p className="mb-6 text-lg leading-relaxed">
               {profile?.summary || "I am a developer..."}

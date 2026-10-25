@@ -16,20 +16,16 @@ export function UsesItem({ name, description, url, imageUrl, className }: UsesIt
       <div className="flex items-start gap-4">
         {imageUrl && (
           <div className="h-16 w-16 shrink-0 overflow-hidden rounded border border-(--color-border) bg-(--color-surface)">
-            <OptimizedImage 
-              src={imageUrl} 
-              alt={name} 
-              aspectRatio="1/1" 
-            />
+            <OptimizedImage src={imageUrl} alt={name} aspectRatio="1/1" />
           </div>
         )}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
             <h3 className="truncate text-lg font-bold">{name}</h3>
             {url && (
-              <a 
-                href={url} 
-                target="_blank" 
+              <a
+                href={url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-(--color-text-secondary) transition-colors hover:text-(--color-ubuntu-orange)"
               >
@@ -38,9 +34,7 @@ export function UsesItem({ name, description, url, imageUrl, className }: UsesIt
             )}
           </div>
           {description && (
-            <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-              {description}
-            </p>
+            <p className="text-sm leading-relaxed text-(--color-text-secondary)">{description}</p>
           )}
         </div>
       </div>

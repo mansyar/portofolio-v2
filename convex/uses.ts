@@ -37,10 +37,7 @@ export const listAll = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
-    return await ctx.db
-      .query("usesItems")
-      .withIndex("by_order")
-      .collect();
+    return await ctx.db.query("usesItems").withIndex("by_order").collect();
   },
 });
 

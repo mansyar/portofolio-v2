@@ -6,12 +6,12 @@ import { Timeline } from "../../ui/timeline";
 export function EducationSection() {
   const { data: education } = useSuspenseQuery(convexQuery(api.resume.getEducation, {}));
 
-  const eduItems = education.map(e => ({
+  const eduItems = education.map((e) => ({
     _id: e._id,
     year: e.startDate.slice(0, 4),
     title: e.degree,
     subtitle: e.institution,
-    description: e.field
+    description: e.field,
   }));
 
   return (

@@ -1,9 +1,9 @@
-import { Link } from '@tanstack/react-router';
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  Code2, 
-  Image as  ImageIcon, 
+import { Link } from "@tanstack/react-router";
+import {
+  LayoutDashboard,
+  Briefcase,
+  Code2,
+  Image as ImageIcon,
   LogOut,
   PenTool,
   User,
@@ -11,27 +11,27 @@ import {
   Mail,
   Wrench,
   Settings,
-  Activity
-} from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { useQuery } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
+  Activity,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export function AdminSidebar() {
   const { signOut } = useAuth();
   const unreadMessagesCount = useQuery(api.contact.unreadCount);
 
   const navItems = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', exact: true },
-    { label: 'Projects', icon: Briefcase, path: '/admin/projects' },
-    { label: 'Skills', icon: Code2, path: '/admin/skills' },
-    { label: 'Uses', icon: Wrench, path: '/admin/uses' },
-    { label: 'Blog', icon: PenTool, path: '/admin/blog' },
-    { label: 'Messages', icon: Mail, path: '/admin/messages', badge: unreadMessagesCount },
-    { label: 'Resume', icon: User, path: '/admin/resume' },
-    { label: 'Media', icon: ImageIcon, path: '/admin/media' },
-    { label: 'Activity Log', icon: Activity, path: '/admin/activity' },
-    { label: 'Settings', icon: Settings, path: '/admin/settings' },
+    { label: "Dashboard", icon: LayoutDashboard, path: "/admin", exact: true },
+    { label: "Projects", icon: Briefcase, path: "/admin/projects" },
+    { label: "Skills", icon: Code2, path: "/admin/skills" },
+    { label: "Uses", icon: Wrench, path: "/admin/uses" },
+    { label: "Blog", icon: PenTool, path: "/admin/blog" },
+    { label: "Messages", icon: Mail, path: "/admin/messages", badge: unreadMessagesCount },
+    { label: "Resume", icon: User, path: "/admin/resume" },
+    { label: "Media", icon: ImageIcon, path: "/admin/media" },
+    { label: "Activity Log", icon: Activity, path: "/admin/activity" },
+    { label: "Settings", icon: Settings, path: "/admin/settings" },
   ];
 
   return (
@@ -52,7 +52,7 @@ export function AdminSidebar() {
             to={item.path}
             activeOptions={{ exact: item.exact }}
             className="nav-link rounded-md relative"
-            activeProps={{ className: 'active' }}
+            activeProps={{ className: "active" }}
           >
             <item.icon />
             <span>{item.label}</span>
@@ -67,7 +67,7 @@ export function AdminSidebar() {
 
       {/* User Footer */}
       <div className="p-4 border-t border-(--color-border)">
-        <button 
+        <button
           onClick={() => signOut()}
           className="nav-link w-full rounded-md text-(--color-terminal-red) hover:bg-opacity-10 hover:bg-(--color-terminal-red)"
         >

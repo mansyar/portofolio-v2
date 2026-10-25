@@ -17,4 +17,3 @@ export function useMediaQuery(query: string) {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
-

@@ -1,0 +1,15 @@
+# Normalize line endings so the repository, every developer machine, and CI
+# hold byte-identical files. The formatter gate compares exact bytes, so a
+# platform-dependent working tree would make it pass locally and fail on Linux.
+* text=auto eol=lf
+
+# Binary assets are never converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

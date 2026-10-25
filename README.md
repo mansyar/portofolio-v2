@@ -38,8 +38,8 @@
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 9+
+- Node.js 24
+- pnpm 12.4.1 (pinned via `packageManager`; `corepack enable` will honour it)
 - Convex backend (self-hosted or cloud)
 
 ### Installation
@@ -111,14 +111,16 @@ convex/
 | `pnpm dev` | Start development server on port 3000 |
 | `pnpm build` | Build for production |
 | `pnpm preview` | Preview production build |
-| `pnpm type-check` | Run TypeScript type checking |
-| `pnpm lint` | Run ESLint |
+| `pnpm type-check` | Run TypeScript type checking (`tsc --noEmit`) |
+| `pnpm lint` | Lint and format-check with Biome |
+| `pnpm format` | Format the codebase with Biome |
 | `pnpm test` | Run Vitest tests |
+| `pnpm test:coverage` | Run tests with a coverage report |
 
 ### Quality Check (before commit)
 
 ```bash
-pnpm type-check; pnpm lint; pnpm build
+pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build
 ```
 
 ---

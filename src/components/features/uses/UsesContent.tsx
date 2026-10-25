@@ -8,23 +8,21 @@ export function UsesContent() {
 
   // Group items by category (case-insensitive)
   const groups: Record<string, typeof items> = {};
-  items.forEach(item => {
+  items.forEach((item) => {
     const categoryKey = item.category.toLowerCase();
     if (!groups[categoryKey]) groups[categoryKey] = [];
     groups[categoryKey].push(item);
   });
 
-  const categoryOrder = ['hardware', 'software', 'accessories', 'other'];
-  
+  const categoryOrder = ["hardware", "software", "accessories", "other"];
+
   // Get any categories not in the predefined order
-  const additionalCategories = Object.keys(groups).filter(
-    cat => !categoryOrder.includes(cat)
-  );
+  const additionalCategories = Object.keys(groups).filter((cat) => !categoryOrder.includes(cat));
   const allCategories = [...categoryOrder, ...additionalCategories];
 
   return (
     <div className="flex flex-col gap-10">
-      {allCategories.map(category => {
+      {allCategories.map((category) => {
         const categoryItems = groups[category];
         if (!categoryItems || categoryItems.length === 0) return null;
 
@@ -34,24 +32,24 @@ export function UsesContent() {
               {category}
             </h2>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-               {categoryItems.map(item => (
-                 <UsesItem 
-                   key={item._id}
-                   name={item.name}
-                   description={item.description}
-                   imageUrl={item.imageUrl}
-                   url={item.url}
-                 />
-               ))}
+              {categoryItems.map((item) => (
+                <UsesItem
+                  key={item._id}
+                  name={item.name}
+                  description={item.description}
+                  imageUrl={item.imageUrl}
+                  url={item.url}
+                />
+              ))}
             </div>
           </section>
-        )
+        );
       })}
 
       {items.length === 0 && (
-         <div className="rounded border border-dashed border-(--color-border) py-12 text-center">
-            <p className="font-mono text-(--color-text-secondary)">No items found.</p>
-         </div>
+        <div className="rounded border border-dashed border-(--color-border) py-12 text-center">
+          <p className="font-mono text-(--color-text-secondary)">No items found.</p>
+        </div>
       )}
     </div>
   );

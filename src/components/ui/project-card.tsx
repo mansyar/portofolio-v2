@@ -24,33 +24,38 @@ export function ProjectCard({
   githubUrl,
 }: ProjectCardProps) {
   return (
-    <Card title={slug} className="flex h-full flex-col transition-colors duration-200 hover:border-(--color-ubuntu-orange)">
-      <Link 
-        to="/projects/$slug" 
-        params={{ slug }} 
+    <Card
+      title={slug}
+      className="flex h-full flex-col transition-colors duration-200 hover:border-(--color-ubuntu-orange)"
+    >
+      <Link
+        to="/projects/$slug"
+        params={{ slug }}
         className="group block"
         data-umami-event="project-click"
         data-umami-event-project={slug}
       >
         <div className="relative mb-4 overflow-hidden rounded border border-(--color-border) bg-(--color-terminal-bg-dark)/50">
           {thumbnailUrl ? (
-            <OptimizedImage 
-              src={thumbnailUrl} 
-              alt={title} 
+            <OptimizedImage
+              src={thumbnailUrl}
+              alt={title}
               aspectRatio="16/9"
               className="transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex aspect-video w-full items-center justify-center font-mono text-(--color-text-secondary)">
-              <span className="group-hover:text-(--color-ubuntu-orange)">./preview_missing.jpg</span>
+              <span className="group-hover:text-(--color-ubuntu-orange)">
+                ./preview_missing.jpg
+              </span>
             </div>
           )}
         </div>
       </Link>
 
       <div className="flex flex-1 flex-col">
-        <Link 
-          to="/projects/$slug" 
+        <Link
+          to="/projects/$slug"
           params={{ slug }}
           data-umami-event="project-click"
           data-umami-event-project={slug}
@@ -59,7 +64,7 @@ export function ProjectCard({
             {title}
           </h3>
         </Link>
-        
+
         {shortDescription && (
           <p className="mb-4 flex-1 text-sm leading-relaxed text-(--color-text-secondary)">
             {shortDescription}
@@ -68,15 +73,17 @@ export function ProjectCard({
 
         <div className="mb-6 flex flex-wrap gap-2">
           {techStack.slice(0, 4).map((tech) => (
-            <span 
-              key={tech} 
+            <span
+              key={tech}
               className="rounded border border-(--color-border) bg-(--color-surface) px-2 py-1 text-xs text-(--color-text-secondary)"
             >
               {tech}
             </span>
           ))}
           {techStack.length > 4 && (
-            <span className="px-1 py-1 text-xs text-(--color-text-secondary)">+{techStack.length - 4}</span>
+            <span className="px-1 py-1 text-xs text-(--color-text-secondary)">
+              +{techStack.length - 4}
+            </span>
           )}
         </div>
 
@@ -96,15 +103,17 @@ export function ProjectCard({
             </a>
           )}
           {!liveDemoUrl && !githubUrl && (
-             <Link 
-               to="/projects/$slug" 
-               params={{ slug }} 
-               className="flex-1"
-               data-umami-event="project-click"
-               data-umami-event-project={slug}
-             >
-               <Button size="sm" className="w-full">Details</Button>
-             </Link>
+            <Link
+              to="/projects/$slug"
+              params={{ slug }}
+              className="flex-1"
+              data-umami-event="project-click"
+              data-umami-event-project={slug}
+            >
+              <Button size="sm" className="w-full">
+                Details
+              </Button>
+            </Link>
           )}
         </div>
       </div>

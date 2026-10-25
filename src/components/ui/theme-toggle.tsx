@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "./button";
 
 const applyTheme = (newTheme: "light" | "dark") => {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
   const root = document.documentElement;
   if (newTheme === "dark") {
     root.classList.add("dark");
@@ -16,11 +16,11 @@ const applyTheme = (newTheme: "light" | "dark") => {
 
 // Get initial theme from localStorage or system preference
 const getInitialTheme = (): "light" | "dark" => {
-  if (typeof window === 'undefined') return "dark";
-  
+  if (typeof window === "undefined") return "dark";
+
   const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
   if (savedTheme) return savedTheme;
-  
+
   if (window.matchMedia("(prefers-color-scheme: light)").matches) {
     return "light";
   }
@@ -43,10 +43,10 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button 
-      variant="secondary" 
-      size="sm" 
-      onClick={toggleTheme} 
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={toggleTheme}
       title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
       className="h-10 w-10 rounded-full p-0"
     >

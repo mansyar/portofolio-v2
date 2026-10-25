@@ -13,15 +13,7 @@ export const getSitemapData = query({
       .filter((q) => q.eq(q.field("status"), "published"))
       .collect();
 
-    const staticRoutes = [
-      "",
-      "/about",
-      "/skills",
-      "/projects",
-      "/blog",
-      "/uses",
-      "/contact",
-    ];
+    const staticRoutes = ["", "/about", "/skills", "/projects", "/blog", "/uses", "/contact"];
 
     return {
       staticRoutes,

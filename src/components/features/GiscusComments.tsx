@@ -1,24 +1,24 @@
-import { useEffect } from 'react';
-import './GiscusComments.css';
+import { useEffect } from "react";
+import "./GiscusComments.css";
 
 interface GiscusCommentsProps {
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
 }
 
-export function GiscusComments({ theme = 'dark' }: GiscusCommentsProps) {
+export function GiscusComments({ theme = "dark" }: GiscusCommentsProps) {
   useEffect(() => {
-    const giscusTheme = theme === 'dark' ? 'dark' : 'light';
-    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-    
+    const giscusTheme = theme === "dark" ? "dark" : "light";
+    const iframe = document.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+
     if (iframe) {
       iframe.contentWindow?.postMessage(
         { giscus: { setConfig: { theme: giscusTheme } } },
-        'https://giscus.app'
+        "https://giscus.app"
       );
     }
   }, [theme]);
 
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   return (
     <div className="giscus-wrapper">
@@ -40,7 +40,7 @@ export function GiscusComments({ theme = 'dark' }: GiscusCommentsProps) {
           data-reactions-enabled="1"
           data-emit-metadata="0"
           data-input-position="bottom"
-          data-theme={theme === 'dark' ? 'dark' : 'light'}
+          data-theme={theme === "dark" ? "dark" : "light"}
           data-lang="en"
           data-loading="lazy"
           crossOrigin="anonymous"

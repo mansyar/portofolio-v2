@@ -9,12 +9,15 @@ export const getPublic = query({
   args: {},
   handler: async (ctx) => {
     const settings = await ctx.db.query("siteSettings").collect();
-    
+
     // Transform array to key-value object
-    return settings.reduce((acc, setting) => {
-      acc[setting.key] = setting.value;
-      return acc;
-    }, {} as Record<string, unknown>);
+    return settings.reduce(
+      (acc, setting) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      },
+      {} as Record<string, unknown>
+    );
   },
 });
 
@@ -26,11 +29,14 @@ export const getAll = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
     const settings = await ctx.db.query("siteSettings").collect();
-    
-    return settings.reduce((acc, setting) => {
-      acc[setting.key] = setting.value;
-      return acc;
-    }, {} as Record<string, unknown>);
+
+    return settings.reduce(
+      (acc, setting) => {
+        acc[setting.key] = setting.value;
+        return acc;
+      },
+      {} as Record<string, unknown>
+    );
   },
 });
 
@@ -44,12 +50,12 @@ export const set = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    
+
     const existing = await ctx.db
       .query("siteSettings")
       .withIndex("by_key", (q) => q.eq("key", args.key))
       .unique();
-      
+
     if (existing) {
       await ctx.db.patch(existing._id, { value: args.value });
     } else {
@@ -70,17 +76,17 @@ export const setBulk = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    
+
     const keys = Object.keys(args.settings);
-    
+
     for (const key of keys) {
       const value = args.settings[key];
-      
+
       const existing = await ctx.db
         .query("siteSettings")
         .withIndex("by_key", (q) => q.eq("key", key))
         .unique();
-        
+
       if (existing) {
         await ctx.db.patch(existing._id, { value });
       } else {

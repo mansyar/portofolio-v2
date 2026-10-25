@@ -78,10 +78,7 @@ export const listAll = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
 
-    const skills = await ctx.db
-      .query("skills")
-      .withIndex("by_order")
-      .collect();
+    const skills = await ctx.db.query("skills").withIndex("by_order").collect();
 
     return skills;
   },
@@ -154,12 +151,7 @@ export const update = mutation({
     id: v.id("skills"),
     name: v.optional(v.string()),
     category: v.optional(
-      v.union(
-        v.literal("devops"),
-        v.literal("backend"),
-        v.literal("frontend"),
-        v.literal("tools")
-      )
+      v.union(v.literal("devops"), v.literal("backend"), v.literal("frontend"), v.literal("tools"))
     ),
     icon: v.optional(v.string()),
     proficiency: v.optional(v.number()),

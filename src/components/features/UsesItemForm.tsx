@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { api } from '../../../convex/_generated/api';
-import { useToastMutation } from '../../hooks/use-toast-mutation';
-import { Id } from '../../../convex/_generated/dataModel';
-import { useRouter } from '@tanstack/react-router';
+import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
+import { useToastMutation } from "../../hooks/use-toast-mutation";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { useRouter } from "@tanstack/react-router";
 
 export interface UsesItemFormData {
   category: string;
@@ -16,41 +16,40 @@ export interface UsesItemFormData {
 
 interface UsesItemFormProps {
   initialData?: UsesItemFormData & { id?: Id<"usesItems"> };
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   onSubmit?: () => void;
 }
 
 export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps) {
   const router = useRouter();
   const { mutate: createItem, isPending: isCreating } = useToastMutation(api.uses.create, {
-    successMessage: 'item saved successfully',
-    errorMessage: 'failed to save item'
+    successMessage: "item saved successfully",
+    errorMessage: "failed to save item",
   });
   const { mutate: updateItem, isPending: isUpdating } = useToastMutation(api.uses.update, {
-    successMessage: 'item updated successfully',
-    errorMessage: 'failed to update item'
+    successMessage: "item updated successfully",
+    errorMessage: "failed to update item",
   });
 
   const [formData, setFormData] = useState<UsesItemFormData>({
-    category: initialData?.category || '',
-    name: initialData?.name || '',
-    description: initialData?.description || '',
-    url: initialData?.url || '',
-    imageUrl: initialData?.imageUrl || '',
+    category: initialData?.category || "",
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    url: initialData?.url || "",
+    imageUrl: initialData?.imageUrl || "",
     displayOrder: initialData?.displayOrder ?? 0,
     isVisible: initialData?.isVisible ?? true,
   });
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+    const val = type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'displayOrder' ? parseInt(value as string) || 0 : val,
+      [name]: name === "displayOrder" ? parseInt(value as string, 10) || 0 : val,
     }));
   };
 
@@ -58,19 +57,19 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
     e.preventDefault();
 
     try {
-      if (mode === 'create') {
+      if (mode === "create") {
         await createItem(formData);
-      } else if (mode === 'edit' && initialData?.id) {
+      } else if (mode === "edit" && initialData?.id) {
         await updateItem({
           id: initialData.id,
           ...formData,
         });
       }
-      
+
       if (onSubmit) {
         onSubmit();
       } else {
-        router.navigate({ to: '/admin/uses' });
+        router.navigate({ to: "/admin/uses" });
       }
     } catch {
       // Handled by toast
@@ -81,7 +80,9 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
     <div className="card max-w-4xl">
       <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-surface) px-4 py-2">
         <div className="text-sm text-(--color-text-secondary)">
-          {mode === 'create' ? 'new_uses_item.ts' : `edit_uses_item_${initialData?.name.toLowerCase().replace(/\s+/g, '_')}.ts`}
+          {mode === "create"
+            ? "new_uses_item.ts"
+            : `edit_uses_item_${initialData?.name.toLowerCase().replace(/\s+/g, "_")}.ts`}
         </div>
       </div>
 
@@ -90,7 +91,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
           {/* Left Column: Basic Info */}
           <div className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-xs font-mono text-(--color-text-secondary)">Name</label>
+              <label
+                htmlFor="name"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Name
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">$</span>
                 <input
@@ -107,7 +113,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="category" className="block text-xs font-mono text-(--color-text-secondary)">Category</label>
+              <label
+                htmlFor="category"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Category
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">#</span>
                 <input
@@ -124,7 +135,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="displayOrder" className="block text-xs font-mono text-(--color-text-secondary)">Display Order</label>
+              <label
+                htmlFor="displayOrder"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Display Order
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">#</span>
                 <input
@@ -150,7 +166,10 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
                   onChange={handleChange}
                   className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 focus:ring-offset-0 accent-(--color-ubuntu-orange)"
                 />
-                <label htmlFor="isVisible" className="text-sm font-mono text-(--color-text-primary)">
+                <label
+                  htmlFor="isVisible"
+                  className="text-sm font-mono text-(--color-text-primary)"
+                >
                   Visible on public site
                 </label>
               </div>
@@ -160,7 +179,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
           {/* Right Column: URLs */}
           <div className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="url" className="block text-xs font-mono text-(--color-text-secondary)">Link URL (Optional)</label>
+              <label
+                htmlFor="url"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Link URL (Optional)
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">&gt;</span>
                 <input
@@ -176,7 +200,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="imageUrl" className="block text-xs font-mono text-(--color-text-secondary)">Image URL (Optional)</label>
+              <label
+                htmlFor="imageUrl"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Image URL (Optional)
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">&gt;</span>
                 <input
@@ -195,7 +224,12 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
 
         {/* Full Width Section */}
         <div className="space-y-2">
-          <label htmlFor="description" className="block text-xs font-mono text-(--color-text-secondary)">Description (Optional)</label>
+          <label
+            htmlFor="description"
+            className="block text-xs font-mono text-(--color-text-secondary)"
+          >
+            Description (Optional)
+          </label>
           <textarea
             id="description"
             name="description"
@@ -213,18 +247,18 @@ export function UsesItemForm({ initialData, mode, onSubmit }: UsesItemFormProps)
             type="button"
             onClick={() => {
               if (onSubmit) onSubmit();
-              else router.navigate({ to: '/admin/uses' });
+              else router.navigate({ to: "/admin/uses" });
             }}
             className="px-4 py-2 text-sm font-mono text-(--color-text-secondary) hover:text-(--color-text-primary) transition-colors"
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={isCreating || isUpdating}
-            className="terminal-button"
-          >
-            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Item' : 'Update Item')}
+          <button type="submit" disabled={isCreating || isUpdating} className="terminal-button">
+            {isCreating || isUpdating
+              ? "Saving..."
+              : mode === "create"
+                ? "Create Item"
+                : "Update Item"}
           </button>
         </div>
       </form>

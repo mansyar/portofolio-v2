@@ -47,17 +47,14 @@ export const getRouter = () => {
     defaultPreloadStaleTime: 0,
     defaultPendingComponent: LoadingSpinner,
     defaultPendingMs: 500,
-    defaultErrorComponent: ({ error, reset }) => (
-      <ErrorFallback error={error} reset={reset} />
-    ),
+    defaultErrorComponent: ({ error, reset }) => <ErrorFallback error={error} reset={reset} />,
 
     // Wrap the router with Convex Auth and Query providers
+    // biome-ignore lint/correctness/noComponentHookFactories: TanStack Router's `Wrap` option requires a component, and this one closes over the per-instance `queryClient` created above; `getRouter` runs once per app, not per render.
     Wrap: function WrapComponent({ children }) {
       return (
         <ConvexAuthProvider client={convex}>
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         </ConvexAuthProvider>
       );
     },

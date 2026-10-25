@@ -1,12 +1,14 @@
-import { useState, lazy, Suspense } from 'react';
-import { useQuery } from 'convex/react';
-import { useToastMutation } from '../../hooks/use-toast-mutation';
-import { api } from '../../../convex/_generated/api';
-import { Id } from '../../../convex/_generated/dataModel';
-import { useRouter } from '@tanstack/react-router';
-import { Terminal, Save, X, Globe, EyeOff, Calendar } from 'lucide-react';
+import { useState, lazy, Suspense } from "react";
+import { useQuery } from "convex/react";
+import { useToastMutation } from "../../hooks/use-toast-mutation";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { useRouter } from "@tanstack/react-router";
+import { Terminal, Save, X, Globe, EyeOff, Calendar } from "lucide-react";
 
-const RichTextEditor = lazy(() => import('../editor/RichTextEditor').then(m => ({ default: m.RichTextEditor })));
+const RichTextEditor = lazy(() =>
+  import("../editor/RichTextEditor").then((m) => ({ default: m.RichTextEditor }))
+);
 
 function EditorSkeleton() {
   return (
@@ -25,13 +27,13 @@ interface BlogPostFormData {
   coverImageUrl: string;
   categoryId?: Id<"blogCategories">;
   tagIds: Id<"blogTags">[];
-  status: 'draft' | 'published';
+  status: "draft" | "published";
   scheduledAt?: number;
 }
 
 interface BlogPostFormProps {
   initialData?: BlogPostFormData & { id?: Id<"blogPosts"> };
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
 }
 
 function slugify(text: string) {
@@ -39,52 +41,54 @@ function slugify(text: string) {
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
 }
 
 export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
   const router = useRouter();
   const categories = useQuery(api.blog.getCategories);
   const tags = useQuery(api.blog.getTags);
-  
+
   const { mutate: createPost, isPending: isCreating } = useToastMutation(api.blog.createPost, {
-    successMessage: 'post published successfully',
-    errorMessage: 'failed to publish post'
+    successMessage: "post published successfully",
+    errorMessage: "failed to publish post",
   });
   const { mutate: updatePost, isPending: isUpdating } = useToastMutation(api.blog.updatePost, {
-    successMessage: 'post updated successfully',
-    errorMessage: 'failed to update post'
+    successMessage: "post updated successfully",
+    errorMessage: "failed to update post",
   });
 
   const [formData, setFormData] = useState<BlogPostFormData>({
-    title: initialData?.title || '',
-    slug: initialData?.slug || '',
-    excerpt: initialData?.excerpt || '',
-    content: initialData?.content || '',
-    coverImageUrl: initialData?.coverImageUrl || '',
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    excerpt: initialData?.excerpt || "",
+    content: initialData?.content || "",
+    coverImageUrl: initialData?.coverImageUrl || "",
     categoryId: initialData?.categoryId,
     tagIds: initialData?.tagIds || [],
-    status: initialData?.status || 'draft',
+    status: initialData?.status || "draft",
     scheduledAt: initialData?.scheduledAt,
   });
 
-  const [autoSlug, setAutoSlug] = useState(mode === 'create');
+  const [autoSlug, setAutoSlug] = useState(mode === "create");
 
   const handleTitleChange = (title: string) => {
-    if (autoSlug && mode === 'create') {
-      setFormData(prev => ({ ...prev, title, slug: slugify(title) }));
+    if (autoSlug && mode === "create") {
+      setFormData((prev) => ({ ...prev, title, slug: slugify(title) }));
     } else {
-      setFormData(prev => ({ ...prev, title }));
+      setFormData((prev) => ({ ...prev, title }));
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev: BlogPostFormData) => ({ ...prev, [name]: value }));
-    
-    if (name === 'slug') {
+
+    if (name === "slug") {
       setAutoSlug(false);
     }
   };
@@ -93,8 +97,8 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
     setFormData((prev: BlogPostFormData) => ({
       ...prev,
       tagIds: prev.tagIds.includes(tagId)
-        ? prev.tagIds.filter(id => id !== tagId)
-        : [...prev.tagIds, tagId]
+        ? prev.tagIds.filter((id) => id !== tagId)
+        : [...prev.tagIds, tagId],
     }));
   };
 
@@ -102,12 +106,12 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
     e.preventDefault();
 
     try {
-      if (mode === 'create') {
+      if (mode === "create") {
         await createPost(formData);
       } else if (initialData?.id) {
         await updatePost({ id: initialData.id, ...formData });
       }
-      router.navigate({ to: '/admin/blog' });
+      router.navigate({ to: "/admin/blog" });
     } catch {
       // Handled by toast
     }
@@ -126,7 +130,7 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
                 type="text"
                 name="title"
                 value={formData.title}
-                onChange={e => handleTitleChange(e.target.value)}
+                onChange={(e) => handleTitleChange(e.target.value)}
                 required
                 className="input"
                 placeholder="Blog post title..."
@@ -165,10 +169,12 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           </div>
 
           <Suspense fallback={<EditorSkeleton />}>
-            <RichTextEditor 
+            <RichTextEditor
               label="Content"
               content={formData.content}
-              onChange={(content: string) => setFormData((prev: BlogPostFormData) => ({ ...prev, content }))}
+              onChange={(content: string) =>
+                setFormData((prev: BlogPostFormData) => ({ ...prev, content }))
+              }
               placeholder="Write your post here..."
             />
           </Suspense>
@@ -181,15 +187,20 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
               <Terminal size={14} className="text-(--color-ubuntu-orange)" />
               PUBLISHING
             </h3>
-            
+
             <div className="flex items-center justify-between p-2 rounded bg-[rgba(255,255,255,0.05)]">
               <span className="text-xs font-mono">Status</span>
               <button
                 type="button"
-                onClick={() => setFormData((prev: BlogPostFormData) => ({ ...prev, status: prev.status === 'draft' ? 'published' : 'draft' }))}
-                className={`admin-badge ${formData.status === 'published' ? 'success' : 'neutral'} cursor-pointer flex items-center gap-1`}
+                onClick={() =>
+                  setFormData((prev: BlogPostFormData) => ({
+                    ...prev,
+                    status: prev.status === "draft" ? "published" : "draft",
+                  }))
+                }
+                className={`admin-badge ${formData.status === "published" ? "success" : "neutral"} cursor-pointer flex items-center gap-1`}
               >
-                {formData.status === 'published' ? <Globe size={10} /> : <EyeOff size={10} />}
+                {formData.status === "published" ? <Globe size={10} /> : <EyeOff size={10} />}
                 {formData.status.toUpperCase()}
               </button>
             </div>
@@ -203,12 +214,16 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
                 <input
                   type="datetime-local"
                   name="scheduledAt"
-                  value={formData.scheduledAt ? new Date(formData.scheduledAt).toISOString().slice(0, 16) : ''}
+                  value={
+                    formData.scheduledAt
+                      ? new Date(formData.scheduledAt).toISOString().slice(0, 16)
+                      : ""
+                  }
                   onChange={(e) => {
                     const val = e.target.value;
-                    setFormData(prev => ({ 
-                      ...prev, 
-                      scheduledAt: val ? new Date(val).getTime() : undefined 
+                    setFormData((prev) => ({
+                      ...prev,
+                      scheduledAt: val ? new Date(val).getTime() : undefined,
                     }));
                   }}
                   className="input text-xs bg-transparent border-none w-full"
@@ -223,15 +238,17 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
 
             <div className="input-container">
               <label className="input-label">Category</label>
-              <select 
-                name="categoryId" 
-                value={formData.categoryId || ''} 
+              <select
+                name="categoryId"
+                value={formData.categoryId || ""}
                 onChange={handleChange}
                 className="input bg-[rgba(0,0,0,0.2)] border border-(--color-border) p-2 rounded text-sm w-full outline-none focus:border-(--color-ubuntu-orange)"
               >
                 <option value="">Select Category</option>
-                {categories?.map(cat => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                {categories?.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -253,23 +270,23 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           </div>
 
           <div className="terminal-card p-4 space-y-4 border border-(--color-border) bg-[rgba(0,0,0,0.2)] rounded">
-             <h3 className="text-sm font-bold border-bottom border-(--color-border) pb-2">TAGS</h3>
-             <div className="flex flex-wrap gap-2">
-                {tags?.map(tag => (
-                  <button
-                    key={tag._id}
-                    type="button"
-                    onClick={() => handleTagToggle(tag._id)}
-                    className={`text-[10px] px-2 py-1 rounded border transition-colors ${
-                      formData.tagIds.includes(tag._id)
-                        ? 'bg-(--color-ubuntu-orange) border-(--color-ubuntu-orange) text-white'
-                        : 'bg-transparent border-(--color-border) text-(--color-text-secondary) hover:border-(--color-text-secondary)'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
-             </div>
+            <h3 className="text-sm font-bold border-bottom border-(--color-border) pb-2">TAGS</h3>
+            <div className="flex flex-wrap gap-2">
+              {tags?.map((tag) => (
+                <button
+                  key={tag._id}
+                  type="button"
+                  onClick={() => handleTagToggle(tag._id)}
+                  className={`text-[10px] px-2 py-1 rounded border transition-colors ${
+                    formData.tagIds.includes(tag._id)
+                      ? "bg-(--color-ubuntu-orange) border-(--color-ubuntu-orange) text-white"
+                      : "bg-transparent border-(--color-border) text-(--color-text-secondary) hover:border-(--color-text-secondary)"
+                  }`}
+                >
+                  {tag.name}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -278,16 +295,16 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
               disabled={isCreating || isUpdating}
               className="terminal-button btn-primary w-full flex items-center justify-center gap-2"
             >
-              {(isCreating || isUpdating) ? (
+              {isCreating || isUpdating ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
                 <Save size={18} />
               )}
-              {mode === 'create' ? 'Deploy Post' : 'Overwrite Post'}
+              {mode === "create" ? "Deploy Post" : "Overwrite Post"}
             </button>
             <button
               type="button"
-              onClick={() => router.navigate({ to: '/admin/blog' })}
+              onClick={() => router.navigate({ to: "/admin/blog" })}
               className="terminal-button btn-secondary w-full flex items-center justify-center gap-2"
             >
               <X size={18} />

@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
-import { toast } from 'sonner';
-import { Send, Loader2 } from 'lucide-react';
-import './NewsletterForm.css';
+import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { toast } from "sonner";
+import { Send, Loader2 } from "lucide-react";
+import "./NewsletterForm.css";
 
 export function NewsletterForm() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const subscribe = useMutation(api.newsletter.subscribe);
 
@@ -18,14 +18,14 @@ export function NewsletterForm() {
     try {
       const result = await subscribe({ email });
       if (result.alreadySubscribed) {
-        toast.info('YOU_ARE_ALREADY_SUBSCRIBED');
+        toast.info("YOU_ARE_ALREADY_SUBSCRIBED");
       } else {
-        toast.success('SUBSCRIPTION_SUCCESSFUL');
+        toast.success("SUBSCRIPTION_SUCCESSFUL");
       }
-      setEmail('');
+      setEmail("");
     } catch (error) {
-      toast.error('SUBSCRIPTION_FAILED', {
-        description: error instanceof Error ? error.message : "Unknown error"
+      toast.error("SUBSCRIPTION_FAILED", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     } finally {
       setLoading(false);
@@ -52,11 +52,7 @@ export function NewsletterForm() {
           className="newsletter-inline-submit"
           aria-label="Subscribe"
         >
-          {loading ? (
-            <Loader2 className="animate-spin" size={14} />
-          ) : (
-            <Send size={14} />
-          )}
+          {loading ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
         </button>
       </div>
     </form>

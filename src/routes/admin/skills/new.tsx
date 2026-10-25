@@ -1,16 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { SkillForm } from '../../../components/features/SkillForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { SkillForm } from "../../../components/features/SkillForm";
 
-export const Route = createFileRoute('/admin/skills/new')({
+export const Route = createFileRoute("/admin/skills/new")({
   component: NewSkillPage,
 });
 
 function NewSkillPage() {
   // We can fetch existing skills to determine the next display order
   const skills = useQuery(api.skills.listAll);
-  
+
   const nextDisplayOrder = skills ? skills.length : 0;
 
   return (
@@ -22,15 +22,15 @@ function NewSkillPage() {
         </p>
       </div>
 
-      <SkillForm 
-        mode="create" 
+      <SkillForm
+        mode="create"
         initialData={{
-          name: '',
-          category: 'frontend',
+          name: "",
+          category: "frontend",
           proficiency: 50,
           displayOrder: nextDisplayOrder,
-          isVisible: true
-        }} 
+          isVisible: true,
+        }}
       />
     </div>
   );

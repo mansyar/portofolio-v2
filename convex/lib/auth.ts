@@ -1,4 +1,4 @@
-import { QueryCtx, MutationCtx, ActionCtx } from "../_generated/server";
+import type { QueryCtx, MutationCtx, ActionCtx } from "../_generated/server";
 
 /**
  * Admin email(s) that have full CMS access.
@@ -46,20 +46,22 @@ export async function requireAdmin(
 
         // If still no email, check authAccounts table
         if (!email) {
-          // System tables are tricky to type explicitly without Generics. 
+          // System tables are tricky to type explicitly without Generics.
           // Using a safe cast to avoid 'any' while accessing internal query methods.
-          type FilterBuilder = { 
-            eq: (a: unknown, b: unknown) => unknown; 
-            field: (f: string) => unknown 
+          type FilterBuilder = {
+            eq: (a: unknown, b: unknown) => unknown;
+            field: (f: string) => unknown;
           };
-          const authAccount = await (db.query("authAccounts") as unknown as { 
-            filter: (cb: (q: FilterBuilder) => unknown) => { 
-              first: () => Promise<{ providerAccountId: string } | null> 
-            } 
-          })
+          const authAccount = await (
+            db.query("authAccounts") as unknown as {
+              filter: (cb: (q: FilterBuilder) => unknown) => {
+                first: () => Promise<{ providerAccountId: string } | null>;
+              };
+            }
+          )
             .filter((q) => q.eq(q.field("userId"), userId))
             .first();
-          
+
           if (authAccount) {
             email = authAccount.providerAccountId;
           }
@@ -73,9 +75,12 @@ export async function requireAdmin(
         // We use unknown cast here because ActionCtx.runQuery type definitions
         // might not always expose internal query execution in all environments
         // but it is supported by the runtime.
-        email = (await (ctx as unknown as { 
-          runQuery: (fn: unknown, args: unknown) => Promise<string | null> 
-        }).runQuery(internal.admin.getUserEmail, { userId: userIdStr })) ?? undefined;
+        email =
+          (await (
+            ctx as unknown as {
+              runQuery: (fn: unknown, args: unknown) => Promise<string | null>;
+            }
+          ).runQuery(internal.admin.getUserEmail, { userId: userIdStr })) ?? undefined;
       } catch (err) {
         console.error("Failed to resolve email in action:", err);
       }
@@ -83,7 +88,9 @@ export async function requireAdmin(
   }
 
   if (!email || !ADMIN_EMAILS.includes(email)) {
-    console.error(`Unauthorized access for email: ${email || 'unknown'} (Subject: ${identity.subject})`);
+    console.error(
+      `Unauthorized access for email: ${email || "unknown"} (Subject: ${identity.subject})`
+    );
     throw new Error("Unauthorized: Not an admin");
   }
 

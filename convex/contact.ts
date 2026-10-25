@@ -20,7 +20,7 @@ export const sendSlackNotification = internalAction({
   },
   handler: async (_ctx, args) => {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-    
+
     if (!webhookUrl) {
       console.warn("SLACK_WEBHOOK_URL not configured - skipping notification");
       return;
@@ -34,33 +34,31 @@ export const sendSlackNotification = internalAction({
           blocks: [
             {
               type: "header",
-              text: { type: "plain_text", text: "📬 New Contact Submission", emoji: true }
+              text: { type: "plain_text", text: "📬 New Contact Submission", emoji: true },
             },
             {
-              type: "divider"
+              type: "divider",
             },
             {
               type: "section",
               fields: [
                 { type: "mrkdwn", text: `*From:*\n${args.name}` },
                 { type: "mrkdwn", text: `*Email:*\n${args.email}` },
-              ]
+              ],
             },
             {
               type: "section",
-              text: { type: "mrkdwn", text: `*Subject:*\n${args.subject}` }
+              text: { type: "mrkdwn", text: `*Subject:*\n${args.subject}` },
             },
             {
               type: "section",
-              text: { type: "mrkdwn", text: `*Message:*\n>>> ${args.message}` }
+              text: { type: "mrkdwn", text: `*Message:*\n>>> ${args.message}` },
             },
             {
               type: "context",
-              elements: [
-                { type: "mrkdwn", text: `Submitted at ${new Date().toLocaleString()}` }
-              ]
-            }
-          ]
+              elements: [{ type: "mrkdwn", text: `Submitted at ${new Date().toLocaleString()}` }],
+            },
+          ],
         }),
       });
 
@@ -144,10 +142,7 @@ export const listAll = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
-    return await ctx.db
-      .query("contactSubmissions")
-      .order("desc")
-      .collect();
+    return await ctx.db.query("contactSubmissions").order("desc").collect();
   },
 });
 

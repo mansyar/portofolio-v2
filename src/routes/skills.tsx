@@ -1,51 +1,51 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '../../convex/_generated/api'
-import { Button } from '../components/ui/button'
-import { Seo } from '../components/seo'
-import { Terminal } from 'lucide-react'
-import { Suspense } from 'react'
-import { SkillsGrid } from '../components/features/skills/SkillsGrid'
-import { SectionSkeleton } from '../components/ui/section-skeleton'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../convex/_generated/api";
+import { Button } from "../components/ui/button";
+import { Seo } from "../components/seo";
+import { Terminal } from "lucide-react";
+import { Suspense } from "react";
+import { SkillsGrid } from "../components/features/skills/SkillsGrid";
+import { SectionSkeleton } from "../components/ui/section-skeleton";
 
-type Category = 'all' | 'frontend' | 'backend' | 'devops' | 'tools';
+type Category = "all" | "frontend" | "backend" | "devops" | "tools";
 
-export const Route = createFileRoute('/skills')({
+export const Route = createFileRoute("/skills")({
   component: Skills,
   validateSearch: (search: Record<string, unknown>): { category?: Category } => {
     return {
-      category: (search.category as Category) || 'all',
-    }
+      category: (search.category as Category) || "all",
+    };
   },
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(convexQuery(api.skills.listVisible, {}))
-  }
-})
+    await context.queryClient.ensureQueryData(convexQuery(api.skills.listVisible, {}));
+  },
+});
 
 function Skills() {
-  const { category } = Route.useSearch()
-  const navigate = useNavigate({ from: Route.fullPath })
+  const { category } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
 
   const setCategory = (newCategory: Category) => {
     navigate({
       search: { category: newCategory },
       replace: true,
-    })
-  }
+    });
+  };
 
   const categories: { id: Category; label: string }[] = [
-    { id: 'all', label: 'All Systems' },
-    { id: 'frontend', label: 'Frontend' },
-    { id: 'backend', label: 'Backend' },
-    { id: 'devops', label: 'DevOps' },
-    { id: 'tools', label: 'Tools' },
+    { id: "all", label: "All Systems" },
+    { id: "frontend", label: "Frontend" },
+    { id: "backend", label: "Backend" },
+    { id: "devops", label: "DevOps" },
+    { id: "tools", label: "Tools" },
   ];
 
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
-      <Seo 
-        title="Skills & Tech Stack | Muhammad Ansyar Rafi Putra" 
-        description="Technical skills and proficiency of Muhammad Ansyar Rafi Putra in web development, DevOps, and cloud infrastructure." 
+      <Seo
+        title="Skills & Tech Stack | Muhammad Ansyar Rafi Putra"
+        description="Technical skills and proficiency of Muhammad Ansyar Rafi Putra in web development, DevOps, and cloud infrastructure."
       />
 
       <div className="flex flex-col gap-4">
@@ -54,7 +54,8 @@ function Skills() {
           Technical Proficiency
         </h1>
         <p className="max-w-2xl text-(--color-text-secondary)">
-          A comprehensive list of technologies I work with. Proficiency levels indicate my comfort and experience level with each tool in a production environment.
+          A comprehensive list of technologies I work with. Proficiency levels indicate my comfort
+          and experience level with each tool in a production environment.
         </p>
       </div>
 
@@ -62,7 +63,7 @@ function Skills() {
         {categories.map((cat) => (
           <Button
             key={cat.id}
-            variant={category === cat.id ? 'primary' : 'secondary'}
+            variant={category === cat.id ? "primary" : "secondary"}
             size="sm"
             onClick={() => setCategory(cat.id)}
             className="font-mono text-xs capitalize md:text-sm"
@@ -73,8 +74,8 @@ function Skills() {
       </div>
 
       <Suspense fallback={<SectionSkeleton items={4} />}>
-        <SkillsGrid category={category || 'all'} />
+        <SkillsGrid category={category || "all"} />
       </Suspense>
     </div>
-  )
+  );
 }

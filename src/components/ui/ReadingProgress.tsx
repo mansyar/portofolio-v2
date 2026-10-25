@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import './reading-progress.css';
+import { useState, useEffect } from "react";
+import "./reading-progress.css";
 
 export function ReadingProgress() {
   const [progress, setProgress] = useState(0);
@@ -12,8 +12,8 @@ export function ReadingProgress() {
       setProgress(Math.min(100, Math.max(0, scrollPercent)));
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (

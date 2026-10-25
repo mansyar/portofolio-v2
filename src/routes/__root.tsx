@@ -1,31 +1,31 @@
-import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import type { QueryClient } from '@tanstack/react-query'
+import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
 
-import Header from '../components/Header'
-import { Footer } from '../components/layout/Footer'
+import Header from "../components/Header";
+import { Footer } from "../components/layout/Footer";
 
-import '../styles/variables.css'
-import '../styles/globals.css'
-import '../styles/toast.css'
-import { ToastProvider } from '../components/ui/toast-provider'
-import { UmamiScript } from '../components/analytics/UmamiScript'
+import "../styles/variables.css";
+import "../styles/globals.css";
+import "../styles/toast.css";
+import { ToastProvider } from "../components/ui/toast-provider";
+import { UmamiScript } from "../components/analytics/UmamiScript";
 
 // Define the router context interface
 export interface RouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
 }
 
-import { NotFound } from '../components/NotFound'
+import { NotFound } from "../components/NotFound";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
       {
         title: "Muhammad Ansyar Rafi Putra | Portfolio",
@@ -36,7 +36,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
   shellComponent: RootDocument,
   notFoundComponent: NotFound,
-})
+});
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -46,18 +46,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {/* Preconnect to font origins to speed up connection establishment */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* Preload the font stylesheet for faster FCP/LCP */}
-        <link 
-          rel="preload" 
-          as="style" 
-          href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
+        <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap"
         />
-        
+
         {/* Load font stylesheet with display swap for non-blocking render */}
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" 
-          rel="stylesheet" 
+        <link
+          href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap"
+          rel="stylesheet"
         />
 
         {/* Umami Analytics */}
@@ -68,14 +68,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body suppressHydrationWarning>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </div>
         <ToastProvider />
         <Scripts />
       </body>
     </html>
-  )
+  );
 }

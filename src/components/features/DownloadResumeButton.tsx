@@ -1,7 +1,7 @@
-import { useQuery } from 'convex/react';
-import { api } from '../../../convex/_generated/api';
-import { FileDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { FileDown } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function DownloadResumeButton() {
   const [isMounted, setIsMounted] = useState(false);
@@ -30,7 +30,7 @@ export function DownloadResumeButton() {
 
   const handleDownload = async () => {
     if (!profile || !experiences || !education || !skills || !certifications) {
-      alert('Data still loading, please wait...');
+      alert("Data still loading, please wait...");
       return;
     }
 
@@ -38,41 +38,43 @@ export function DownloadResumeButton() {
     try {
       // Lazy load heavy PDF libraries only on demand
       const [reactPdf, { ResumeDocument }] = await Promise.all([
-        import('@react-pdf/renderer'),
-        import('./ResumeDocument')
+        import("@react-pdf/renderer"),
+        import("./ResumeDocument"),
       ]);
 
       const { pdf, Document, Page, Text, View, StyleSheet } = reactPdf;
       const pdfComponents = { Document, Page, Text, View, StyleSheet };
 
-      const doc = <ResumeDocument 
-        profile={profile} 
-        experiences={experiences} 
-        education={education} 
-        skills={skills} 
-        certifications={certifications} 
-        pdfComponents={pdfComponents}
-      />;
-      
+      const doc = (
+        <ResumeDocument
+          profile={profile}
+          experiences={experiences}
+          education={education}
+          skills={skills}
+          certifications={certifications}
+          pdfComponents={pdfComponents}
+        />
+      );
+
       const blob = await pdf(doc).toBlob();
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `Resume_${profile.fullName.replace(/\s+/g, '_')}.pdf`;
+      link.download = `Resume_${profile.fullName.replace(/\s+/g, "_")}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to generate PDF:', error);
-      alert('Failed to generate PDF. Check console for details.');
+      console.error("Failed to generate PDF:", error);
+      alert("Failed to generate PDF. Check console for details.");
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <button 
+    <button
       onClick={handleDownload}
       disabled={isGenerating}
       className="terminal-button btn-primary flex items-center gap-2"

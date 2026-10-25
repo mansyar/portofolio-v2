@@ -24,7 +24,7 @@ export const generateUploadUrl = mutation({
 export const saveFile = mutation({
   args: {
     storageId: v.id("_storage"),
-    username: v.optional(v.string()), 
+    username: v.optional(v.string()),
     filename: v.string(),
     mimeType: v.string(),
     size: v.number(),
@@ -32,20 +32,20 @@ export const saveFile = mutation({
   },
   handler: async (ctx, args) => {
     const { email } = await requireAdmin(ctx);
-    
+
     const id = await ctx.db.insert("mediaFiles", {
-        storageId: args.storageId,
-        filename: args.filename,
-        originalFilename: args.filename,
-        mimeType: args.mimeType,
-        size: args.size,
-        altText: args.altText,
+      storageId: args.storageId,
+      filename: args.filename,
+      originalFilename: args.filename,
+      mimeType: args.mimeType,
+      size: args.size,
+      altText: args.altText,
     });
 
     await ctx.runMutation(internal.activity.log, {
       actorEmail: email,
       action: "create",
-      entityType: "media", 
+      entityType: "media",
       entityId: id,
       entityTitle: args.filename,
       metadata: { mimeType: args.mimeType },
@@ -77,7 +77,7 @@ export const remove = mutation({
     await ctx.runMutation(internal.activity.log, {
       actorEmail: email,
       action: "delete",
-      entityType: "media", 
+      entityType: "media",
       entityId: args.id,
       entityTitle: file.filename,
     });
@@ -96,10 +96,7 @@ export const list = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
 
-    const files = await ctx.db
-      .query("mediaFiles")
-      .order("desc")
-      .collect();
+    const files = await ctx.db.query("mediaFiles").order("desc").collect();
 
     const filesWithUrls = await Promise.all(
       files.map(async (file) => ({

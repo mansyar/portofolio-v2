@@ -19,12 +19,19 @@ export function BlogCard({
   readingTime,
   category,
 }: BlogCardProps) {
-  const date = publishedAt 
-    ? new Date(publishedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
-    : 'Draft';
+  const date = publishedAt
+    ? new Date(publishedAt).toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "Draft";
 
   return (
-    <Card title={`${slug}.md`} className="h-full transition-transform duration-200 hover:-translate-y-1">
+    <Card
+      title={`${slug}.md`}
+      className="h-full transition-transform duration-200 hover:-translate-y-1"
+    >
       <div className="flex h-full flex-col">
         <div className="mb-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs text-(--color-text-secondary)">
           <div className="flex items-center gap-1">
@@ -45,9 +52,9 @@ export function BlogCard({
           )}
         </div>
 
-        <Link 
-          to="/blog/$slug" 
-          params={{ slug }} 
+        <Link
+          to="/blog/$slug"
+          params={{ slug }}
           className="group"
           data-umami-event="blog-click"
           data-umami-event-post={slug}
@@ -56,7 +63,7 @@ export function BlogCard({
             {title}
           </h2>
         </Link>
-        
+
         {excerpt && (
           <p className="mb-4 flex-1 text-sm leading-relaxed text-(--color-text-secondary)">
             {excerpt}
@@ -64,8 +71,8 @@ export function BlogCard({
         )}
 
         <div className="mt-auto pt-2">
-          <Link 
-            to="/blog/$slug" 
+          <Link
+            to="/blog/$slug"
             params={{ slug }}
             className="inline-flex items-center font-mono text-sm text-(--color-terminal-cyan) hover:underline"
             data-umami-event="blog-click"

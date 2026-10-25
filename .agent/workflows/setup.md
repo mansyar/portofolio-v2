@@ -34,7 +34,7 @@ Select options:
 ```bash
 pnpm add convex @convex-dev/react-query @convex-dev/auth @auth/core
 pnpm add @tanstack/react-query sharp clsx
-pnpm add -D @types/node typescript eslint prettier
+pnpm add -D @types/node typescript @biomejs/biome
 ```
 
 ---
@@ -184,9 +184,11 @@ Create `docker/Dockerfile` and `docker/docker-compose.yml` using templates from 
 
 ---
 
-## Step 11: Configure ESLint
+## Step 11: Configure Biome
 
-Create `eslint.config.js` with TypeScript and React hooks support.
+Create `biome.json` with the formatter and linter settings (2-space indent, width 100,
+double quotes, `noExplicitAny` at error). Ignore generated files: `convex/_generated/`
+and `src/routeTree.gen.ts`.
 
 ---
 
@@ -212,5 +214,5 @@ Open http://localhost:3000 to verify the app runs.
 - [ ] Auth helpers created
 - [ ] CSS variables defined
 - [ ] Docker files created
-- [ ] ESLint configured
+- [ ] Biome configured
 - [ ] Dev server runs successfully

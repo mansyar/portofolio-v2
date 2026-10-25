@@ -1,6 +1,5 @@
 import { ConvexReactClient } from "convex/react";
 
-
 /**
  * Convex URL from environment variables.
  * For self-hosted Convex, this should be your deployed backend URL.

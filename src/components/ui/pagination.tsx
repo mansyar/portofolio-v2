@@ -9,7 +9,13 @@ interface PaginationProps {
   searchParams?: Record<string, unknown>;
 }
 
-export function Pagination({ currentPage, totalPages, baseUrl, className, searchParams = {} }: PaginationProps) {
+export function Pagination({
+  currentPage,
+  totalPages,
+  baseUrl,
+  className,
+  searchParams = {},
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (

@@ -6,16 +6,25 @@ export const getStats = query({
   handler: async (ctx) => {
     await requireAdmin(ctx);
 
-    const projectsCount = await ctx.db.query("projects").collect().then(res => res.length);
-    const skillsCount = await ctx.db.query("skills").collect().then(res => res.length);
-    const blogPostsCount = await ctx.db.query("blogPosts").collect().then(res => res.length);
-    
+    const projectsCount = await ctx.db
+      .query("projects")
+      .collect()
+      .then((res) => res.length);
+    const skillsCount = await ctx.db
+      .query("skills")
+      .collect()
+      .then((res) => res.length);
+    const blogPostsCount = await ctx.db
+      .query("blogPosts")
+      .collect()
+      .then((res) => res.length);
+
     // Unread messages
     const unreadMessagesCount = await ctx.db
       .query("contactSubmissions")
       .withIndex("by_read", (q) => q.eq("isRead", false))
       .collect()
-      .then(res => res.length);
+      .then((res) => res.length);
 
     return {
       projects: projectsCount,

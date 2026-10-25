@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { ProjectForm } from '../../../components/features/ProjectForm';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { ProjectForm } from "../../../components/features/ProjectForm";
 
-export const Route = createFileRoute('/admin/projects/$id')({
+export const Route = createFileRoute("/admin/projects/$id")({
   component: EditProjectPage,
 });
 
@@ -24,10 +24,7 @@ function EditProjectPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4 text-(--color-text-secondary)">
         <p className="font-mono">Project not found</p>
-        <button 
-          onClick={() => history.back()}
-          className="terminal-button"
-        >
+        <button onClick={() => history.back()} className="terminal-button">
           Go Back
         </button>
       </div>
@@ -43,23 +40,23 @@ function EditProjectPage() {
         </p>
       </div>
 
-      <ProjectForm 
-        mode="edit" 
+      <ProjectForm
+        mode="edit"
         initialData={{
-            id: project._id,
-            title: project.title,
-            slug: project.slug,
-            shortDescription: project.shortDescription || '',
-            fullDescription: project.fullDescription || '',
-            thumbnailUrl: project.thumbnailUrl || '',
-            images: project.images,
-            techStack: project.techStack,
-            liveDemoUrl: project.liveDemoUrl || '',
-            githubUrl: project.githubUrl || '',
-            isFeatured: project.isFeatured,
-            displayOrder: project.displayOrder,
-            isVisible: project.isVisible,
-        }} 
+          id: project._id,
+          title: project.title,
+          slug: project.slug,
+          shortDescription: project.shortDescription || "",
+          fullDescription: project.fullDescription || "",
+          thumbnailUrl: project.thumbnailUrl || "",
+          images: project.images,
+          techStack: project.techStack,
+          liveDemoUrl: project.liveDemoUrl || "",
+          githubUrl: project.githubUrl || "",
+          isFeatured: project.isFeatured,
+          displayOrder: project.displayOrder,
+          isVisible: project.isVisible,
+        }}
       />
     </div>
   );

@@ -10,29 +10,23 @@ interface TimelineItemProps {
 
 function TimelineItem({ year, title, subtitle, description, isLast }: TimelineItemProps) {
   return (
-    <div className={`relative flex gap-6 pb-12 ${isLast ? 'pb-0' : ''}`}>
+    <div className={`relative flex gap-6 pb-12 ${isLast ? "pb-0" : ""}`}>
       {/* Line */}
-      {!isLast && (
-        <div className="absolute top-8 bottom-0 left-[19px] w-px bg-(--color-border)" />
-      )}
-      
+      {!isLast && <div className="absolute top-8 bottom-0 left-[19px] w-px bg-(--color-border)" />}
+
       {/* Dot */}
       <div className="relative z-10 mt-1 shrink-0">
         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-(--color-surface) font-mono text-xs font-bold text-(--color-ubuntu-orange)">
-           {year}
+          {year}
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="flex-1 pt-1">
         <h3 className="text-xl font-bold">{title}</h3>
-        {subtitle && (
-          <p className="mb-2 font-medium text-(--color-ubuntu-purple)">{subtitle}</p>
-        )}
+        {subtitle && <p className="mb-2 font-medium text-(--color-ubuntu-purple)">{subtitle}</p>}
         {description && (
-          <p className="leading-relaxed text-(--color-text-secondary)">
-            {description}
-          </p>
+          <p className="leading-relaxed text-(--color-text-secondary)">{description}</p>
         )}
       </div>
     </div>

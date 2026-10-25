@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
-import { BlogPostForm } from '../../../components/features/BlogPostForm';
-import { Terminal } from 'lucide-react';
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+import { BlogPostForm } from "../../../components/features/BlogPostForm";
+import { Terminal } from "lucide-react";
 
-export const Route = createFileRoute('/admin/blog/$id')({
+export const Route = createFileRoute("/admin/blog/$id")({
   component: EditBlogPost,
 });
 
@@ -24,19 +24,21 @@ function EditBlogPost() {
   const formData = {
     title: post.title,
     slug: post.slug,
-    excerpt: post.excerpt || '',
+    excerpt: post.excerpt || "",
     content: post.content,
-    coverImageUrl: post.coverImageUrl || '',
+    coverImageUrl: post.coverImageUrl || "",
     categoryId: post.categoryId,
     tagIds: post.tagIds,
-    status: post.status as 'draft' | 'published',
+    status: post.status as "draft" | "published",
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Terminal className="text-(--color-ubuntu-orange)" />
-        <h1 className="text-2xl font-bold">EDIT_POST <span className="text-(--color-text-secondary)">[{post.title}]</span></h1>
+        <h1 className="text-2xl font-bold">
+          EDIT_POST <span className="text-(--color-text-secondary)">[{post.title}]</span>
+        </h1>
       </div>
 
       <div className="terminal-card p-6">

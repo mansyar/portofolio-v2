@@ -55,7 +55,9 @@ export const getUniqueTechStacks = query({
 
     const techStacks = new Set<string>();
     projects.forEach((p) => {
-      p.techStack.forEach((t) => techStacks.add(t));
+      p.techStack.forEach((t) => {
+        techStacks.add(t);
+      });
     });
 
     return Array.from(techStacks).sort();
@@ -63,9 +65,9 @@ export const getUniqueTechStacks = query({
 });
 
 export const getRelated = query({
-  args: { 
+  args: {
     currentProjectId: v.id("projects"),
-    limit: v.optional(v.number()) 
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 3;
@@ -82,9 +84,7 @@ export const getRelated = query({
       .filter((p) => p._id !== args.currentProjectId)
       .map((p) => ({
         ...p,
-        sharedTech: p.techStack.filter((t) => 
-          currentProject.techStack.includes(t)
-        ).length,
+        sharedTech: p.techStack.filter((t) => currentProject.techStack.includes(t)).length,
       }))
       .filter((p) => p.sharedTech > 0)
       .sort((a, b) => b.sharedTech - a.sharedTech);
@@ -101,10 +101,7 @@ export const listAll = query({
   args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
-    return await ctx.db
-      .query("projects")
-      .withIndex("by_order")
-      .collect();
+    return await ctx.db.query("projects").withIndex("by_order").collect();
   },
 });
 
@@ -121,7 +118,7 @@ export const create = mutation({
     title: v.string(),
     slug: v.string(),
     shortDescription: v.optional(v.string()),
-    fullDescription: v.optional(v.string()), 
+    fullDescription: v.optional(v.string()),
     thumbnailUrl: v.optional(v.string()),
     images: v.array(v.string()),
     techStack: v.array(v.string()),
@@ -136,13 +133,13 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    
+
     // Check slug uniqueness
     const existing = await ctx.db
       .query("projects")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .first();
-    
+
     if (existing) {
       throw new Error(`Slug "${args.slug}" is already in use.`);
     }
@@ -189,9 +186,9 @@ export const update = mutation({
       const newSlug = updates.slug;
       const current = await ctx.db.get(id);
       if (!current) throw new Error("Project not found");
-  
+
       if (current.slug !== newSlug) {
-         const existing = await ctx.db
+        const existing = await ctx.db
           .query("projects")
           .withIndex("by_slug", (q) => q.eq("slug", newSlug))
           .first();
@@ -206,7 +203,7 @@ export const update = mutation({
 
     if (Object.keys(cleanUpdates).length > 0) {
       await ctx.db.patch(id, cleanUpdates);
-      
+
       const project = await ctx.db.get(id);
       await ctx.runMutation(internal.activity.log, {
         actorEmail: (await requireAdmin(ctx)).email,
@@ -260,7 +257,6 @@ export const reorder = mutation({
   },
 });
 
-
 export const removeBulk = mutation({
   args: { ids: v.array(v.id("projects")) },
   handler: async (ctx, args) => {
@@ -268,7 +264,7 @@ export const removeBulk = mutation({
     for (const id of args.ids) {
       const project = await ctx.db.get(id);
       await ctx.db.delete(id);
-      
+
       await ctx.runMutation(internal.activity.log, {
         actorEmail: email,
         action: "delete",

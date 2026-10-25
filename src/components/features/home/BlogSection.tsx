@@ -14,7 +14,10 @@ export function BlogSection() {
           <h2 className="mb-2 text-2xl font-bold md:text-3xl">Latest from Blog</h2>
           <p className="text-(--color-text-secondary)">Thoughts on tech and development</p>
         </div>
-        <Link to="/blog" className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex">
+        <Link
+          to="/blog"
+          className="hidden items-center font-mono text-(--color-ubuntu-orange) hover:underline md:inline-flex"
+        >
           read_more_posts() &gt;
         </Link>
       </div>

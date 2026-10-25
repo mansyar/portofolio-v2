@@ -2,14 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { StatCard } from "../ui/stat-card";
-import { 
-  Eye, 
-  Users, 
-  Activity, 
-  MousePointer2,
-  RefreshCw,
-  AlertCircle
-} from "lucide-react";
+import { Eye, Users, Activity, MousePointer2, RefreshCw, AlertCircle } from "lucide-react";
 import "./AnalyticsWidget.css";
 
 type TimeRange = "today" | "7d" | "30d";
@@ -78,7 +71,10 @@ export function AnalyticsWidget() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-(--color-surface) animate-pulse rounded-lg border border-(--color-border)" />
+            <div
+              key={i}
+              className="h-24 bg-(--color-surface) animate-pulse rounded-lg border border-(--color-border)"
+            />
           ))}
         </div>
       </div>
@@ -104,15 +100,15 @@ export function AnalyticsWidget() {
               key={r}
               onClick={() => setRange(r)}
               className={`px-3 py-1 text-xs font-mono transition-all rounded ${
-                range === r 
-                  ? "bg-(--color-ubuntu-orange) text-white shadow-sm" 
+                range === r
+                  ? "bg-(--color-ubuntu-orange) text-white shadow-sm"
                   : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
               }`}
             >
               {r.toUpperCase()}
             </button>
           ))}
-          <button 
+          <button
             onClick={fetchStats}
             disabled={loading}
             className="p-1 text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors disabled:opacity-50"
@@ -130,22 +126,22 @@ export function AnalyticsWidget() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard 
-            label="Unique Visitors" 
-            value={stats?.visitors.value ?? 0} 
-            icon={Users} 
+          <StatCard
+            label="Unique Visitors"
+            value={stats?.visitors.value ?? 0}
+            icon={Users}
             color="#aa00ff"
           />
-          <StatCard 
-            label="Page Views" 
-            value={stats?.pageviews.value ?? 0} 
-            icon={Eye} 
+          <StatCard
+            label="Page Views"
+            value={stats?.pageviews.value ?? 0}
+            icon={Eye}
             color="var(--color-ubuntu-orange)"
           />
-          <StatCard 
-            label="Total Visits" 
-            value={stats?.visits.value ?? 0} 
-            icon={MousePointer2} 
+          <StatCard
+            label="Total Visits"
+            value={stats?.visits.value ?? 0}
+            icon={MousePointer2}
             color="#2196f3"
           />
           <div className="card p-4 flex items-center justify-between relative overflow-hidden group">

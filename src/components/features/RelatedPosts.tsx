@@ -1,9 +1,9 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { api } from '../../../convex/_generated/api';
-import { Id } from '../../../convex/_generated/dataModel';
-import { BlogCard } from '../ui/blog-card';
-import { FileText } from 'lucide-react';
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { BlogCard } from "../ui/blog-card";
+import { FileText } from "lucide-react";
 
 interface Props {
   currentPostId: Id<"blogPosts">;
@@ -24,8 +24,8 @@ export function RelatedPosts({ currentPostId }: Props) {
       </h2>
       <div className="grid gap-6 md:grid-cols-3">
         {posts.map((post) => (
-          <BlogCard 
-            key={post._id} 
+          <BlogCard
+            key={post._id}
             title={post.title}
             slug={post.slug}
             excerpt={post.excerpt}

@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { useAuth } from '@/hooks/use-auth';
-import '@/styles/admin.css';
+import { useState, useEffect } from "react";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
+import "@/styles/admin.css";
 
-export const Route = createFileRoute('/admin/login')({
+export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
 });
 
 function AdminLogin() {
   const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Redirect if already authenticated - must be before any conditional returns
   useEffect(() => {
     if (isAuthenticated) {
-      router.navigate({ to: '/admin' });
+      router.navigate({ to: "/admin" });
     }
   }, [isAuthenticated, router]);
 
@@ -47,7 +47,8 @@ function AdminLogin() {
       // Success is handled by the auth state change -> redirect
     } catch (err: unknown) {
       console.error(err);
-      const errorMessage = err instanceof Error ? err.message : 'Authentication failed. Check your credentials.';
+      const errorMessage =
+        err instanceof Error ? err.message : "Authentication failed. Check your credentials.";
       setError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -66,7 +67,7 @@ function AdminLogin() {
           <div className="text-sm text-(--color-text-secondary)">admin@login:~</div>
           <div className="w-16" /> {/* Spacer */}
         </div>
-        
+
         <div className="p-8">
           <div className="mb-6 text-center">
             <h1 className="font-mono text-2xl font-bold text-(--color-ubuntu-orange)">
@@ -119,19 +120,19 @@ function AdminLogin() {
               </div>
             )}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="terminal-button w-full justify-center"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : 'Access CMS'}
+              {isSubmitting ? "Processing..." : "Access CMS"}
             </button>
           </form>
-          
+
           <div className="mt-6 border-t border-(--color-border) pt-4 text-center">
-             <p className="font-mono text-xs text-(--color-text-secondary)">
-               Unauthorized access is prohibited
-             </p>
+            <p className="font-mono text-xs text-(--color-text-secondary)">
+              Unauthorized access is prohibited
+            </p>
           </div>
         </div>
       </div>

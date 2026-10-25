@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { api } from '../../../convex/_generated/api';
-import { useToastMutation } from '../../hooks/use-toast-mutation';
-import { Id } from '../../../convex/_generated/dataModel';
-import { useRouter } from '@tanstack/react-router';
+import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
+import { useToastMutation } from "../../hooks/use-toast-mutation";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { useRouter } from "@tanstack/react-router";
 
 export interface ProjectFormData {
   title: string;
@@ -24,7 +24,7 @@ export interface ProjectFormData {
 
 interface ProjectFormProps {
   initialData?: ProjectFormData & { id?: Id<"projects"> };
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
 }
 
 function slugify(text: string) {
@@ -32,59 +32,62 @@ function slugify(text: string) {
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')     // Replace spaces with -
-    .replace(/[^\w-]+/g, '')  // Remove all non-word chars
-    .replace(/--+/g, '-');    // Replace multiple - with single -
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w-]+/g, "") // Remove all non-word chars
+    .replace(/--+/g, "-"); // Replace multiple - with single -
 }
 
 export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   const router = useRouter();
   const { mutate: createProject, isPending: isCreating } = useToastMutation(api.projects.create, {
-    successMessage: 'project saved successfully',
-    errorMessage: 'failed to save project'
+    successMessage: "project saved successfully",
+    errorMessage: "failed to save project",
   });
   const { mutate: updateProject, isPending: isUpdating } = useToastMutation(api.projects.update, {
-    successMessage: 'project updated successfully',
-    errorMessage: 'failed to update project'
+    successMessage: "project updated successfully",
+    errorMessage: "failed to update project",
   });
 
   const [formData, setFormData] = useState<ProjectFormData>(() => ({
-    title: initialData?.title || '',
-    slug: initialData?.slug || '',
-    shortDescription: initialData?.shortDescription || '',
-    fullDescription: initialData?.fullDescription || '',
-    thumbnailUrl: initialData?.thumbnailUrl || '',
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    shortDescription: initialData?.shortDescription || "",
+    fullDescription: initialData?.fullDescription || "",
+    thumbnailUrl: initialData?.thumbnailUrl || "",
     images: initialData?.images || [],
     techStack: initialData?.techStack || [],
-    liveDemoUrl: initialData?.liveDemoUrl || '',
-    githubUrl: initialData?.githubUrl || '',
+    liveDemoUrl: initialData?.liveDemoUrl || "",
+    githubUrl: initialData?.githubUrl || "",
     isFeatured: initialData?.isFeatured ?? false,
     displayOrder: initialData?.displayOrder ?? 0,
     isVisible: initialData?.isVisible ?? true,
-    challenge: initialData?.challenge || '',
-    approach: initialData?.approach || '',
-    outcome: initialData?.outcome || '',
+    challenge: initialData?.challenge || "",
+    approach: initialData?.approach || "",
+    outcome: initialData?.outcome || "",
   }));
 
   // Raw text state for array fields to allow typing commas/newlines
-  const [techStackText, setTechStackText] = useState(() => initialData?.techStack?.join(', ') || '');
-  const [imagesText, setImagesText] = useState(() => initialData?.images?.join('\n') || '');
+  const [techStackText, setTechStackText] = useState(
+    () => initialData?.techStack?.join(", ") || ""
+  );
+  const [imagesText, setImagesText] = useState(() => initialData?.images?.join("\n") || "");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    
-    setFormData(prev => {
+
+    setFormData((prev) => {
       const newData = {
         ...prev,
-        [name]: type === 'checkbox' 
-          ? (e.target as HTMLInputElement).checked 
-          : type === 'number' 
-            ? Number(value) 
-            : value
+        [name]:
+          type === "checkbox"
+            ? (e.target as HTMLInputElement).checked
+            : type === "number"
+              ? Number(value)
+              : value,
       };
 
       // Auto-generate slug from title if in create mode and slug hasn't been manually touched (simplified)
-      if (name === 'title' && mode === 'create') {
+      if (name === "title" && mode === "create") {
         newData.slug = slugify(value as string);
       }
 
@@ -93,11 +96,14 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
   };
 
   // Parse array field on blur (when user leaves the input)
-  const parseArrayField = (name: 'images' | 'techStack') => {
-    const text = name === 'techStack' ? techStackText : imagesText;
+  const parseArrayField = (name: "images" | "techStack") => {
+    const text = name === "techStack" ? techStackText : imagesText;
     // Split by comma or newline and clean up
-    const list = text.split(/[\n,]/).map(item => item.trim()).filter(Boolean);
-    setFormData(prev => ({ ...prev, [name]: list }));
+    const list = text
+      .split(/[\n,]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+    setFormData((prev) => ({ ...prev, [name]: list }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,16 +120,16 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
         githubUrl: formData.githubUrl || undefined,
       };
 
-      if (mode === 'create') {
+      if (mode === "create") {
         await createProject(payload);
-      } else if (mode === 'edit' && initialData?.id) {
+      } else if (mode === "edit" && initialData?.id) {
         await updateProject({
           id: initialData.id,
-          ...payload
+          ...payload,
         });
       }
 
-      router.navigate({ to: '/admin/projects' });
+      router.navigate({ to: "/admin/projects" });
     } catch {
       // Handled by toast
     }
@@ -133,16 +139,21 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
     <div className="card max-w-4xl">
       <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-surface) px-4 py-2">
         <div className="text-sm text-(--color-text-secondary)">
-          {mode === 'create' ? 'new_project.ts' : `edit_project_${initialData?.slug}.ts`}
+          {mode === "create" ? "new_project.ts" : `edit_project_${initialData?.slug}.ts`}
         </div>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column: Basic Info */}
           <div className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="title" className="block text-xs font-mono text-(--color-text-secondary)">Title</label>
+              <label
+                htmlFor="title"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Title
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">$</span>
                 <input
@@ -159,7 +170,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="slug" className="block text-xs font-mono text-(--color-text-secondary)">Slug</label>
+              <label
+                htmlFor="slug"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Slug
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">/</span>
                 <input
@@ -176,20 +192,30 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="techStack" className="block text-xs font-mono text-(--color-text-secondary)">Tech Stack (comma separated)</label>
+              <label
+                htmlFor="techStack"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Tech Stack (comma separated)
+              </label>
               <textarea
                 id="techStack"
                 rows={3}
                 value={techStackText}
                 onChange={(e) => setTechStackText(e.target.value)}
-                onBlur={() => parseArrayField('techStack')}
+                onBlur={() => parseArrayField("techStack")}
                 className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
                 placeholder="React, TypeScript, TailwindCSS"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="displayOrder" className="block text-xs font-mono text-(--color-text-secondary)">Display Order</label>
+              <label
+                htmlFor="displayOrder"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Display Order
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">#</span>
                 <input
@@ -203,41 +229,52 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
               </div>
             </div>
 
-             <div className="flex flex-col gap-2 pt-2">
-                <div className="flex items-center space-x-3">
-                  <input
-                    id="isVisible"
-                    name="isVisible"
-                    type="checkbox"
-                    checked={formData.isVisible}
-                    onChange={handleChange}
-                    className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 focus:ring-offset-0 accent-(--color-ubuntu-orange)"
-                  />
-                  <label htmlFor="isVisible" className="text-sm font-mono text-(--color-text-primary)">
-                    Visible on public site
-                  </label>
-                </div>
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex items-center space-x-3">
+                <input
+                  id="isVisible"
+                  name="isVisible"
+                  type="checkbox"
+                  checked={formData.isVisible}
+                  onChange={handleChange}
+                  className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 focus:ring-offset-0 accent-(--color-ubuntu-orange)"
+                />
+                <label
+                  htmlFor="isVisible"
+                  className="text-sm font-mono text-(--color-text-primary)"
+                >
+                  Visible on public site
+                </label>
+              </div>
 
-                <div className="flex items-center space-x-3">
-                  <input
-                    id="isFeatured"
-                    name="isFeatured"
-                    type="checkbox"
-                    checked={formData.isFeatured}
-                    onChange={handleChange}
-                    className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 focus:ring-offset-0 accent-(--color-ubuntu-orange)"
-                  />
-                  <label htmlFor="isFeatured" className="text-sm font-mono text-(--color-text-primary)">
-                    Featured project
-                  </label>
-                </div>
+              <div className="flex items-center space-x-3">
+                <input
+                  id="isFeatured"
+                  name="isFeatured"
+                  type="checkbox"
+                  checked={formData.isFeatured}
+                  onChange={handleChange}
+                  className="h-4 w-4 bg-(--color-terminal-bg) border-(--color-border) rounded text-(--color-ubuntu-orange) focus:ring-0 focus:ring-offset-0 accent-(--color-ubuntu-orange)"
+                />
+                <label
+                  htmlFor="isFeatured"
+                  className="text-sm font-mono text-(--color-text-primary)"
+                >
+                  Featured project
+                </label>
+              </div>
             </div>
           </div>
 
           {/* Right Column: URLs and Media */}
           <div className="space-y-6">
-             <div className="space-y-2">
-              <label htmlFor="thumbnailUrl" className="block text-xs font-mono text-(--color-text-secondary)">Thumbnail URL</label>
+            <div className="space-y-2">
+              <label
+                htmlFor="thumbnailUrl"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Thumbnail URL
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">&gt;</span>
                 <input
@@ -253,7 +290,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="liveDemoUrl" className="block text-xs font-mono text-(--color-text-secondary)">Live Demo URL</label>
+              <label
+                htmlFor="liveDemoUrl"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Live Demo URL
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">&gt;</span>
                 <input
@@ -269,7 +311,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="githubUrl" className="block text-xs font-mono text-(--color-text-secondary)">GitHub URL</label>
+              <label
+                htmlFor="githubUrl"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                GitHub URL
+              </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">&gt;</span>
                 <input
@@ -284,14 +331,19 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
               </div>
             </div>
 
-             <div className="space-y-2">
-              <label htmlFor="images" className="block text-xs font-mono text-(--color-text-secondary)">Additional Images (one per line)</label>
+            <div className="space-y-2">
+              <label
+                htmlFor="images"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Additional Images (one per line)
+              </label>
               <textarea
                 id="images"
                 rows={4}
                 value={imagesText}
                 onChange={(e) => setImagesText(e.target.value)}
-                onBlur={() => parseArrayField('images')}
+                onBlur={() => parseArrayField("images")}
                 className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden font-mono text-sm"
                 placeholder="https://..."
               />
@@ -301,7 +353,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
 
         {/* Full Width Sections */}
         <div className="space-y-2">
-          <label htmlFor="shortDescription" className="block text-xs font-mono text-(--color-text-secondary)">Short Description</label>
+          <label
+            htmlFor="shortDescription"
+            className="block text-xs font-mono text-(--color-text-secondary)"
+          >
+            Short Description
+          </label>
           <textarea
             id="shortDescription"
             name="shortDescription"
@@ -314,7 +371,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="fullDescription" className="block text-xs font-mono text-(--color-text-secondary)">Full Description (Markdown)</label>
+          <label
+            htmlFor="fullDescription"
+            className="block text-xs font-mono text-(--color-text-secondary)"
+          >
+            Full Description (Markdown)
+          </label>
           <textarea
             id="fullDescription"
             name="fullDescription"
@@ -327,10 +389,17 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
         </div>
 
         <div className="border-t border-(--color-border) pt-6">
-          <h3 className="text-sm font-mono text-(--color-ubuntu-orange) mb-4">CASE_STUDY_DETAILS</h3>
+          <h3 className="text-sm font-mono text-(--color-ubuntu-orange) mb-4">
+            CASE_STUDY_DETAILS
+          </h3>
           <div className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="challenge" className="block text-xs font-mono text-(--color-text-secondary)">Challenge (Markdown)</label>
+              <label
+                htmlFor="challenge"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Challenge (Markdown)
+              </label>
               <textarea
                 id="challenge"
                 name="challenge"
@@ -343,7 +412,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="approach" className="block text-xs font-mono text-(--color-text-secondary)">Approach (Markdown)</label>
+              <label
+                htmlFor="approach"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Approach (Markdown)
+              </label>
               <textarea
                 id="approach"
                 name="approach"
@@ -356,7 +430,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="outcome" className="block text-xs font-mono text-(--color-text-secondary)">Outcome (Markdown)</label>
+              <label
+                htmlFor="outcome"
+                className="block text-xs font-mono text-(--color-text-secondary)"
+              >
+                Outcome (Markdown)
+              </label>
               <textarea
                 id="outcome"
                 name="outcome"
@@ -379,12 +458,12 @@ export function ProjectForm({ initialData, mode }: ProjectFormProps) {
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={isCreating || isUpdating}
-            className="terminal-button"
-          >
-            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Project' : 'Update Project')}
+          <button type="submit" disabled={isCreating || isUpdating} className="terminal-button">
+            {isCreating || isUpdating
+              ? "Saving..."
+              : mode === "create"
+                ? "Create Project"
+                : "Update Project"}
           </button>
         </div>
       </form>

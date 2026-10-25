@@ -1,5 +1,5 @@
-import { X, CheckSquare } from 'lucide-react';
-import './BulkActionBar.css';
+import { X, CheckSquare } from "lucide-react";
+import "./BulkActionBar.css";
 
 interface BulkActionBarProps {
   selectedCount: number;
@@ -8,7 +8,7 @@ interface BulkActionBarProps {
     label: string;
     icon: React.ElementType;
     onClick: () => void;
-    variant?: 'default' | 'danger' | 'success' | 'warning';
+    variant?: "default" | "danger" | "success" | "warning";
     disabled?: boolean;
   }[];
 }
@@ -22,7 +22,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
         <div className="bulk-info">
           <CheckSquare className="text-(--color-ubuntu-orange)" size={18} />
           <span className="font-mono text-sm">
-            {selectedCount} item{selectedCount > 1 ? 's' : ''} selected
+            {selectedCount} item{selectedCount > 1 ? "s" : ""} selected
           </span>
         </div>
 
@@ -36,7 +36,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
                 key={index}
                 onClick={action.onClick}
                 disabled={action.disabled}
-                className={`bulk-action-button variant-${action.variant || 'default'}`}
+                className={`bulk-action-button variant-${action.variant || "default"}`}
                 title={action.label}
               >
                 <Icon size={16} />
@@ -48,11 +48,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
 
         <div className="bulk-divider" />
 
-        <button 
-          onClick={onClear}
-          className="bulk-clear-button"
-          title="Clear Selection"
-        >
+        <button onClick={onClear} className="bulk-clear-button" title="Clear Selection">
           <X size={18} />
         </button>
       </div>

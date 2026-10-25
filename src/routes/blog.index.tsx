@@ -1,35 +1,35 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Seo } from '../components/seo'
-import { Terminal } from 'lucide-react'
-import { z } from 'zod'
-import { Suspense } from 'react'
-import { BlogContent } from '../components/features/blog/BlogContent'
-import { SectionSkeleton } from '../components/ui/section-skeleton'
-import { TagCloud } from '../components/features/TagCloud'
+import { createFileRoute } from "@tanstack/react-router";
+import { Seo } from "../components/seo";
+import { Terminal } from "lucide-react";
+import { z } from "zod";
+import { Suspense } from "react";
+import { BlogContent } from "../components/features/blog/BlogContent";
+import { SectionSkeleton } from "../components/ui/section-skeleton";
+import { TagCloud } from "../components/features/TagCloud";
 
 const blogSearchSchema = z.object({
   page: z.number().default(1),
   category: z.string().optional(),
   tag: z.string().optional(),
-})
+});
 
-export const Route = createFileRoute('/blog/')({
+export const Route = createFileRoute("/blog/")({
   component: Blog,
   validateSearch: blogSearchSchema,
   loaderDeps: ({ search: { page, category, tag } }) => ({ page, category, tag }),
   loader: async () => {
     // Prefetching logic...
-  }
-})
+  },
+});
 
 function Blog() {
-  const { page, category, tag } = Route.useSearch()
-  
+  const { page, category, tag } = Route.useSearch();
+
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
-      <Seo 
-        title="Blog | Muhammad Ansyar Rafi Putra" 
-        description="Thoughts, tutorials, and insights on web development and DevOps by Muhammad Ansyar Rafi Putra." 
+      <Seo
+        title="Blog | Muhammad Ansyar Rafi Putra"
+        description="Thoughts, tutorials, and insights on web development and DevOps by Muhammad Ansyar Rafi Putra."
       />
 
       <div className="flex flex-col gap-4">
@@ -54,5 +54,5 @@ function Blog() {
         </aside>
       </div>
     </div>
-  )
+  );
 }

@@ -38,10 +38,10 @@ export const listPublished = query({
         .query("blogPosts")
         .withIndex("by_category", (q) => q.eq("categoryId", category._id))
         .filter((q) => q.eq(q.field("status"), "published"))
-        .order("desc") 
+        .order("desc")
         .paginate(args.paginationOpts);
     }
-    
+
     // Default: List all published posts by publication date
     return await ctx.db
       .query("blogPosts")
@@ -61,7 +61,7 @@ export const listRecent = query({
       .query("blogPosts")
       .filter((q) => q.eq(q.field("status"), "published"))
       .collect();
-    
+
     return posts.sort((a, b) => (b.publishedAt || 0) - (a.publishedAt || 0)).slice(0, limit);
   },
 });
@@ -97,9 +97,9 @@ export const getTags = query({
 });
 
 export const getRelated = query({
-  args: { 
+  args: {
     currentPostId: v.id("blogPosts"),
-    limit: v.optional(v.number()) 
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 3;
@@ -109,11 +109,8 @@ export const getRelated = query({
     const relatedPosts = await ctx.db
       .query("blogPosts")
       .withIndex("by_category", (q) => q.eq("categoryId", currentPost.categoryId!))
-      .filter((q) => 
-        q.and(
-          q.eq(q.field("status"), "published"),
-          q.neq(q.field("_id"), args.currentPostId)
-        )
+      .filter((q) =>
+        q.and(q.eq(q.field("status"), "published"), q.neq(q.field("_id"), args.currentPostId))
       )
       .order("desc")
       .take(limit);
@@ -138,10 +135,12 @@ export const getTagsWithCounts = query({
     });
 
     const tags = await ctx.db.query("blogTags").collect();
-    return tags.map((tag) => ({
-      ...tag,
-      count: tagCounts.get(tag._id.toString()) || 0,
-    })).filter((t) => t.count > 0);
+    return tags
+      .map((tag) => ({
+        ...tag,
+        count: tagCounts.get(tag._id.toString()) || 0,
+      }))
+      .filter((t) => t.count > 0);
   },
 });
 
@@ -302,10 +301,10 @@ export const togglePublish = mutation({
     const { email } = await requireAdmin(ctx);
     const post = await ctx.db.get(args.id);
     if (!post) throw new Error("Post not found");
-    
+
     const newStatus = post.status === "draft" ? "published" : "draft";
     const publishedAt = newStatus === "published" ? Date.now() : post.publishedAt;
-    
+
     await ctx.db.patch(args.id, {
       status: newStatus,
       publishedAt,
@@ -374,20 +373,21 @@ export const removePostsBulk = mutation({
 });
 
 export const toggleStatusBulk = mutation({
-  args: { 
-    ids: v.array(v.id("blogPosts")), 
-    status: v.union(v.literal("draft"), v.literal("published")) 
+  args: {
+    ids: v.array(v.id("blogPosts")),
+    status: v.union(v.literal("draft"), v.literal("published")),
   },
   handler: async (ctx, args) => {
     const { email } = await requireAdmin(ctx);
     const publishedAt = args.status === "published" ? Date.now() : undefined;
-    
+
     for (const id of args.ids) {
       const post = await ctx.db.get(id);
       if (post) {
-        await ctx.db.patch(id, { 
+        await ctx.db.patch(id, {
           status: args.status,
-          publishedAt: args.status === "published" ? (post.publishedAt || publishedAt) : post.publishedAt
+          publishedAt:
+            args.status === "published" ? post.publishedAt || publishedAt : post.publishedAt,
         });
 
         await ctx.runMutation(internal.activity.log, {
@@ -409,7 +409,7 @@ export const publishScheduled = internalMutation({
     const now = Date.now();
     const scheduledPosts = await ctx.db
       .query("blogPosts")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("status"), "draft"),
           q.neq(q.field("scheduledAt"), undefined),

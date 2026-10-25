@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { api } from '../../../convex/_generated/api';
-import { useToastMutation } from '../../hooks/use-toast-mutation';
-import { Id } from '../../../convex/_generated/dataModel';
-import { useRouter } from '@tanstack/react-router';
+import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
+import { useToastMutation } from "../../hooks/use-toast-mutation";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { useRouter } from "@tanstack/react-router";
 
 export type SkillCategory = "devops" | "backend" | "frontend" | "tools";
 
@@ -19,42 +19,45 @@ export interface SkillFormData {
 
 interface SkillFormProps {
   initialData?: SkillFormData & { id?: Id<"skills"> };
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   onSubmit?: () => void;
 }
 
 export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   const router = useRouter();
   const { mutate: createSkill, isPending: isCreating } = useToastMutation(api.skills.create, {
-    successMessage: 'skill added successfully',
-    errorMessage: 'failed to add skill'
+    successMessage: "skill added successfully",
+    errorMessage: "failed to add skill",
   });
   const { mutate: updateSkill, isPending: isUpdating } = useToastMutation(api.skills.update, {
-    successMessage: 'skill updated successfully',
-    errorMessage: 'failed to update skill'
+    successMessage: "skill updated successfully",
+    errorMessage: "failed to update skill",
   });
 
   const [formData, setFormData] = useState<SkillFormData>(() => ({
-    name: initialData?.name || '',
-    category: initialData?.category || 'frontend',
-    icon: initialData?.icon || '',
+    name: initialData?.name || "",
+    category: initialData?.category || "frontend",
+    icon: initialData?.icon || "",
     proficiency: initialData?.proficiency ?? 50,
     yearsOfExperience: initialData?.yearsOfExperience ?? 0,
-    description: initialData?.description || '',
+    description: initialData?.description || "",
     displayOrder: initialData?.displayOrder ?? 0,
     isVisible: initialData?.isVisible ?? true,
   }));
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' 
-        ? (e.target as HTMLInputElement).checked 
-        : (type === 'number' || type === 'range')
-          ? Number(value) 
-          : value
+      [name]:
+        type === "checkbox"
+          ? (e.target as HTMLInputElement).checked
+          : type === "number" || type === "range"
+            ? Number(value)
+            : value,
     }));
   };
 
@@ -62,15 +65,15 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
     e.preventDefault();
 
     try {
-      if (mode === 'create') {
+      if (mode === "create") {
         await createSkill({
           ...formData,
           // Handle optional fields
           icon: formData.icon || undefined,
-          yearsOfExperience: formData.yearsOfExperience || undefined, 
+          yearsOfExperience: formData.yearsOfExperience || undefined,
           description: formData.description || undefined,
         });
-      } else if (mode === 'edit' && initialData?.id) {
+      } else if (mode === "edit" && initialData?.id) {
         await updateSkill({
           id: initialData.id,
           ...formData,
@@ -84,7 +87,7 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
       if (onSubmit) {
         onSubmit();
       } else {
-        router.navigate({ to: '/admin/skills' });
+        router.navigate({ to: "/admin/skills" });
       }
     } catch {
       // Handled by toast
@@ -92,25 +95,27 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
   };
 
   const categories: { value: SkillCategory; label: string }[] = [
-    { value: 'frontend', label: 'Frontend' },
-    { value: 'backend', label: 'Backend' },
-    { value: 'devops', label: 'DevOps' },
-    { value: 'tools', label: 'Tools' },
+    { value: "frontend", label: "Frontend" },
+    { value: "backend", label: "Backend" },
+    { value: "devops", label: "DevOps" },
+    { value: "tools", label: "Tools" },
   ];
 
   return (
     <div className="card max-w-2xl">
       <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-surface) px-4 py-2">
         <div className="text-sm text-(--color-text-secondary)">
-          {mode === 'create' ? 'new_skill.ts' : `edit_skill_${initialData?.id || 'unknown'}.ts`}
+          {mode === "create" ? "new_skill.ts" : `edit_skill_${initialData?.id || "unknown"}.ts`}
         </div>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name */}
           <div className="space-y-2">
-            <label htmlFor="name" className="block text-xs font-mono text-(--color-text-secondary)">Name</label>
+            <label htmlFor="name" className="block text-xs font-mono text-(--color-text-secondary)">
+              Name
+            </label>
             <div className="terminal-input-wrapper">
               <span className="terminal-prompt">$</span>
               <input
@@ -128,7 +133,12 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
           {/* Category */}
           <div className="space-y-2">
-            <label htmlFor="category" className="block text-xs font-mono text-(--color-text-secondary)">Category</label>
+            <label
+              htmlFor="category"
+              className="block text-xs font-mono text-(--color-text-secondary)"
+            >
+              Category
+            </label>
             <div className="relative">
               <select
                 id="category"
@@ -137,19 +147,29 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
                 onChange={handleChange}
                 className="w-full bg-(--color-terminal-bg) border border-(--color-border) rounded p-2 pl-3 text-(--color-text-primary) focus:border-(--color-ubuntu-orange) focus:outline-hidden appearance-none font-mono text-sm"
               >
-                {categories.map(cat => (
-                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                {categories.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-(--color-text-secondary)">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg
+                  className="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
               </div>
             </div>
           </div>
 
           {/* Icon (Optional) */}
           <div className="space-y-2">
-            <label htmlFor="icon" className="block text-xs font-mono text-(--color-text-secondary)">Icon (React Icon Name)</label>
+            <label htmlFor="icon" className="block text-xs font-mono text-(--color-text-secondary)">
+              Icon (React Icon Name)
+            </label>
             <div className="terminal-input-wrapper">
               <span className="terminal-prompt">&gt;</span>
               <input
@@ -166,7 +186,10 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
           {/* Proficiency */}
           <div className="space-y-2">
-            <label htmlFor="proficiency" className="block text-xs font-mono text-(--color-text-secondary)">
+            <label
+              htmlFor="proficiency"
+              className="block text-xs font-mono text-(--color-text-secondary)"
+            >
               Proficiency: {formData.proficiency}%
             </label>
             <input
@@ -183,7 +206,12 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
           {/* Years of Experience */}
           <div className="space-y-2">
-            <label htmlFor="yearsOfExperience" className="block text-xs font-mono text-(--color-text-secondary)">Years of Experience</label>
+            <label
+              htmlFor="yearsOfExperience"
+              className="block text-xs font-mono text-(--color-text-secondary)"
+            >
+              Years of Experience
+            </label>
             <div className="terminal-input-wrapper">
               <span className="terminal-prompt">#</span>
               <input
@@ -201,7 +229,12 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
           {/* Display Order */}
           <div className="space-y-2">
-            <label htmlFor="displayOrder" className="block text-xs font-mono text-(--color-text-secondary)">Display Order</label>
+            <label
+              htmlFor="displayOrder"
+              className="block text-xs font-mono text-(--color-text-secondary)"
+            >
+              Display Order
+            </label>
             <div className="terminal-input-wrapper">
               <span className="terminal-prompt">#</span>
               <input
@@ -218,7 +251,12 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
 
         {/* Description */}
         <div className="space-y-2">
-          <label htmlFor="description" className="block text-xs font-mono text-(--color-text-secondary)">Description (Optional)</label>
+          <label
+            htmlFor="description"
+            className="block text-xs font-mono text-(--color-text-secondary)"
+          >
+            Description (Optional)
+          </label>
           <textarea
             id="description"
             name="description"
@@ -253,12 +291,12 @@ export function SkillForm({ initialData, mode, onSubmit }: SkillFormProps) {
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={isCreating || isUpdating}
-            className="terminal-button"
-          >
-            {(isCreating || isUpdating) ? 'Saving...' : (mode === 'create' ? 'Create Skill' : 'Update Skill')}
+          <button type="submit" disabled={isCreating || isUpdating} className="terminal-button">
+            {isCreating || isUpdating
+              ? "Saving..."
+              : mode === "create"
+                ? "Create Skill"
+                : "Update Skill"}
           </button>
         </div>
       </form>

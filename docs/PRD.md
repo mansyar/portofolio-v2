@@ -79,7 +79,8 @@ A fully-featured portfolio website with a custom-built CMS, designed to showcase
 | Technology            | Purpose                                  |
 | --------------------- | ---------------------------------------- |
 | **Vite**              | Build tool (bundled with TanStack Start) |
-| **ESLint + Prettier** | Code quality                             |
+| **Biome**             | Code quality (lint + format)             |
+| **TypeScript 7**      | Type checking (`tsc --noEmit`)           |
 | **pnpm**              | Package manager                          |
 
 ---
@@ -1037,10 +1038,10 @@ portofolio-v2/
 
 ```dockerfile
 # Dockerfile
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@12.4.1 --activate
 
 WORKDIR /app
 
