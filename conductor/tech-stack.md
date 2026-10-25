@@ -29,7 +29,7 @@ and the container is closed.
 | Full-stack framework | TanStack Start 1.145 (SSR via Vite plugin + Nitro server) |
 | Routing | TanStack Router 1.144, file-based under `src/routes/`; `routeTree.gen.ts` is generated |
 | Server state | TanStack Query 5.104 via `@convex-dev/react-query`, `useSuspenseQuery` + `convexQuery` |
-| Backend | Convex 1.48 (self-hosted) - reactive DB, queries/mutations/actions, scheduler, file storage |
+| Backend | Convex 1.31.2 (self-hosted) - reactive DB, queries/mutations/actions, scheduler, file storage |
 | Auth | Convex Auth 0.0.90 (`@convex-dev/auth`), JWT via `JWT_PRIVATE_KEY` + `JWKS` |
 | Styling | **Tailwind CSS 4 is authoritative**; CSS custom properties in `variables.css` supply the design tokens Tailwind consumes, and co-located `*.css` files remain for what Tailwind cannot express (keyframes, terminal chrome) |
 | Component primitives | Local, hand-built (`src/components/ui/`); `clsx` + `tailwind-merge`; `lucide-react` and `react-icons` icons |
@@ -160,7 +160,7 @@ The modernization work is complete. Every row below was closed by track
 | Toolchain consolidation | ESLint 9 + Prettier 3.7 | Biome | **Done** - closed by track `20261024-tooling-modernization`. ESLint and Prettier removed; `noExplicitAny` remains an error, pre-existing a11y/style debt demoted to warnings rather than silenced. |
 | Typecheck | `tsc` 5.7 | TypeScript 7 native compiler | **Done** - TypeScript 7.0.2 type-checks TanStack Start, Convex codegen, and `vite-tsconfig-paths` cleanly. The only change needed was removing the now-removed `baseUrl` from `tsconfig.json` (TS5102); no source file changed. |
 | Runtime | Node 20 (Dockerfile + CI) | Node 24 | **Done** - closed by track `20261024-tooling-modernization`: `node:24-alpine`, CI `node-version: 24`, `.nvmrc`, and `packageManager` all in place. |
-| Dependency freshness | mixed | current majors | **Done** - 41 packages moved within their existing majors; no major version changed. The TanStack Router family is deliberately held at its pre-update versions (`react-start` 1.145.3, `router` 1.144.0) because `react-start` 1.169 requires **Vite 8**. Moving the router forward is a Vite 8 upgrade, tracked separately. |
+| Dependency freshness | mixed | current majors | **Done** - 40 packages moved within their existing majors; no major version changed. Two families are deliberately held: the TanStack Router family at its pre-update versions (`react-start` 1.145.3, `router` 1.144.0) because `react-start` 1.169 requires **Vite 8**, and `convex` at `1.31.2` because the CLI must match the self-hosted backend (see Constraints). Both are tracked separately. |
 | Reproducibility | `"nitro": "latest"` | pinned semver | **Done** - pinned to exact `3.0.1-alpha.1`, the version `latest` was already resolving to. Confirmed building under Node 24. |
 
 The sequence that was followed: **Node 24 → Biome → dependency refresh → TypeScript 7**,
@@ -187,6 +187,12 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 
 - **Self-hosting is load-bearing.** Convex, R2, Umami, and Coolify are all
   owner-operated. There is no managed fallback for any of them.
+- **The `convex` CLI is pinned to `1.31.2`, matching the self-hosted backend.** Do not
+  upgrade it on its own. `convex deploy` pushes an `appDefinition` whose schema is tied
+  to the backend's protocol; a newer CLI against an older backend fails with
+  `BadJsonBody: appDefinition: missing field 'functions'`. `docs/PROGRESS.md` records the
+  same class of failure ("Convex Version Alignment") from an earlier misalignment.
+  Upgrading requires upgrading the self-hosted backend first, then the CLI.
 - **No `any`.** Enforced at error level by Biome (`noExplicitAny`); keep it an error,
   never a warning.
 - **Committed generated code.** `convex/_generated/` and `src/routeTree.gen.ts` are
@@ -243,6 +249,9 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
    Vite 8 peer requirement. When should that upgrade happen, and what does it cost - the
    router generator also rejects `createFileRoute("/feed.xml" as any)`, so the two
    XML routes may need converting to Escape routes first.
+6. **Convex CLI/backend upgrade.** The CLI is pinned to `1.31.2` to match the self-hosted
+   backend. When the backend is upgraded, the CLI follows in the same change; until then
+   `convex deploy` fails with `appDefinition: missing field 'functions'`.
 
 **Resolved**
 
