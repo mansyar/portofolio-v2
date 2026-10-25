@@ -4,12 +4,35 @@ import { internal } from "./_generated/api";
 import { Resend } from "resend";
 
 export const subscribe = mutation({
-  args: { email: v.string() },
-  handler: async (ctx, { email }) => {
+  args: { email: v.string(), clientIp: v.string() },
+  handler: async (ctx, { email, clientIp }) => {
     // Basic validation
     if (!email.includes("@")) {
       throw new Error("Invalid email address");
     }
+
+    // Rate limiting (max 5 attempts per hour per IP). `subscribe` is public by
+    // design, so the limit - not auth - is what stops enumeration and mail-bombing.
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    const recentAttempts = await ctx.db
+      .query("rateLimits")
+      .withIndex("by_identifier_action", (q) =>
+        q.eq("identifier", clientIp).eq("action", "newsletter_subscribe")
+      )
+      .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
+      .collect();
+
+    if (recentAttempts.length >= 5) {
+      throw new Error("Too many attempts. Please try again later.");
+    }
+
+    // Logged before the subscriber write so that a repeat subscribe to an
+    // already-active address still counts against the limit.
+    await ctx.db.insert("rateLimits", {
+      identifier: clientIp,
+      action: "newsletter_subscribe",
+      timestamp: Date.now(),
+    });
 
     const existing = await ctx.db
       .query("newsletterSubscribers")
