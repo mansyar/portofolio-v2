@@ -28,42 +28,40 @@ This checks for:
 
 ---
 
-## Step 2: ESLint
+## Step 2: Biome (Lint)
 
-Run ESLint to check for code quality issues:
+Run Biome to check for code quality issues:
 
 ```bash
-# turbo
 pnpm lint
 ```
 
-To auto-fix fixable issues:
+To auto-fix fixable issues and reformat:
 
 ```bash
-pnpm lint --fix
+pnpm format
 ```
 
 Common issues to watch for:
 
 - Unused variables/imports
-- Missing dependencies in hooks
+- `any` (an error, not a warning)
 - Accessibility violations
-- React-specific issues
 
 ---
 
-## Step 3: Prettier (Formatting)
+## Step 3: Biome (Formatting)
 
-Check formatting:
+Check formatting without writing:
 
 ```bash
-pnpm prettier --check .
+pnpm format:check
 ```
 
 Auto-format all files:
 
 ```bash
-pnpm prettier --write .
+pnpm format
 ```
 
 ---
@@ -131,11 +129,13 @@ Add to `package.json`:
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{css,json,md}": ["prettier --write"]
+    "*.{ts,tsx,js,jsx}": ["biome check --write --no-errors-on-unmatched"]
   }
 }
 ```
+
+`biome.json` scopes Biome to `js`/`jsx`/`ts`/`tsx`, so non-code files are not
+formatted by it.
 
 Create `.husky/pre-commit`:
 
@@ -158,13 +158,13 @@ pnpm lint-staged
 | "Type 'X' is not assignable" | Fix type mismatch or add proper typing    |
 | "Property does not exist"    | Update interface or use optional chaining |
 
-### ESLint Errors
+### Biome Errors
 
-| Error                                         | Fix                                                                             |
+| Error | Fix |
 | --------------------------------------------- | ------------------------------------------------------------------------------- |
-| "React Hook useEffect has missing dependency" | Add to dependency array or use `// eslint-disable-next-line` with justification |
-| "Unexpected any"                              | Add proper TypeScript type                                                      |
-| "'X' is defined but never used"               | Remove or prefix with underscore                                                |
+| "Avoid `any`" (`noExplicitAny`) | Add a proper TypeScript type, or `unknown` plus a type guard |
+| "'X' is defined but never used" | Remove it, or prefix an unused parameter with underscore |
+| Formatter diff (`format`) | Run `pnpm format` |
 
 ### Build Errors
 
@@ -192,8 +192,7 @@ Before merging/deploying, ensure:
 
 For VS Code, ensure these extensions are installed:
 
-- ESLint
-- Prettier
+- Biome
 - TypeScript and JavaScript Language Features
 
 Add to `.vscode/settings.json`:
@@ -201,9 +200,9 @@ Add to `.vscode/settings.json`:
 ```json
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.biome": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

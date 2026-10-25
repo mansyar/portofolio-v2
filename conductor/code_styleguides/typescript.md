@@ -23,8 +23,8 @@ Style Guide, which is enforced by the `gts` tool.
 -   **String Literals:** Use double quotes (`"`). Use template literals (`` ` ``)
     for interpolation and multi-line strings. *(Project override: this repository
     standardizes on double quotes; the upstream Google guide specifies single
-    quotes. Formatting is enforced by Prettier today and Biome after the tooling
-    migration — do not re-litigate this by hand.)*
+    quotes. Formatting is enforced by Biome - `pnpm format:check` in CI and
+    `pnpm format` locally - so do not re-litigate this by hand.)*
 -   **Equality Checks:** Always use triple equals (`===`) and not equals
     (`!==`).
 -   **Type Assertions:** **Avoid type assertions (`x as SomeType`) and
@@ -49,9 +49,10 @@ Style Guide, which is enforced by the `gts` tool.
 -   **`CONSTANT_CASE`:** For global constant values, including enum values.
 -   **`_` Prefix/Suffix:** **Do not use `_` as a prefix or suffix** for
     identifiers, including for private properties. *(Project exception: a leading
-    underscore on an intentionally unused parameter is allowed to satisfy
-    `@typescript-eslint/no-unused-vars`, which is configured with
-    `argsIgnorePattern: "^_"`. This is the only sanctioned use.)*
+    underscore on an intentionally unused parameter is allowed to satisfy Biome's
+    `correctness.noUnusedFunctionParameters`, which is a warning in `biome.json`
+    so the parameter can be kept for a required signature. This is the only
+    sanctioned use.)*
 
 ## 4. Type System
 

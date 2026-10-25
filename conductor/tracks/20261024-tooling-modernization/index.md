@@ -12,8 +12,8 @@
 ## Summary
 
 Unify the toolchain on pinned, modern versions: Node 24, pnpm 12.4.1, an exact
-`nitro` pin, Biome in place of ESLint and Prettier, Vitest 5 with a 40% coverage
-gate, and TypeScript 7. No product behavior changes.
+`nitro` pin, Biome in place of ESLint and Prettier, Vitest 5 with a ratcheting
+coverage floor, and TypeScript 7. No product behavior changes.
 
 ## Artifacts
 

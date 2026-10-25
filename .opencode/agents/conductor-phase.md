@@ -89,7 +89,7 @@ permissions:
     resource: "pnpm install"
     effect: allow
   - action: shell
-    resource: "pnpm install *"
+    resource: "pnpm install --frozen-lockfile"
     effect: allow
   - action: shell
     resource: "npx convex dev *"
@@ -147,12 +147,6 @@ permissions:
     effect: allow
   - action: shell
     resource: "pnpm outdated *"
-    effect: allow
-  - action: shell
-    resource: "pnpm update"
-    effect: allow
-  - action: shell
-    resource: "pnpm update *"
     effect: allow
   - action: shell
     resource: "pnpm list *"

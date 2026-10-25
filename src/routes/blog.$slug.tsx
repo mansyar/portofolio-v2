@@ -97,6 +97,7 @@ function BlogPostDetail() {
 
           <div
             className="editor-content prose prose-invert prose-orange max-w-none"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitizedContent is sanitizeHtml(post.content), which runs DOMPurify with a tag/attribute allowlist before injection
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
 

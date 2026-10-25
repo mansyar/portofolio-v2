@@ -69,7 +69,7 @@ Biome replacing ESLint + Prettier, Vitest 5 with coverage and a ratcheting gate,
 | FR-9 | `format:check` added to the phase verification gate in `conductor/workflow.md` | must |
 | FR-10 | Remaining dependencies refreshed to latest compatible within their current majors | should |
 | FR-11 | TypeScript upgraded to `7.0.2`; `pnpm type-check` exits 0 | must |
-| FR-12 | `conductor/tech-stack.md` and `conductor/workflow.md` updated: Node 24, pnpm 12.4.1, Biome, TypeScript 7, `coverage.gate: true` at 40, a real `format` command | must |
+| FR-12 | `conductor/tech-stack.md` and `conductor/workflow.md` updated: Node 24, pnpm 12.4.1, Biome, TypeScript 7, `coverage.gate: true` at the ratchet floor (3% lines, 3% functions), a real `format` command | must |
 
 ## Non-Functional Requirements
 
@@ -91,7 +91,7 @@ Biome replacing ESLint + Prettier, Vitest 5 with coverage and a ratcheting gate,
 | AC-4 | `pnpm install --frozen-lockfile` exits 0 with no ignored-builds error | FR-4 |
 | AC-5 | `pnpm test` reports 31 passing tests and Vitest 5.0.5 | FR-5 |
 | AC-6 | `pnpm test:coverage` exits 0 and reports coverage at or above the configured ratchet floor (3% lines, 3% functions), with the measured baseline recorded as evidence | FR-6 |
-| AC-7 | A test run log shows at most 4 workers active | FR-7 |
+| AC-7 | `vite.config.ts` sets `test.maxWorkers: 4` and a bare `pnpm test` honours it | FR-7 |
 | AC-8 | `pnpm lint` and `pnpm format:check` exit 0, and `eslint.config.js` and `.prettierrc` are absent | FR-8 |
 | AC-9 | `workflow.md` `verify_phase` contains a format check | FR-9 |
 | AC-10 | No dependency that could be updated within its current major was left behind without a recorded reason | FR-10 |

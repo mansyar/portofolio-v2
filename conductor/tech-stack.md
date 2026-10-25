@@ -190,8 +190,9 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 - **Tight coupling to framework idioms.** Server state goes through `convexQuery` and
   `useSuspenseQuery`; mutations go through Convex React hooks wrapped by
   `use-toast-mutation`. Deviating breaks the SSR + reactivity model.
-- **Single package, no workspace.** Do not introduce a monorepo without a product-level
-  decision.
+- **Single package, no workspace.** `pnpm-workspace.yaml` exists solely to carry
+  `allowBuilds` (esbuild, sharp) and declares no `packages:`. Do not add a `packages:` key
+  or introduce a monorepo without a product-level decision.
 
 ## Rejected Alternatives and Why
 

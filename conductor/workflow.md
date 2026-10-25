@@ -123,7 +123,7 @@ pnpm build
 ### Before Committing
 
 ```bash
-pnpm type-check && pnpm lint && pnpm test
+pnpm type-check && pnpm lint && pnpm format:check && pnpm test
 ```
 
 ## Phase & Task Workflow

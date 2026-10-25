@@ -58,7 +58,7 @@
         "useOptionalChain": "warn"
       },
       "security": {
-        "noDangerouslySetInnerHtml": "warn"
+        "noDangerouslySetInnerHtml": "error"
       },
       "a11y": {
         "noLabelWithoutControl": "warn",

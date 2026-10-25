@@ -130,8 +130,12 @@ inaccessible portfolio actively harms the product.
 | No `:focus-visible` rules | Zero matches across `src/**/*.css`; focus is shown only via `:focus-within` on wrappers | Buttons and links have no explicit visible focus state |
 | Reduced motion respected in one file only | `prefers-reduced-motion` appears only in `typing-effect.css` | Cursor blink and other animations run regardless of user preference |
 | Minimal ARIA labelling | One `aria-label` across all TSX files | Icon-only controls and dynamic regions may be unnamed |
+| 45 interaction and button findings | Biome `recommended` preset: `useButtonType` 39, `noStaticElementInteractions` 2, `useKeyWithClickEvents` 2, `noSvgWithoutTitle` 1, `useHtmlLang` 1, `noAutofocus` 1. Demoted to warnings in `biome.json` so they do not block the build | Buttons may submit forms implicitly; click handlers on static elements are unreachable by keyboard; inline SVGs are unlabelled |
 
-These are recorded as real work to schedule, not as acceptable state.
+These are recorded as real work to schedule, not as acceptable state. The Biome
+findings in the last row are pre-existing and were surfaced - not introduced - by the
+ESLint-to-Biome migration in track `20261024-tooling-modernization`; the promotion order
+is tracked in `tech-stack.md` open question 3.
 
 ## Design System and Component Conventions
 

@@ -79,8 +79,8 @@ A fully-featured portfolio website with a custom-built CMS, designed to showcase
 | Technology            | Purpose                                  |
 | --------------------- | ---------------------------------------- |
 | **Vite**              | Build tool (bundled with TanStack Start) |
-| **Biome**             | Code quality (lint + format)              |
-| **TypeScript 7**      | Type checking (`tsc --noEmit`)            |
+| **Biome**             | Code quality (lint + format)             |
+| **TypeScript 7**      | Type checking (`tsc --noEmit`)           |
 | **pnpm**              | Package manager                          |
 
 ---

@@ -185,3 +185,43 @@ Review fixes are appended by `conductor-review` as:
 
 - [ ] **R1.T1: Resolve <finding ID>** - covers: <finding ID>
 -->
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve the ten findings from the track review. No product behaviour changes.
+- **Depends on:** Phase 5
+- **Covers:** review findings F1-F10
+- **Touches:** `conductor/tracks/20261024-tooling-modernization/spec.md`, `conductor/tracks/20261024-tooling-modernization/index.md`, `conductor/product-guidelines.md`, `conductor/tech-stack.md`, `conductor/workflow.md`, `conductor/code_styleguides/typescript.md`, `biome.json`, `src/routes/blog.$slug.tsx`, `.agent/workflows/check.md`, `.agent/workflows/setup.md`, `.opencode/agents/conductor-phase.md`, `docs/PRD.md`, `README.md`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Status:** verified
+
+- [x] **R1.T1: Finish the coverage-gate amendment** - covers: F1
+  - [x] FR-12 now says "at the ratchet floor (3% lines, 3% functions)"
+  - [x] Track `index.md` summary says "a ratcheting coverage floor"
+- [x] **R1.T2: Restore the security rule** - covers: F2
+  - [x] `security.noDangerouslySetInnerHtml` back to `"error"` in `biome.json`
+  - [x] Attribute-position `biome-ignore` at the one sanctioned site in `blog.$slug.tsx`, naming `sanitizeHtml`/DOMPurify
+- [x] **R1.T3: Record the a11y debt honestly** - covers: F3
+  - [x] Fourth "Known gaps" row in `product-guidelines.md` naming the 45 interaction/button/svg/lang/autofocus findings
+- [x] **R1.T4: Update the stale agent workflows** - covers: F4
+  - [x] `check.md` steps 2-3 rewritten to `pnpm lint` / `pnpm format` / `pnpm format:check`
+  - [x] lint-staged config and VS Code block moved to Biome
+  - [x] `setup.md` installs `@biomejs/biome` and configures `biome.json`
+- [x] **R1.T5: Narrow the phase-executor allowlist** - covers: F5
+  - [x] Removed `pnpm update` and `pnpm update *`
+  - [x] Replaced `pnpm install *` with bare `pnpm install` and `pnpm install --frozen-lockfile`
+- [x] **R1.T6: Restore `docs/PRD.md` line endings** - covers: F6
+  - [x] Rebuilt from the base blob with the four content lines applied; diff is now 4/3 instead of 1146/1145
+- [x] **R1.T7: Unify the gate definition** - covers: F7
+  - [x] "Before Committing" in `workflow.md` matches `verify_phase`
+  - [x] README quality-check line uses `&&` and includes `pnpm build`
+- [x] **R1.T8: Amend AC-7** - covers: F8
+  - [x] AC-7 now states the config-based criterion FR-7 actually implements
+- [x] **R1.T9: Update the style guide** - covers: F9
+  - [x] `typescript.md` cites Biome and `correctness.noUnusedFunctionParameters`
+- [x] **R1.T10: Reconcile the workspace constraint** - covers: F10
+  - [x] `tech-stack.md` explains that `pnpm-workspace.yaml` carries `allowBuilds` only
+
+**Result:** verified
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/review-fixes.md
+**Deviation:** The only `src/` change is a suppression comment — no behaviour was altered. `noDangerouslySetInnerHtml` needed an attribute-position `biome-ignore`; a JSX-expression comment above the element does not suppress an attribute-level rule.

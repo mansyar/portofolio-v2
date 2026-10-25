@@ -120,7 +120,7 @@ convex/
 ### Quality Check (before commit)
 
 ```bash
-pnpm type-check; pnpm lint; pnpm format:check; pnpm test
+pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build
 ```
 
 ---
