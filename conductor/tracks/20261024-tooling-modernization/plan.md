@@ -93,24 +93,38 @@ Vitest 5.
 - **Goal:** One formatter and linter, with `pnpm lint` and `pnpm format:check` both passing.
 - **Depends on:** Phase 2
 - **Covers:** FR-8, FR-9, AC-8, AC-9
-- **Touches:** `package.json`, `pnpm-lock.yaml`, `biome.json`, `eslint.config.js`, `.prettierrc`, `src/**`, `convex/**`, `conductor/workflow.md`, `conductor/code_styleguides/project.md`
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `biome.json`, `eslint.config.js`, `.prettierrc`, `src/**`, `convex/**`, `conductor/workflow.md`, `conductor/code_styleguides/project.md`, `conductor/tech-stack.md`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Install and configure Biome** - covers: FR-8
-  - [ ] Add `@biomejs/biome@^2.6.2`
-  - [ ] Create `biome.json` preserving current intent: double quotes, 2-space indent, width 100, semicolons, `noExplicitAny` as an error, unused variables as a warning with leading-underscore arguments exempt
-  - [ ] Ignore `dist`, `.output`, `.tanstack`, `node_modules`, `convex/_generated`, and `src/routeTree.gen.ts`
-- [ ] **P3.T2: Rewire scripts and remove the old tooling** - covers: FR-8
-  - [ ] `lint` runs Biome check, `format` runs Biome check with write, and `format:check` runs Biome check
-  - [ ] Delete `eslint.config.js` and `.prettierrc`
-  - [ ] Remove eslint and prettier devDependencies, including the unresolvable `prettier-plugin-tailwindcss` reference
-- [ ] **P3.T3: Apply formatting and resolve lint findings** - covers: FR-8
-  - [ ] Run the formatter and review the diff for semantic changes
-- [ ] **P3.T4: Add the format check to the verification gate** - covers: FR-9
-  - [ ] Set `verify_phase` to include `pnpm format:check`
-  - [ ] Fill the `format` command key in the Workflow Config block
-  - [ ] Update `conductor/code_styleguides/project.md` to name Biome as the enforcing tool
+- [x] **P3.T1: Install and configure Biome** - covers: FR-8
+  - [x] Add `@biomejs/biome@^2.6.2`
+  - [x] Create `biome.json` preserving current intent: double quotes, 2-space indent, width 100, semicolons, `noExplicitAny` as an error, unused variables as a warning with leading-underscore arguments exempt
+  - [x] Ignore `dist`, `.output`, `.tanstack`, `node_modules`, `convex/_generated`, and `src/routeTree.gen.ts`
+  - [x] Set `formatter.lineEnding: "crlf"` - every source file in this repo is CRLF, so the LF default would have rewritten every line of every file
+- [x] **P3.T2: Rewire scripts and remove the old tooling** - covers: FR-8
+  - [x] `lint` runs Biome check, `format` runs Biome check with write, and `format:check` runs Biome check
+  - [x] Delete `eslint.config.js` and `.prettierrc`
+  - [x] Remove eslint and prettier devDependencies, including the unresolvable `prettier-plugin-tailwindcss` reference
+- [x] **P3.T3: Apply formatting and resolve lint findings** - covers: FR-8
+  - [x] Run the formatter and review the diff for semantic changes
+  - [x] Prove semantic equivalence mechanically: 139 files parsed at HEAD and working tree, 0 residual AST differences after normalizing provably behavior-preserving formatter transforms
+  - [x] Fix genuine defects at source (`useIterableCallbackReturn`, `useParseIntRadix`, `useTemplate`, `noCommentText`); demote pre-existing a11y/style debt to warnings rather than disabling it
+  - [x] Convert the two stale `eslint-disable-next-line` comments to `biome-ignore` with reasons
+- [x] **P3.T4: Add the format check to the verification gate** - covers: FR-9
+  - [x] Set `verify_phase` to include `pnpm format:check`
+  - [x] Fill the `format` command key in the Workflow Config block
+  - [x] Update `conductor/code_styleguides/project.md` to name Biome as the enforcing tool
+
+**Result:** verified
+**Checkpoint:** 4524a75
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/phase-3.md
+
+**Deviation:** 100 Biome findings ESLint never checked (mostly `useButtonType`,
+`noLabelWithoutControl`, `noArrayIndexKey`) were demoted to warnings rather than fixed or
+disabled - fixing them is an accessibility work item and this track puts product behavior
+changes out of scope. They are recorded as open question 4 in `tech-stack.md`. `biome.json`
+and the files carrying the five source-level lint fixes were outside the original `Touches`.
 
 ## Phase 4: Dependency refresh
 
