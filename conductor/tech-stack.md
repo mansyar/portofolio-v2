@@ -13,13 +13,14 @@ self-hosted backend and deployment.
 | --- | --- | --- |
 | Language | TypeScript 5.7 (strict, `noEmit` typecheck) | TypeScript 7 (native compiler) |
 | UI runtime | React 19.2 with React DOM | React 19.x (latest 19) |
-| Server runtime | Node 20 — Dockerfile `node:20-alpine`, CI `node-version: 20` | **Node 24 everywhere** |
-| Package manager | pnpm — Dockerfile pins `pnpm@10.1.0`, CI pins 10, local 12.4.1 | pnpm 12, pinned via `packageManager` |
+| Server runtime | Node 24 - Dockerfile `node:24-alpine`, CI `node-version: 24`, `.nvmrc` | Node 24 everywhere |
+| Package manager | pnpm 12.4.1 - pinned via `packageManager` in `package.json`, Dockerfile, and CI | pnpm 12.4.1 |
 | Module system | ESM (`"type": "module"`) | ESM |
 
-**Runtime drift is a known, accepted gap.** The decision is that Node 24 is canonical.
-The Dockerfile and CI workflow still pin Node 20 and pnpm 10; bringing them in line,
-adding `.nvmrc` and a `packageManager` field, is pending migration work.
+**Runtime is pinned consistently.** Node 24 and pnpm 12.4.1 are now the declared
+versions across local development (`.nvmrc`), CI, and the Docker image, with pnpm
+pinned through the `packageManager` field. The earlier drift between the local machine
+and the container is closed.
 
 ## Frameworks and Major Libraries
 
@@ -147,9 +148,9 @@ each needs verification before adoption — the notes below record what must be 
 | --- | --- | --- | --- |
 | Toolchain consolidation | ESLint 9 + Prettier 3.7 | Biome | Confirm Biome covers `no-explicit-any`, the `react-hooks` rules in use, import ordering, and `ignores` for generated files. Keep a lint rule set at least as strict as today. |
 | Typecheck | `tsc` 5.7 | TypeScript 7 native compiler | Confirm TanStack Start, Convex codegen, and `vite-tsconfig-paths` typecheck cleanly; keep both paths available until parity is proven. |
-| Runtime | Node 20 (Dockerfile + CI) | Node 24 | Update `node:20-alpine` → a Node 24 base, CI `node-version`, add `.nvmrc`, add `packageManager` to `package.json`. Re-verify the healthcheck and `.output/server/index.mjs` boot. |
+| Runtime | Node 20 (Dockerfile + CI) | Node 24 | **Done** - closed by track `20261024-tooling-modernization`: `node:24-alpine`, CI `node-version: 24`, `.nvmrc`, and `packageManager` all in place. |
 | Dependency freshness | mixed | current majors | Bump in reviewable groups, not one sweeping commit. |
-| Reproducibility | `"nitro": "latest"` | pinned semver | Pin once the current resolved version is confirmed building. |
+| Reproducibility | `"nitro": "latest"` | pinned semver | **Done** - pinned to exact `3.0.1-alpha.1`, the version `latest` was already resolving to. |
 
 A sensible order: **Node 24 → Biome → dependency refresh → TypeScript 7**, since each
 later step is easier to validate on a green baseline. TypeScript 7 goes last because it
@@ -228,8 +229,8 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 
 **Recorded assumptions**
 
-- *Node 24 is the intended production runtime*, even though the Dockerfile and CI still
-  pin 20. The gap is accepted temporarily and closed by a track.
+- *Node 24 is the production runtime*, declared identically in the Dockerfile, CI,
+  and `.nvmrc`.
 - *Vitest is retained.* The modernization targets the lint/format/typecheck surface, not
   the test runner; Biome does not replace it.
 - *Committed generated files are intentional*, so CI does not need a codegen step before

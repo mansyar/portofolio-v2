@@ -1,11 +1,11 @@
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Build arguments for Vite env vars
 ARG VITE_CONVEX_URL
 ENV VITE_CONVEX_URL=$VITE_CONVEX_URL
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.1.0 --activate
+RUN corepack enable && corepack prepare pnpm@12.4.1 --activate
 
 WORKDIR /app
 

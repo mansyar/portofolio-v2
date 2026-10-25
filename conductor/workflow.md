@@ -6,8 +6,9 @@
    evidence link lives in `plan.md`.
 2. **The tech stack is deliberate.** A change to the stack is recorded in
    `tech-stack.md` before the implementation depends on it. This project has a
-   committed modernization path (Biome, TypeScript 7, Node 24) recorded there — follow
-   it rather than introducing tools ad hoc.
+   committed modernization path (Biome, TypeScript 7) recorded there - follow
+   it rather than introducing tools ad hoc. Node 24 and pnpm 12.4.1 are already
+   pinned across local, CI, and Docker.
 3. **Verification is agent-executed.** The phase subagent runs the configured checks and
    writes evidence. The user is not asked to manually verify routine work.
 4. **Evidence over assertion.** A phase is complete only when the configured checks pass
