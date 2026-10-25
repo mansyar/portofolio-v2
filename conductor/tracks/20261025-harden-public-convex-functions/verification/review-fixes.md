@@ -6,6 +6,7 @@
 | Phase | R1 |
 | Date | 2026-10-26 |
 | Base commit | `626312e` |
+| Fix commit | `84913cf` |
 | **Result** | **verified** |
 
 Resolves the five findings from the track review (verdict PASS WITH FINDINGS, 0 Critical,

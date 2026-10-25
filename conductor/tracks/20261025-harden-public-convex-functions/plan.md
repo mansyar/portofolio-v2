@@ -154,7 +154,7 @@
   - [x] Name and body now state that visibility is pinned by the sibling test
 
 **Result:** verified
-**Checkpoint:** pending
+**Checkpoint:** 84913cf
 **Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/review-fixes.md
 
 **Deviation:** F3 was recorded rather than fixed, because `convex/projects.ts` is explicitly outside this track's scope. `contact.submit` keeps its IP-only limit for the same reason — the reviewer's fix was scoped to the newsletter, and changing contact's behaviour is outside the phase's Touches. Both are listed as deferred debt in `review.md`.
