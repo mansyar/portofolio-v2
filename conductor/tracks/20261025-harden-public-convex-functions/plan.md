@@ -50,26 +50,25 @@
 - **Touches:** `convex/analytics.ts`, `convex/newsletter.ts`,
   `convex/_generated/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Guard `analytics.getStats` with `requireAdmin`** - covers: FR-1
-  - [ ] **P2.T1.1: Call `await requireAdmin(ctx)` as the first statement in the handler, before the Umami env-var check, so an anonymous caller cannot distinguish configured from unconfigured**
-  - [ ] **P2.T1.2: Confirm the admin dashboard path still works — the action signature and return type are unchanged**
-- [ ] **P2.T2: Delete `newsletter.listSubscribers`** - covers: FR-2
-  - [ ] **P2.T2.1: Remove the query and regenerate the Convex API types**
-  - [ ] **P2.T2.2: Confirm no reference remains in `src/`, and record that the subscriber admin screen is a future track**
-- [ ] **P2.T3: Make `sendWelcomeEmail` internal** - covers: FR-3
-  - [ ] **P2.T3.1: Change `action` to `internalAction`**
-  - [ ] **P2.T3.2: Update the `subscribe` scheduler call to `internal.newsletter.sendWelcomeEmail`**
-- [ ] **P2.T4: Verify the guard tests now pass** - covers: AC-1, AC-2, AC-3
-  - [ ] **P2.T4.1: Run `pnpm test` and confirm the Phase 1 failures are now green**
+- [x] **P2.T1: Guard `analytics.getStats` with `requireAdmin`** - covers: FR-1
+  - [x] **P2.T1.1: Call `await requireAdmin(ctx)` as the first statement in the handler, before the Umami env-var check, so an anonymous caller cannot distinguish configured from unconfigured** - placed above the `try`/`catch` that returns `null`, which would otherwise swallow the rejection
+  - [x] **P2.T1.2: Confirm the admin dashboard path still works - the action signature and return type are unchanged**
+- [x] **P2.T2: Delete `newsletter.listSubscribers`** - covers: FR-2
+  - [x] **P2.T2.1: Remove the query and regenerate the Convex API types** - `npx convex dev --once` ran clean (11.13s) with no diff; `api.d.ts` derives the surface via `FilterApi` over module types rather than enumerating function names
+  - [x] **P2.T2.2: Confirm no reference remains in `src/`, and record that the subscriber admin screen is a future track**
+- [x] **P2.T3: Make `sendWelcomeEmail` internal** - covers: FR-3
+  - [x] **P2.T3.1: Change `action` to `internalAction`**
+  - [x] **P2.T3.2: Update the `subscribe` scheduler call to `internal.newsletter.sendWelcomeEmail`**
+- [x] **P2.T4: Verify the guard tests now pass** - covers: AC-1, AC-2, AC-3
+  - [x] **P2.T4.1: Run `pnpm test` and confirm the Phase 1 failures are now green** - failures dropped from 6 to 2; the remaining two are the Phase 3 rate-limit pair and fail at the Convex validator on the missing `clientIp` argument
 
-<!--
-The primary appends after acceptance:
 **Result:** verified
-**Checkpoint:** <short-sha>
+**Checkpoint:** 2eda002
 **Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-2.md
--->
+
+**Deviation:** none. `convex/_generated/**` was listed in Touches but needed no edit — regeneration was a genuine no-op, so nothing generated was hand-written. The phase gate is partially green by design: `pnpm test` exits 1 with exactly the two rate-limit failures that Phase 3 resolves. `subscribe` was deliberately left without a rate limit so the two phases stay independently verifiable.
 
 ## Phase 3: Rate-limit newsletter subscribe
 
