@@ -22,7 +22,7 @@
 - **Covers:** FR-1, FR-2, FR-3, FR-4, AC-1, AC-2, AC-3, AC-4
 - **Touches:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.github/workflows/deploy.yml`, `docker/Dockerfile`, `conductor/tech-stack.md`, `conductor/workflow.md`
 - **Verification:** `pnpm install --frozen-lockfile && pnpm type-check && pnpm lint && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Move CI and the Dockerfile to Node 24** - covers: FR-1
   - [ ] Change `node-version: 20` to `24` in `.github/workflows/deploy.yml`
