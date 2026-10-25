@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-25T14:58:03+11:00",
-  "updated_at": "2026-10-25T15:00:09+11:00",
+  "updated_at": "2026-10-25T15:22:12+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "chore/20261024-tooling-modernization",
@@ -14,11 +14,11 @@
   "base_sha": "de0e4b51f56e9c1aa3ee8e714ffc4d3b4978fc64",
   "progress": {
     "phases_total": 5,
-    "phases_verified": 0,
+    "phases_verified": 1,
     "tasks_total": 18,
-    "tasks_done": 0
+    "tasks_done": 5
   },
-  "last_checkpoint": null,
+  "last_checkpoint": "edc0ecf",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",

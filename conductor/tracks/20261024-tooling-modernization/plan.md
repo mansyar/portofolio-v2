@@ -20,25 +20,30 @@
 - **Goal:** Node 24 everywhere, pnpm 12.4.1 everywhere, `nitro` pinned, and `pnpm install` exits 0.
 - **Depends on:** none
 - **Covers:** FR-1, FR-2, FR-3, FR-4, AC-1, AC-2, AC-3, AC-4
-- **Touches:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.github/workflows/deploy.yml`, `docker/Dockerfile`, `conductor/tech-stack.md`, `conductor/workflow.md`
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.nvmrc`, `.github/workflows/deploy.yml`, `docker/Dockerfile`, `conductor/tech-stack.md`, `conductor/workflow.md`
 - **Verification:** `pnpm install --frozen-lockfile && pnpm type-check && pnpm lint && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Move CI and the Dockerfile to Node 24** - covers: FR-1
-  - [ ] Change `node-version: 20` to `24` in `.github/workflows/deploy.yml`
-  - [ ] Change `FROM node:20-alpine AS base` to `node:24-alpine` in `docker/Dockerfile`
-- [ ] **P1.T2: Unify pnpm on 12.4.1** - covers: FR-2
-  - [ ] Add `"packageManager": "pnpm@12.4.1"` to `package.json`
-  - [ ] Change `pnpm/action-setup` version from `10` to `12.4.1` in CI
-  - [ ] Change `corepack prepare pnpm@10.1.0` to `pnpm@12.4.1` in the Dockerfile
-- [ ] **P1.T3: Pin nitro to an exact version** - covers: FR-3
-  - [ ] Change `"nitro": "latest"` to `"nitro": "3.0.1-alpha.1"`
-- [ ] **P1.T4: Record the build-script allowlist** - covers: FR-4
-  - [ ] Create `pnpm-workspace.yaml` with `allowBuilds` set to `true` for `esbuild` and `sharp`
-  - [ ] Confirm `pnpm install --frozen-lockfile` exits 0 with no `ERR_PNPM_IGNORED_BUILDS`
-- [ ] **P1.T5: Update context docs for Node 24 and pnpm 12.4.1** - covers: FR-12
-  - [ ] `conductor/tech-stack.md`: Languages/Runtimes and Tooling rows
-  - [ ] `conductor/workflow.md`: any Node or pnpm version references
+- [x] **P1.T1: Move CI and the Dockerfile to Node 24** - covers: FR-1
+  - [x] Change `node-version: 20` to `24` in `.github/workflows/deploy.yml`
+  - [x] Change `FROM node:20-alpine AS base` to `node:24-alpine` in `docker/Dockerfile`
+  - [x] Add `.nvmrc` containing `24`
+- [x] **P1.T2: Unify pnpm on 12.4.1** - covers: FR-2
+  - [x] Add `"packageManager": "pnpm@12.4.1"` to `package.json`
+  - [x] Change `pnpm/action-setup` version from `10` to `12.4.1` in CI
+  - [x] Change `corepack prepare pnpm@10.1.0` to `pnpm@12.4.1` in the Dockerfile
+- [x] **P1.T3: Pin nitro to an exact version** - covers: FR-3
+  - [x] Change `"nitro": "latest"` to `"nitro": "3.0.1-alpha.1"`
+- [x] **P1.T4: Record the build-script allowlist** - covers: FR-4
+  - [x] Create `pnpm-workspace.yaml` with `allowBuilds` set to `true` for `esbuild` and `sharp`
+  - [x] Confirm `pnpm install --frozen-lockfile` exits 0 with no `ERR_PNPM_IGNORED_BUILDS`
+- [x] **P1.T5: Update context docs for Node 24 and pnpm 12.4.1** - covers: FR-12
+  - [x] `conductor/tech-stack.md`: Languages/Runtimes and Tooling rows
+  - [x] `conductor/workflow.md`: any Node or pnpm version references
+
+**Result:** verified
+**Checkpoint:** edc0ecf
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/phase-1.md
 
 **Risk:** `nitro@3.0.1-alpha.1` under Node 24 is the unknown in this track. If the
 build fails, fall back to pinning the stable `3.0.0` release and record the change.
