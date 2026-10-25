@@ -24,8 +24,9 @@ custom CMS built with TanStack Start and self-hosted Convex.
 ## Tracks
 
 - [Tracks Registry](./tracks.md) — all tracks and their status.
-- [Tracks Directory](./tracks/) — one folder per track with `spec.md`, `plan.md`,
+- [Tracks Directory](./tracks/) — one folder per active track with `spec.md`, `plan.md`,
   `metadata.json`, `review.md`, and `verification/`.
+- [Archive](./archive/) — completed tracks, moved here with their full history.
 
 ## Capabilities
 

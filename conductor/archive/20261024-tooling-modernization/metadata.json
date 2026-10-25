@@ -2,11 +2,11 @@
   "id": "20261024-tooling-modernization",
   "title": "Tooling Modernization",
   "type": "chore",
-  "status": "in_progress",
+  "status": "complete",
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-25T14:58:03+11:00",
-  "updated_at": "2026-10-25T17:37:48+11:00",
+  "updated_at": "2026-10-25T17:39:47+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "chore/20261024-tooling-modernization",
@@ -27,6 +27,6 @@
   "reverted_at": null,
   "revert_commit": null,
   "revert_pr_url": null,
-  "archived_at": null,
-  "archive_path": null
+  "archived_at": "2026-10-25T17:39:47+11:00",
+  "archive_path": "conductor/archive/20261024-tooling-modernization"
 }
