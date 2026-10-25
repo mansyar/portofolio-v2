@@ -57,26 +57,36 @@ The primary appends after acceptance:
 
 ## Phase 2: Vitest 5, coverage, and worker cap
 
-- **Goal:** Tests pass on Vitest 5, coverage is measured and gated at 40%, and concurrency is capped at 4.
+- **Goal:** Tests pass on Vitest 5, coverage is measured and gated at a ratcheting floor, and concurrency is capped at 4.
 - **Depends on:** Phase 1
 - **Covers:** FR-5, FR-6, FR-7, AC-5, AC-6, AC-7
-- **Touches:** `package.json`, `pnpm-lock.yaml`, `vite.config.ts`, `conductor/workflow.md`
+- **Touches:** `package.json`, `pnpm-lock.yaml`, `vite.config.ts`, `vitest.setup.tsx`, `.gitignore`, `conductor/workflow.md`, `conductor/tech-stack.md`
 - **Verification:** `pnpm test && pnpm test:coverage`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Upgrade Vitest from 3 to 5** - covers: FR-5
-  - [ ] Bump `vitest` to `^5.0.5`
-  - [ ] Resolve any config breakage; confirm all 31 tests still pass
-  - [ ] Confirm the new `clearMocks` default does not affect the form tests
-- [ ] **P2.T2: Add coverage tooling and the 40% gate** - covers: FR-6
-  - [ ] Add `@vitest/coverage-v8@^5.0.5` and a `test:coverage` script
-  - [ ] Configure `coverage.include` as `["src", "convex"]` and exclude `convex/_generated/**` and `src/routeTree.gen.ts`
-  - [ ] Set thresholds to 40% lines and 40% functions
-  - [ ] Report the measured baseline before enabling the gate. If it is below 40%, stop and escalate rather than lowering the threshold.
-- [ ] **P2.T3: Cap test workers at 4** - covers: FR-7
-  - [ ] Set `maxWorkers: 4` in the Vitest config, so a bare `pnpm test` respects it without a CLI flag
-- [ ] **P2.T4: Enable the coverage gate in workflow.md** - covers: FR-12
-  - [ ] Set `coverage.gate: true` and record the 40% threshold
+- [x] **P2.T1: Upgrade Vitest from 3 to 5** - covers: FR-5
+  - [x] Bump `vitest` to `^5.0.5`
+  - [x] Resolve any config breakage; confirm all 31 tests still pass
+  - [x] Confirm the new `clearMocks` default does not affect the form tests
+- [x] **P2.T2: Add coverage tooling and the ratchet gate** - covers: FR-6
+  - [x] Add `@vitest/coverage-v8@^5.0.5` and a `test:coverage` script
+  - [x] Configure `coverage.include` as `["src", "convex"]` and exclude `convex/_generated/**` and `src/routeTree.gen.ts`
+  - [x] Measure and record the baseline: 3.91% statements, 10.4% branches, 3.49% functions, 3.93% lines
+  - [x] Set thresholds to 3% lines / 3% functions (ratchet at the measured floor, per user decision - the original 40% was unreachable without test expansion, which is out of scope)
+- [x] **P2.T3: Cap test workers at 4** - covers: FR-7
+  - [x] Set `maxWorkers: 4` in the Vitest config, so a bare `pnpm test` respects it without a CLI flag
+- [x] **P2.T4: Enable the coverage gate in workflow.md** - covers: FR-12
+  - [x] Set `coverage.gate: true` and record the 3% ratchet thresholds
+
+**Result:** verified
+**Checkpoint:** 0b74322
+**Evidence:** conductor/tracks/20261024-tooling-modernization/verification/phase-2.md
+
+**Deviation:** the 40% gate in FR-6 was unachievable — measured coverage was 3.93% lines /
+3.49% functions. FR-6, AC-6, the goals metric, and the in-scope bullet were amended to a
+ratcheting floor at the measured baseline. Also `vitest.setup.tsx` was edited (outside
+`Touches`) to import `@testing-library/jest-dom/vitest`, a type-only fix required by
+Vitest 5.
 
 ## Phase 3: Biome replaces ESLint and Prettier
 
