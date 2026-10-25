@@ -11,7 +11,7 @@ self-hosted backend and deployment.
 
 | Item | Current | Target |
 | --- | --- | --- |
-| Language | TypeScript 5.7 (strict, `noEmit` typecheck) | TypeScript 7 (native compiler) |
+| Language | TypeScript 7.0.2 - native compiler (`tsgo`), strict, `noEmit` typecheck | TypeScript 7.0.2 |
 | UI runtime | React 19.2 with React DOM | React 19.x (latest 19) |
 | Server runtime | Node 24 - Dockerfile `node:24-alpine`, CI `node-version: 24`, `.nvmrc` | Node 24 everywhere |
 | Package manager | pnpm 12.4.1 - pinned via `packageManager` in `package.json`, Dockerfile, and CI | pnpm 12.4.1 |
@@ -26,10 +26,10 @@ and the container is closed.
 
 | Layer | Choice |
 | --- | --- |
-| Full-stack framework | TanStack Start 1.132 (SSR via Vite plugin + Nitro server) |
-| Routing | TanStack Router 1.132, file-based under `src/routes/`; `routeTree.gen.ts` is generated |
-| Server state | TanStack Query 5.90 via `@convex-dev/react-query`, `useSuspenseQuery` + `convexQuery` |
-| Backend | Convex 1.31 (self-hosted) — reactive DB, queries/mutations/actions, scheduler, file storage |
+| Full-stack framework | TanStack Start 1.145 (SSR via Vite plugin + Nitro server) |
+| Routing | TanStack Router 1.144, file-based under `src/routes/`; `routeTree.gen.ts` is generated |
+| Server state | TanStack Query 5.104 via `@convex-dev/react-query`, `useSuspenseQuery` + `convexQuery` |
+| Backend | Convex 1.48 (self-hosted) - reactive DB, queries/mutations/actions, scheduler, file storage |
 | Auth | Convex Auth 0.0.90 (`@convex-dev/auth`), JWT via `JWT_PRIVATE_KEY` + `JWKS` |
 | Styling | **Tailwind CSS 4 is authoritative**; CSS custom properties in `variables.css` supply the design tokens Tailwind consumes, and co-located `*.css` files remain for what Tailwind cannot express (keyframes, terminal chrome) |
 | Component primitives | Local, hand-built (`src/components/ui/`); `clsx` + `tailwind-merge`; `lucide-react` and `react-icons` icons |
@@ -60,7 +60,8 @@ Tailwind.
   `--frozen-lockfile`.
 - **Vite 7** is the build engine; TanStack Start and Nitro are Vite plugins.
 - **Path aliases** via `vite-tsconfig-paths` reading `tsconfig.json`.
-- **Nitro is pinned to `"latest"`** — a reproducibility risk, documented below.
+- **Nitro is pinned to `3.0.1-alpha.1`** exactly - there is no stable 3.x line, so the
+  prerelease the project was already running is pinned rather than floated.
 
 ### Commands
 
@@ -127,7 +128,7 @@ Single Convex deployment, 16 tables declared in `convex/schema.ts`:
 | Coverage | `@vitest/coverage-v8` 5 + `test:coverage`, ratcheting gate | keep, raise the floor as tests land |
 | Lint | **Biome 2.6** - `noExplicitAny` = **error**; pre-existing a11y and style debt = warnings | **Biome** |
 | Format | **Biome 2.6** - `biome check --write .`, CRLF preserved | **Biome** |
-| Typecheck | `tsc --noEmit` | **TypeScript 7 (`tsgo`)** |
+| Typecheck | `tsc --noEmit` - TypeScript 7.0.2 native compiler (`tsgo`) | **TypeScript 7** |
 
 Test locations: `convex/__tests__/*.test.ts` for backend logic and
 `src/**/__tests__/*.test.tsx` for components and utilities.
@@ -146,20 +147,20 @@ Raise the threshold as tracks add tests; never lower it to make a phase pass.
 
 ## Planned Modernization
 
-These are agreed directions, not completed work. Each should become its own track, and
-each needs verification before adoption — the notes below record what must be checked.
+The modernization work is complete. Every row below was closed by track
+`20261024-tooling-modernization`; the verification notes record what was checked.
 
 | Change | From | To | Verification required |
 | --- | --- | --- | --- |
 | Toolchain consolidation | ESLint 9 + Prettier 3.7 | Biome | **Done** - closed by track `20261024-tooling-modernization`. ESLint and Prettier removed; `noExplicitAny` remains an error, pre-existing a11y/style debt demoted to warnings rather than silenced. |
-| Typecheck | `tsc` 5.7 | TypeScript 7 native compiler | Confirm TanStack Start, Convex codegen, and `vite-tsconfig-paths` typecheck cleanly; keep both paths available until parity is proven. |
+| Typecheck | `tsc` 5.7 | TypeScript 7 native compiler | **Done** - TypeScript 7.0.2 type-checks TanStack Start, Convex codegen, and `vite-tsconfig-paths` cleanly. The only change needed was removing the now-removed `baseUrl` from `tsconfig.json` (TS5102); no source file changed. |
 | Runtime | Node 20 (Dockerfile + CI) | Node 24 | **Done** - closed by track `20261024-tooling-modernization`: `node:24-alpine`, CI `node-version: 24`, `.nvmrc`, and `packageManager` all in place. |
-| Dependency freshness | mixed | current majors | Bump in reviewable groups, not one sweeping commit. |
-| Reproducibility | `"nitro": "latest"` | pinned semver | **Done** - pinned to exact `3.0.1-alpha.1`, the version `latest` was already resolving to. |
+| Dependency freshness | mixed | current majors | **Done** - 41 packages moved within their existing majors; no major version changed. The TanStack Router family is deliberately held at its pre-update versions (`react-start` 1.145.3, `router` 1.144.0) because `react-start` 1.169 requires **Vite 8**. Moving the router forward is a Vite 8 upgrade, tracked separately. |
+| Reproducibility | `"nitro": "latest"` | pinned semver | **Done** - pinned to exact `3.0.1-alpha.1`, the version `latest` was already resolving to. Confirmed building under Node 24. |
 
-A sensible order: **Node 24 → Biome → dependency refresh → TypeScript 7**, since each
-later step is easier to validate on a green baseline. TypeScript 7 goes last because it
-touches every file's type surface.
+The sequence that was followed: **Node 24 → Biome → dependency refresh → TypeScript 7**,
+each on a green baseline, with TypeScript 7 last because it touches every file's type
+surface.
 
 ## Local Development Environment
 
@@ -207,12 +208,15 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 
 - **Reactive, not scheduled.** Dependencies are bumped when work touches them. There is
   no Renovate/Dependabot configuration; adding one is an open question.
-- **Modernization is planned and staged**, per the Planned Modernization table above —
-  not incidental. Each step lands as its own track with verification.
+- **Modernization is complete but bounded.** Track `20261024-tooling-modernization`
+  closed the staged work in the table above. What remains is a hard boundary, not a
+  preference: the TanStack Router family cannot advance past its current versions until
+  **Vite 8** lands, because `@tanstack/react-start` 1.169 declares `vite: ">=8.0.0"` as a
+  peer. That upgrade is its own track.
 - **Convex schema changes** ship through `convex deploy` in the CI deploy stage; there is
   no manual production migration path.
 - **Breaking upgrades require a green baseline first.** Verify with
-  `pnpm type-check; pnpm lint; pnpm test; pnpm build` before and after.
+  `pnpm type-check; pnpm lint; pnpm format:check; pnpm test; pnpm build` before and after.
 
 ## Open Questions & Assumptions
 
@@ -223,15 +227,24 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 2. **Coverage threshold trajectory.** The floor is now a ratchet at 3% lines / 3%
    functions. What is the intended destination, and should it apply to new code only
    (changed lines) rather than the whole project?
-3. **TypeScript 7 readiness.** The native compiler's support for TanStack Start's
-   generated types and Convex's codegen is unverified. The migration must not land
-   before parity is demonstrated.
-4. **Pre-existing lint debt.** Biome's `recommended` preset found 100 findings ESLint never
+3. **Pre-existing lint debt.** Biome's `recommended` preset found 100 findings ESLint never
    checked - mostly a11y (`useButtonType`, `noLabelWithoutControl`) and `noArrayIndexKey`.
    They are warnings today, not errors. Which should be promoted back to errors, and in
    what order?
-5. **`convex` script wrapper.** `convex dev` and `convex deploy` are invoked directly by
+4. **`convex` script wrapper.** `convex dev` and `convex deploy` are invoked directly by
    README and CI. Should they get `package.json` scripts?
+5. **Vite 8 migration.** The TanStack Router family is held back by `react-start` 1.169's
+   Vite 8 peer requirement. When should that upgrade happen, and what does it cost - the
+   router generator also rejects `createFileRoute("/feed.xml" as any)`, so the two
+   XML routes may need converting to Escape routes first.
+
+**Resolved**
+
+- *TypeScript 7 readiness.* TypeScript 7.0.2 type-checks the whole project - TanStack
+  Start generated route types, Convex codegen, and `vite-tsconfig-paths` - with no source
+  changes. The single incompatibility was `baseUrl`, which TypeScript 7 removed; `paths`
+  resolves relative to the tsconfig directory without it, so deleting the line was
+  behavior-preserving.
 
 **Recorded assumptions**
 
