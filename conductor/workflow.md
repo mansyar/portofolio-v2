@@ -197,8 +197,14 @@ tooling, and adding one just to fill this table would be debt disguised as rigor
 - **Services:** the dev server runs on port **3000** (`vite dev --port 3000`). A
   self-hosted Convex instance is required for the app to function locally, addressed by
   `VITE_CONVEX_URL`.
-- **Containers:** none required for verification. `docker/docker-compose.yml` exists for
-  production-shaped local runs, not for tests.
+- **Containers:** not required for phase verification, but **the production image must be
+  buildable**. `docker build -f docker/Dockerfile .` is the check for any change that
+  touches `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, the `Dockerfile`, or a
+  build-affecting config. The container's install step is genuinely different from the
+  host's — it copies a subset of files — so a green host install does not prove the image
+  builds. This was proven the hard way: a missing `pnpm-workspace.yaml` in `COPY` broke
+  production while every local and CI check passed.
+  `docker/docker-compose.yml` exists for production-shaped local runs, not for tests.
 - **Database:** no test database. Vitest runs in `jsdom` and skips the SSR plugins
   (`nitro`, `tanstackStart`) when `NODE_ENV=test` or `VITEST` is set — deliberately, to
   avoid hanging processes. Tests must not require a live Convex deployment; mock at the
@@ -253,7 +259,11 @@ that directory is gitignored. The report itself is committed with the track.
 - **Production deploy outcome.** Whether the Docker image pulled, Convex deployed, and
   Coolify redeployed successfully on `main` can only be confirmed by watching CI and the
   live site. An agent can open the PR and watch checks; it cannot verify the deployment
-  landed.
+  landed. It **can** verify the image builds (`docker build`), which is the part that has
+  actually broken before — so build it locally rather than assuming CI will catch it.
+- **`convex deploy` against the live backend.** The push is real and irreversible; it is
+  the step that fails when the CLI and the self-hosted backend drift apart. Do not bump
+  `convex` without upgrading the backend in the same change.
 - **Coolify webhook delivery.** The final `curl` to the Coolify webhook has no local
   observable result.
 - **Secret rotation.** Rotating `JWT_PRIVATE_KEY`, `JWKS`, `CONVEX_SELF_HOSTED_ADMIN_KEY`,

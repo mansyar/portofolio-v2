@@ -100,3 +100,31 @@ None.
   not errors, and are recorded as open question 3 rather than silently silenced.
 - `deps.optimizer.web` under Vitest 5 and Rollup `@__PURE__` warnings from `zod` 4.6.7 are
   pre-existing dependency noise, non-fatal, untouched.
+
+## Post-merge verification
+
+Merged as 19ce2a6 (squash of 29 commits). The production pipeline then surfaced two defects that no local gate could catch, both fixed forward on `main`:
+
+### 1. Docker build failed - `ERR_PNPM_IGNORED_BUILDS`
+
+The `deps` stage copied only `package.json` and `pnpm-lock.yaml`, so `pnpm-workspace.yaml` - which carries the `allowBuilds` approval for `esbuild` and `sharp` - was absent inside the container. pnpm 12 blocked the postinstall scripts and exited 1.
+
+Fixed by `e0d9c6a`: `COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./`. Verified locally by building the `deps` target and then the full image, running it, and confirming `/health` returns 200 and the app renders.
+
+### 2. `convex deploy` failed - `appDefinition: missing field 'functions'`
+
+Phase 4 moved `convex` from 1.31.2 to 1.48.0. The self-hosted backend was never upgraded, and `convex deploy` pushes an `appDefinition` whose schema is tied to the backend's protocol, so a newer CLI against an older backend is rejected with a 400 `BadJsonBody`.
+
+`docs/PROGRESS.md` records this exact class of failure from an earlier incident ("Convex Version Alignment"), which the Phase 4 review did not connect to the dependency bump.
+
+Fixed by `a8ecc69`: `convex` pinned to exact `1.31.2`, with the constraint and the upgrade procedure recorded in `tech-stack.md` (Constraints and open question 6). The within-major refresh is therefore 40 packages, not 41.
+
+### Final state
+
+| Check | Result |
+| --- | --- |
+| CI run `40172788400` | `test` success, `build-and-push` success, `deploy` success |
+| `https://ansyar-world.top/health` | 200 |
+| `https://ansyar-world.top/` | 200 |
+
+**Lesson recorded:** the track's verification strategy had no Docker layer and no deploy dry-run, so both defects were invisible until production. Docker builds are now reproducible locally and should be part of any future toolchain change.
