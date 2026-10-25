@@ -133,7 +133,7 @@ and the files carrying the five source-level lint fixes were outside the origina
 - **Covers:** FR-10, AC-10
 - **Touches:** `package.json`, `pnpm-lock.yaml`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P4.T1: Update dependencies within current majors** - covers: FR-10
   - [ ] Run a within-major update; confirm no major version changed
