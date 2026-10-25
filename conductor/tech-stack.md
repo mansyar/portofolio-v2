@@ -115,9 +115,11 @@ Single Convex deployment, 16 tables declared in `convex/schema.ts`:
   `CMD node .output/server/index.mjs`.
 - Image published to Docker Hub as `<user>/portfolio-v2:latest` and `:sha`.
 - `docker/docker-compose.yml` runs the app on port 3000 with `NODE_ENV=production`.
-- CI (`.github/workflows/deploy.yml`) runs three stages on push to `main`:
-  **test** (typecheck → lint → test) → **build-and-push** (Dockerfile, GitHub Actions
-  layer cache) → **deploy** (`convex deploy` for the schema, then a Coolify webhook).
+- CI (`.github/workflows/deploy.yml`) runs the **test** stage
+  (typecheck → lint → format:check → test → build) on every pull request and every
+  push to `main`. Only a push to `main` continues to **build-and-push** (Dockerfile,
+  GitHub Actions layer cache) and then **deploy** (`convex deploy` for the schema,
+  then a Coolify webhook).
 
 ## Test, Coverage, Lint, Format, and Typecheck Tooling
 

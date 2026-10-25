@@ -370,14 +370,15 @@ A track is complete when:
 ## Deployment
 
 Deployment is **automatic on merge to `main`**. `.github/workflows/deploy.yml` runs three
-stages on every push to `main`:
+stages, with the first gated differently from the other two:
 
 1. **`test`** — `pnpm install --frozen-lockfile`, `pnpm type-check`, `pnpm lint`,
-   `pnpm test`.
+   `pnpm format:check`, `pnpm test`, `pnpm build`. Runs on **every pull request** and
+   every push to `main`, so a PR cannot merge with a red check.
 2. **`build-and-push`** — multi-stage Docker build, pushed to Docker Hub as `latest` and
-   `${{ github.sha }}`.
+   `${{ github.sha }}`. **Push to `main` only** (`if: github.event_name == 'push'`).
 3. **`deploy`** — `pnpm exec convex deploy` against the self-hosted instance, then a
-   `POST` to the Coolify webhook to pull and restart.
+   `POST` to the Coolify webhook to pull and restart. **Push to `main` only.**
 
 **Merging a PR ships to production.** This is the single most important operational fact
 in this document. The implement flow must never merge a PR without explicit human
