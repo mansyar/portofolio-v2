@@ -126,6 +126,9 @@ pnpm build
 pnpm type-check && pnpm lint && pnpm format:check && pnpm test
 ```
 
+Line endings are LF and enforced by `.gitattributes`. Do not commit a file the formatter
+did not produce; a CRLF working tree passes locally and fails CI.
+
 ## Phase & Task Workflow
 
 Implementation is executed one phase at a time by a phase subagent. The primary agent

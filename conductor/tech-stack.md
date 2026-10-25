@@ -62,6 +62,9 @@ Tailwind.
 - **Path aliases** via `vite-tsconfig-paths` reading `tsconfig.json`.
 - **Nitro is pinned to `3.0.1-alpha.1`** exactly - there is no stable 3.x line, so the
   prerelease the project was already running is pinned rather than floated.
+- **Line endings are LF everywhere**, enforced by `.gitattributes`
+  (`* text=auto eol=lf`). This is not cosmetic: the format gate compares exact bytes,
+  so a platform-dependent working tree passes on Windows and fails on Linux CI.
 
 ### Commands
 
@@ -129,7 +132,7 @@ Single Convex deployment, 16 tables declared in `convex/schema.ts`:
 | Test setup | `vitest.setup.tsx`; SSR plugins disabled under test to avoid hanging processes; `pool: 'forks'` with a short teardown timeout; `maxWorkers: 4` | keep |
 | Coverage | `@vitest/coverage-v8` 5 + `test:coverage`, ratcheting gate | keep, raise the floor as tests land |
 | Lint | **Biome 2.6** - `noExplicitAny` = **error**; pre-existing a11y and style debt = warnings | **Biome** |
-| Format | **Biome 2.6** - `biome check --write .`, CRLF preserved | **Biome** |
+| Format | **Biome 2.6** - `biome check --write .`, LF enforced (`.gitattributes`) | **Biome** |
 | Typecheck | `tsc --noEmit` - TypeScript 7.0.2 native compiler (`tsgo`) | **TypeScript 7** |
 
 Test locations: `convex/__tests__/*.test.ts` for backend logic and

@@ -38,3 +38,18 @@ Warning count fell from 100 to 99 because `noDangerouslySetInnerHtml` became an 
 - F2 required an attribute-position `biome-ignore` comment. A JSX-expression comment (`{/* ... */}`) above the element does not suppress a lint rule on a JSX attribute; the comment must sit inside the element's attribute list, immediately before `dangerouslySetInnerHTML`.
 - F6 was a line-ending defect, not a formatting one: `biome.json` scopes Biome to `js/jsx/ts/tsx`, so `docs/PRD.md` was never touched by the formatter. The doc-sync write re-encoded CRLF. `core.autocrlf` is `false`, so the churn was committed as-is.
 - No finding required a source-behaviour change. The only `src/` edit in this phase is the suppression comment.
+
+## Follow-up: line endings (post-review)
+
+The first PR run of CI failed pnpm lint with 10 formatter errors that did not reproduce locally. Root cause: repository blobs were LF, the Windows working tree was CRLF, and `biome.json` pinned `lineEnding: "crlf"` - so the format gate passed on Windows and failed on Linux. The F6 fix treated the symptom (`docs/PRD.md` churn) without fixing the cause.
+
+Resolved in this track rather than deferred:
+
+- Added `.gitattributes` with `* text=auto eol=lf` plus binary markers, so the object store, every checkout, and CI agree byte for byte.
+- Changed `formatter.lineEnding` from `"crlf"` to `"lf"`.
+- Renormalized the index (147 files, line-endings only, zero content diff) and converted the working tree in place (183 files).
+- Verified: `pnpm format:check`, `pnpm lint`, `pnpm type-check`, `pnpm test` (31/31) all green locally, and the GitHub Actions `test` job passes in CI.
+
+Also fixed in the same pass: `deploy.yml` gained a `pull_request` trigger for `main` and the `test` job now runs `pnpm format:check` and `pnpm build`. `build-and-push` and `deploy` are gated with `if: github.event_name == 'push'` so a PR validates without shipping. Previously the workflow only ran on push to `main`, which made the "CI must pass before merge" rule unenforceable.
+
+**Result: verified.**
