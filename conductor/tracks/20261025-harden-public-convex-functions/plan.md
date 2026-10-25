@@ -108,25 +108,24 @@
 - **Touches:** `convex/__tests__/**`,
   `conductor/tracks/20261025-harden-public-convex-functions/verification/**`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P4.T1: Replace the remaining placeholder tests** - covers: NFR-2, AC-6
-  - [ ] **P4.T1.1: Give `contact.test.ts` and `uses.test.ts` real assertions — these are the only two files that assert `expect(true).toBe(true)`; `helpers.test.ts` and `discovery.test.ts` already contain real logic tests and are out of scope**
-  - [ ] **P4.T1.2: Confirm no file under `convex/__tests__/` contains `expect(true).toBe(true)`**
-- [ ] **P4.T2: Classify every Convex function by access model** - covers: FR-7, AC-7
-  - [ ] **P4.T2.1: Produce a table of every exported function in `convex/` marked public-by-design, admin-guarded, or internal**
-  - [ ] **P4.T2.2: Note the audit method so the check can be repeated when functions are added**
-- [ ] **P4.T3: Full verification** - covers: NFR-3, AC-9
-  - [ ] **P4.T3.1: Run the full five-command gate and record every exit code**
-  - [ ] **P4.T3.2: Run `pnpm test:coverage` and confirm coverage stays at or above the 3% ratchet**
-  - [ ] **P4.T3.3: Confirm the test count is at least 31 and that the number rose because assertions were added, not because files were deleted**
+- [x] **P4.T1: Replace the remaining placeholder tests** - covers: NFR-2, AC-6
+  - [x] **P4.T1.1: Give `contact.test.ts` and `uses.test.ts` real assertions - these are the only two files that assert `expect(true).toBe(true)`; `helpers.test.ts` and `discovery.test.ts` already contain real logic tests and are out of scope** - `contact.test.ts` went from 2 fake tests to 4 real ones (two guard rejections, two admin behaviour tests via `t.withIdentity`); `uses.test.ts` from 1 fake to 1 real. `requireAdmin` is never stubbed.
+  - [x] **P4.T1.2: Confirm no file under `convex/__tests__/` contains `expect(true).toBe(true)`** - zero matches by grep. Neither placeholder file was deleted, so the suite went 40 -> 42 rather than 40 -> 40.
+- [x] **P4.T2: Classify every Convex function by access model** - covers: FR-7, AC-7
+  - [x] **P4.T2.1: Produce a table of every exported function in `convex/` marked public-by-design, admin-guarded, or internal** - all 21 modules recorded in the evidence file. Five functions are intentionally public: `contact.submit` (3/hr), `newsletter.subscribe` (5/hr), `settings.getPublic`, `sitemap.getSitemapData`, and the content read queries. No unguarded public mutation exists.
+  - [x] **P4.T2.2: Note the audit method so the check can be repeated when functions are added** - regex over `export const <name> = <kind>({ ... })` plus a check for `requireAdmin(` inside each handler body; documented in the evidence file.
+- [x] **P4.T3: Full verification** - covers: NFR-3, AC-9
+  - [x] **P4.T3.1: Run the full five-command gate and record every exit code** - type-check 0, lint 0 (99 warnings), format:check 0, test 0 (42 passed), build 0.
+  - [x] **P4.T3.2: Run `pnpm test:coverage` and confirm coverage stays at or above the 3% ratchet** - 6.81% lines / 5.44% functions, up from 5.37% / 4.68%.
+  - [x] **P4.T3.3: Confirm the test count is at least 31 and that the number rose because assertions were added, not because files were deleted** - 42 passing across 17 files; the baseline was 31, so +11 across the track and no file removed.
 
-<!--
-The primary appends after acceptance:
 **Result:** verified
-**Checkpoint:** <short-sha>
+**Checkpoint:** dc5a0ee
 **Evidence:** conductor/tracks/20261025-harden-public-convex-functions/verification/phase-4.md
--->
+
+**Deviation:** none in scope. One finding was reported rather than fixed, per this phase's rules: `convex/projects.ts` `remove` calls `requireAdmin` *after* `ctx.db.delete`, the only handler in the audit whose guard is not the first statement. It is not exploitable today because Convex mutations are transactional, but it is guard-last and would become a real gap if the activity log moved to `ctx.scheduler.runAfter`. Changing it is outside this track's spec (which puts `projects.ts` out of scope), so it is recorded as follow-up debt.
 
 <!--
 Review fixes are appended by `conductor-review` as:
