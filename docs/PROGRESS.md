@@ -356,6 +356,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Oct 25, 2026 | Security hardening: Convex auth gaps closed, newsletter rate limited, real Convex tests |
 | Jan 12, 2026 | Phase 8 complete: Admin Settings, Bulk Actions, Scheduling, Activity Log, Image Optimization |
 | Jan 12, 2026 | Phase 7 complete: Related Content, RSS Feed, Tag Cloud, Progress Bar   |
 | Jan 12, 2026 | Phase 6 complete: Umami Analytics, Admin Widget, Event Tracking                |

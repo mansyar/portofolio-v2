@@ -1,9 +1,26 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Send, Loader2 } from "lucide-react";
 import "./NewsletterForm.css";
+
+// Server function to get client IP from Traefik headers. Duplicated from
+// src/routes/contact.tsx: a shared module is the right refactor, but it would
+// have to be extracted from that route first.
+const getClientIp = createServerFn({ method: "GET" }).handler(async () => {
+  const request = getRequest();
+  if (!request) return "unknown";
+
+  // Traefik adds X-Forwarded-For with the client IP first
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") || "unknown";
+});
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
@@ -16,7 +33,16 @@ export function NewsletterForm() {
 
     setLoading(true);
     try {
-      const result = await subscribe({ email });
+      // A missing IP header must not break signup: every unresolved caller then
+      // shares the "unknown" bucket, which is the trade-off contact.submit makes.
+      let clientIp = "unknown";
+      try {
+        clientIp = await getClientIp();
+      } catch {
+        clientIp = "unknown";
+      }
+
+      const result = await subscribe({ email, clientIp });
       if (result.alreadySubscribed) {
         toast.info("YOU_ARE_ALREADY_SUBSCRIBED");
       } else {
