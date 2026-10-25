@@ -11,7 +11,9 @@ WORKDIR /app
 
 # Dependencies
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
+# pnpm-workspace.yaml carries the `allowBuilds` approval for esbuild and sharp;
+# without it pnpm 12 fails the install with ERR_PNPM_IGNORED_BUILDS.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Build
