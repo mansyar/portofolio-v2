@@ -1,0 +1,32 @@
+{
+  "id": "20261026-newsletter-lifecycle",
+  "title": "Newsletter Lifecycle",
+  "type": "bug",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "created_at": "2026-10-26T18:30:00+11:00",
+  "updated_at": "2026-10-26T18:30:00+11:00",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "fix/20261026-newsletter-lifecycle",
+  "base_branch": "main",
+  "base_sha": "1e721b43b2e82c2c0f93e43681c7dc332e20e2cf",
+  "progress": {
+    "phases_total": 3,
+    "phases_verified": 0,
+    "tasks_total": 8,
+    "tasks_done": 0
+  },
+  "last_checkpoint": null,
+  "review_verdict": null,
+  "review_rounds": 0,
+  "doc_sync": "pending",
+  "pr_url": null,
+  "pr_state": null,
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": null,
+  "archive_path": null
+}
