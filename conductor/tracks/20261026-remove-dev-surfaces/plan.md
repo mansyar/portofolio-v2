@@ -120,7 +120,7 @@ reverted before the phase result is reported.
 - **Touches:** `docs/PROGRESS.md`,
   `conductor/tracks/20261026-remove-dev-surfaces/verification/`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P4.T1: Reconcile the Phase 9 roadmap row** — covers: FR-5, AC-6
   - [ ] Change the Phase 9 table row to complete, matching the header and section
