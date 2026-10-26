@@ -86,22 +86,26 @@ invalid path. No auth or query code is touched.
 - **Touches:** `src/routes/__tests__/route-surface.test.ts`,
   `src/routes/__tests__/admin-dashboard.test.tsx`
 - **Verification:** `pnpm exec vitest run src/routes/__tests__/route-surface.test.ts src/routes/__tests__/admin-dashboard.test.tsx`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Add the route-surface guard** — covers: FR-6, AC-1
-  - [ ] Assert `src/routes/demo` and `src/data/demo.punk-songs.ts` do not exist
-  - [ ] Scan route sources and `src/routeTree.gen.ts` for `/demo` paths and `Demo*`
+- [x] **P3.T1: Add the route-surface guard** — covers: FR-6, AC-1
+  - [x] Assert `src/routes/demo` and `src/data/demo.punk-songs.ts` do not exist
+  - [x] Scan route sources and `src/routeTree.gen.ts` for `/demo` paths and `Demo*`
     identifiers
-- [ ] **P3.T2: Add the dashboard rendering test** — covers: FR-6, AC-4, AC-5
-  - [ ] Mock Convex queries, `AnalyticsWidget`, and the router `Link`; render the
+- [x] **P3.T2: Add the dashboard rendering test** — covers: FR-6, AC-4, AC-5
+  - [x] Mock Convex queries, `AnalyticsWidget`, and the router `Link`; render the
     exported `Dashboard`
-  - [ ] Assert enabled links to `/admin/messages` and `/admin/blog/new`
-  - [ ] Assert `99.9%`, `456MB`, `CPU:`, `Memory:`, and `Disk:` are absent
-- [ ] **P3.T3: Prove both guards fail on regression** — covers: AC-7
-  - [ ] Temporarily add `src/routes/demo-probe.tsx` containing a `/demo/probe` route,
+  - [x] Assert enabled links to `/admin/messages` and `/admin/blog/new`
+  - [x] Assert `99.9%`, `456MB`, `CPU:`, `Memory:`, and `Disk:` are absent
+- [x] **P3.T3: Prove both guards fail on regression** — covers: AC-7
+  - [x] Temporarily add `src/routes/demo-probe.tsx` containing a `/demo/probe` route,
     confirm P3.T1 fails, then delete it
-  - [ ] Temporarily retarget the View All link, confirm P3.T2 fails, then restore it
-  - [ ] Record the mutation output in the phase evidence
+  - [x] Temporarily retarget the View All link, confirm P3.T2 fails, then restore it
+  - [x] Record the mutation output in the phase evidence
+
+**Result:** verified
+**Checkpoint:** f75e1c9
+**Evidence:** conductor/tracks/20261026-remove-dev-surfaces/verification/phase-3.md
 
 **Risk:** The dashboard test depends on module mocks matching the existing
 `src/routes/__tests__/` pattern; no live Convex deployment is used. Mutation probes are
