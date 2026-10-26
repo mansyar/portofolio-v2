@@ -36,7 +36,7 @@
 - **Verification:** the gate, plus `useHtmlLang`, `noAutofocus`,
   `noSvgWithoutTitle`, `noStaticElementInteractions` and `useKeyWithClickEvents`
   each report zero diagnostics
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Add `lang` to the standalone health document** - covers: FR-5
   - [ ] Add `lang="en"` to the `<html>` element in `health.tsx`
