@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-function AdminLayout() {
+export function AdminLayout() {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const router = useRouter();
   const routerState = useRouterState();
@@ -59,7 +59,12 @@ function AdminLayout() {
         </div>
         {/* Close on click outside */}
         {isMobileSidebarOpen && (
-          <div className="absolute inset-0 -z-10" onClick={() => setIsMobileSidebarOpen(false)} />
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            className="absolute inset-0 -z-10 cursor-default"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
         )}
       </div>
 
