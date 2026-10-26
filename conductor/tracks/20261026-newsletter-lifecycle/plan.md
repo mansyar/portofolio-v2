@@ -77,7 +77,7 @@ token, tolerate StrictMode double-invocation, and never render the token itself.
 - **Touches:** `convex/newsletter.ts`, `src/routes/admin/newsletter/index.tsx`,
   `convex/__tests__/newsletter.adminList.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Add the guarded listing query** — covers: FR-6
   - [ ] `requireAdmin` first, then return email, status, `subscribedAt`, newest first
