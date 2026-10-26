@@ -208,7 +208,7 @@
   `conductor/workflow.md`, `docs/PROGRESS.md`, `README.md` (only if a command
   changed)
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P7.T1: Close the known-gaps table** - covers: FR-13
   - [ ] Close all four rows with evidence, or annotate what remains and why
