@@ -193,6 +193,7 @@ function AdminSkillsList() {
                   </td>
                   <td>
                     <button
+                      type="button"
                       onClick={() => handleToggleVisibility(skill._id)}
                       className={`admin-badge ${skill.isVisible ? "success" : "neutral"} cursor-pointer hover:opacity-80 transition-opacity`}
                     >
@@ -209,6 +210,7 @@ function AdminSkillsList() {
                         [edit]
                       </Link>
                       <button
+                        type="button"
                         onClick={() => handleDelete(skill._id)}
                         disabled={deletingId === skill._id}
                         className="text-xs text-(--color-text-secondary) hover:text-(--color-terminal-red) transition-colors font-mono disabled:opacity-50"

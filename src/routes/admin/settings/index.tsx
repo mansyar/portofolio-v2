@@ -68,6 +68,7 @@ export function AdminSettings() {
           </p>
         </div>
         <button
+          type="button"
           onClick={handleSave}
           disabled={setBulk.isPending}
           className="terminal-button btn-primary flex items-center justify-center gap-2"
@@ -81,6 +82,7 @@ export function AdminSettings() {
         {/* Tabs */}
         <div className="flex border-b border-(--color-border) bg-[rgba(255,255,255,0.02)]">
           <button
+            type="button"
             onClick={() => setActiveTab("general")}
             className={`px-6 py-3 font-mono text-sm transition-colors border-r border-(--color-border) ${
               activeTab === "general"
@@ -94,6 +96,7 @@ export function AdminSettings() {
             </span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("seo")}
             className={`px-6 py-3 font-mono text-sm transition-colors border-r border-(--color-border) ${
               activeTab === "seo"
@@ -107,6 +110,7 @@ export function AdminSettings() {
             </span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("social")}
             className={`px-6 py-3 font-mono text-sm transition-colors ${
               activeTab === "social"

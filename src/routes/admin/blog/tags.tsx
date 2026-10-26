@@ -129,6 +129,7 @@ export function TagsAdmin() {
                   <TagIcon size={12} className="text-(--color-text-secondary)" />
                   <span className="text-sm font-mono">{tag.name}</span>
                   <button
+                    type="button"
                     onClick={async () => {
                       if (window.confirm("Delete tag?")) {
                         await deleteTag({ id: tag._id });

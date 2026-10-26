@@ -148,6 +148,7 @@ export function CategoriesAdmin() {
                     </td>
                     <td className="p-4 text-right">
                       <button
+                        type="button"
                         onClick={async () => {
                           if (window.confirm("Delete category?")) {
                             await deleteCategory({ id: cat._id });

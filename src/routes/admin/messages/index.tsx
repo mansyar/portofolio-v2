@@ -120,6 +120,7 @@ export function AdminMessagesInbox() {
                             stays a non-interactive container. */}
                         <div className="flex items-center justify-end gap-3">
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleToggleRead(msg._id, msg.isRead);
@@ -130,6 +131,7 @@ export function AdminMessagesInbox() {
                             {msg.isRead ? <Mail size={16} /> : <MailOpen size={16} />}
                           </button>
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete(msg._id);
@@ -140,7 +142,7 @@ export function AdminMessagesInbox() {
                           >
                             <Trash2 size={16} />
                           </button>
-                          <button className="text-(--color-text-secondary)">
+                          <button type="button" className="text-(--color-text-secondary)">
                             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </button>
                         </div>

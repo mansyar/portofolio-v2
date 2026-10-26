@@ -58,6 +58,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
           <Linkedin size={18} />
         </a>
         <button
+          type="button"
           onClick={copyToClipboard}
           className={`share-button copy ${copied ? "copied" : ""}`}
           title="Copy Link"

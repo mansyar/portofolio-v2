@@ -98,6 +98,7 @@ export function AnalyticsWidget() {
           {(["today", "7d", "30d"] as const).map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setRange(r)}
               className={`px-3 py-1 text-xs font-mono transition-all rounded ${
                 range === r
@@ -109,6 +110,7 @@ export function AnalyticsWidget() {
             </button>
           ))}
           <button
+            type="button"
             onClick={fetchStats}
             disabled={loading}
             className="p-1 text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors disabled:opacity-50"

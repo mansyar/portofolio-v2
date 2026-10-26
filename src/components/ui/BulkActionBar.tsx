@@ -34,6 +34,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             return (
               <button
                 key={index}
+                type="button"
                 onClick={action.onClick}
                 disabled={action.disabled}
                 className={`bulk-action-button variant-${action.variant || "default"}`}
@@ -49,6 +50,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
         <div className="bulk-divider" />
 
         <button
+          type="button"
           onClick={onClear}
           className="bulk-clear-button"
           title="Clear Selection"

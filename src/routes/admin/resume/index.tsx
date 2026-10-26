@@ -39,6 +39,7 @@ function AdminResumePage() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => setActiveTab(tab.id as ResumeTab)}
             className={`px-4 py-2 text-sm font-mono flex items-center gap-2 transition-colors relative top-px ${
               activeTab === tab.id
@@ -313,6 +314,7 @@ function ProfileEditor() {
         </div>
       </div>
       <button
+        type="submit"
         disabled={isSubmitting}
         className="terminal-button btn-primary flex items-center gap-2"
       >
@@ -381,6 +383,7 @@ function ExperienceManager() {
                 </td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => {
                       setEditingId(exp._id);
                       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -397,6 +400,7 @@ function ExperienceManager() {
                     [edit]
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       if (confirm("Delete?")) remove({ id: exp._id });
                     }}
@@ -518,6 +522,7 @@ function EducationManager() {
                 <td>{edu.institution}</td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => remove({ id: edu._id })}
                     className="hover:text-(--color-terminal-red)"
                   >
@@ -566,7 +571,9 @@ function EducationManager() {
             className="input text-xs"
           />
         </div>
-        <button className="terminal-button btn-primary w-full py-1 text-xs">Add Education</button>
+        <button type="submit" className="terminal-button btn-primary w-full py-1 text-xs">
+          Add Education
+        </button>
       </form>
     </div>
   );
@@ -606,6 +613,7 @@ function CertificationsManager() {
                 <td>{c.issuer}</td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => remove({ id: c._id })}
                     className="hover:text-(--color-terminal-red)"
                   >
@@ -662,7 +670,9 @@ function CertificationsManager() {
             className="input text-xs"
           />
         </div>
-        <button className="terminal-button btn-primary w-full py-1 text-xs">Add Cert</button>
+        <button type="submit" className="terminal-button btn-primary w-full py-1 text-xs">
+          Add Cert
+        </button>
       </form>
     </div>
   );
