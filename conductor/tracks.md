@@ -7,4 +7,4 @@
 - [x] **Track: Blog Discovery Correctness** — [20261026-blog-discovery-correctness](./archive/20261026-blog-discovery-correctness/index.md) — bug — high
 - [x] **Track: Newsletter Lifecycle** — [20261026-newsletter-lifecycle](./archive/20261026-newsletter-lifecycle/index.md) — bug — high
 
-- [~] **Track: Blog Index Server Prefetch** — [20261026-blog-index-prefetch](./tracks/20261026-blog-index-prefetch/index.md) — bug — high
+- [x] **Track: Blog Index Server Prefetch** — [20261026-blog-index-prefetch](./archive/20261026-blog-index-prefetch/index.md) — bug — high
