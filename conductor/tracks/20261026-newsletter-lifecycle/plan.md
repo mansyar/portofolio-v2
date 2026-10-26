@@ -48,19 +48,23 @@ double run is harmless.
   `convex/__tests__/newsletter.unsubscribe.test.ts`,
   `convex/__tests__/newsletter.welcomeEmail.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/newsletter.unsubscribe.test.ts convex/__tests__/newsletter.welcomeEmail.test.ts`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Add the token-bearing unsubscribe mutation** — covers: FR-3
-  - [ ] Resolve the subscriber by token; set `status: "unsubscribed"` and `unsubscribedAt`
-  - [ ] Make a second call a no-op and an unknown token return the same shape without writing
-- [ ] **P2.T2: Build the mail footer from the token** — covers: FR-4
-  - [ ] Extract the welcome-mail HTML into a testable builder that takes the token and site URL
-  - [ ] Include the unsubscribe link; omit it when no token exists rather than emitting a
+- [x] **P2.T1: Add the token-bearing unsubscribe mutation** — covers: FR-3
+  - [x] Resolve the subscriber by token; set `status: "unsubscribed"` and `unsubscribedAt`
+  - [x] Make a second call a no-op and an unknown token return the same shape without writing
+- [x] **P2.T2: Build the mail footer from the token** — covers: FR-4
+  - [x] Extract the welcome-mail HTML into a testable builder that takes the token and site URL
+  - [x] Include the unsubscribe link; omit it when no token exists rather than emitting a
     broken URL
-- [ ] **P2.T3: Add the unsubscribe page** — covers: FR-3, NFR-2
-  - [ ] Read `token` from the query string, call the mutation once, and render success,
+- [x] **P2.T3: Add the unsubscribe page** — covers: FR-3, NFR-2
+  - [x] Read `token` from the query string, call the mutation once, and render success,
     already-unsubscribed, missing-token, and error states
-  - [ ] Single `h1`, keyboard-operable, result announced via `role="status"`
+  - [x] Single `h1`, keyboard-operable, result announced via `role="status"`
+
+**Result:** verified
+**Checkpoint:** 3296b4e
+**Evidence:** conductor/tracks/20261026-newsletter-lifecycle/verification/phase-2.md
 
 **Risk:** the page is public and calls a mutation on mount. It must run the call once per
 token, tolerate StrictMode double-invocation, and never render the token itself.
