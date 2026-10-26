@@ -77,7 +77,7 @@ function (not at module load) for `vi.stubEnv` and for runtime overrides to work
   `src/components/NotFound.tsx`, `src/components/__tests__/seo.test.tsx`,
   `convex/sitemap.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Add the noindex capability** — covers: FR-5, AC-5
   - [ ] Emit `<meta name="robots" content="noindex">` when `noindex` is set
