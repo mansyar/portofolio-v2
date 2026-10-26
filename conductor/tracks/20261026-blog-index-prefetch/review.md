@@ -99,7 +99,9 @@ derived every value from `loaderDeps`, and Phase 2 proved it across the search m
 
 ## Doc sync
 
-`pending` — no product, guideline, tech-stack, or command change is implied by this fix.
+`none` — no product, guideline, tech-stack, or command change was needed. The fix restores a
+prefetch pattern those documents already describe for the sibling routes, and adds no
+command, dependency, or UX rule.
 
 ## History
 
