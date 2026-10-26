@@ -50,7 +50,7 @@ documented exception.
 - **Touches:** `src/lib/site.ts`, `src/components/seo.tsx`,
   `src/routes/sitemap[.]xml.ts`, `src/routes/feed[.]xml.ts`, `src/lib/__tests__/site.test.ts`
 - **Verification:** `pnpm exec vitest run src/lib/__tests__/site.test.ts`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Add the resolver and consume it** — covers: FR-4
   - [ ] Implement `siteUrl()`: trim, strip trailing slashes, reject loopback, fall back to the
