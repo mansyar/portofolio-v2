@@ -73,3 +73,24 @@ passes against the new code would not satisfy P1.T1, so the failing run is captu
 called from `blog.index.tsx` with the validated search params; the props must stay the same
 so the route does not change. Mocking follows the existing `src/routes/__tests__/` pattern
 and needs no live backend.
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review finding F1 — a fractional `page` or `pageSize` is floored before
+  the window is computed, so a hand-edited `?page=1.5` cannot produce a fractional slice.
+- **Depends on:** Phase 2
+- **Covers:** F1
+- **Touches:** `convex/blog.ts`, `convex/__tests__/blog.listPublished.test.ts`
+- **Verification:** `pnpm exec vitest run convex/__tests__/blog.listPublished.test.ts`
+- **Status:** verified
+
+- [x] **R1.T1: Floor the paging inputs and pin it** — covers: F1
+  - [x] Apply `Math.floor` to `page` and `pageSize` after clamping
+  - [x] Add a backend case asserting a fractional page and page size behave as their floors
+
+**Result:** verified
+**Checkpoint:** 32a1959
+**Evidence:** conductor/tracks/20261026-blog-discovery-correctness/verification/phase-r1.md
+
+**Risk:** None beyond the listing path already covered; the change narrows accepted inputs
+without altering whole-number behaviour.
