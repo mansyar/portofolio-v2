@@ -18,7 +18,7 @@ function Projects() {
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
       <Seo
-        title="Projects | Muhammad Ansyar Rafi Putra"
+        title="Projects"
         description="A showcase of projects by Muhammad Ansyar Rafi Putra — web applications, infrastructure automation, and open source contributions."
       />
 

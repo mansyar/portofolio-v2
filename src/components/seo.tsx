@@ -1,6 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { DEFAULT_SITE_NAME } from "../lib/site";
 
 interface SiteSettings {
   siteTitle?: string;
@@ -40,7 +41,7 @@ export function Seo({
   const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
   const url = `${siteUrl}${location.pathname}`;
 
-  const siteName = settings?.siteTitle || "Muhammad Ansyar Rafi Putra | Portfolio";
+  const siteName = settings?.siteTitle || DEFAULT_SITE_NAME;
   const fullTitle = `${title} | ${siteName}`;
   const metaDescription =
     description ||

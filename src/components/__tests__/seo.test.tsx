@@ -15,13 +15,12 @@ vi.mock("convex/react", () => ({
 // Seo uses useLocation from @tanstack/react-router which we mocked in vitest.setup.tsx
 
 describe("Seo Component", () => {
-  it("renders correctly without crashing", () => {
-    // We can't easily test <title> or <meta> tags in jsdom easily if they are outside the container
-    // unless we use document.title etc.
-    render(<Seo title="Test Title" description="Test Description" />);
+  it("composes the title once, from a bare page title", () => {
+    render(<Seo title="About Me" description="Test Description" />);
 
-    expect(document.title).toContain("Test Title");
-    // Author is tested separately via JSON-LD; title uses siteTitle from mock
+    // The page supplies a bare title; the component adds the site name exactly once.
+    expect(document.title).toBe("About Me | Test Site");
+    expect(document.querySelectorAll("title")).toHaveLength(1);
   });
 
   it("generates JSON-LD script tag", () => {

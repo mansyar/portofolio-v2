@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
+import { Seo } from "./seo";
 
 export function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <Seo title="Page not found" description="The requested page does not exist." />
       <div className="bg-(--color-surface) p-8 rounded-lg border border-(--color-border) max-w-md w-full shadow-lg">
         <div className="flex justify-center mb-6">
           <div className="bg-(--color-surface-dark) p-4 rounded-full border border-(--color-border)">

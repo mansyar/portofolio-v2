@@ -3,9 +3,12 @@ import { useConvexAuth } from "convex/react";
 import { useEffect, useState } from "react";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { AdminHeader } from "@/components/layout/AdminHeader";
+import { DEFAULT_SITE_NAME } from "@/lib/site";
 import "@/styles/admin.css";
 
 export const Route = createFileRoute("/admin")({
+  // The admin tree does not render Seo; the route owns its one title.
+  head: () => ({ meta: [{ title: `Admin | ${DEFAULT_SITE_NAME}` }] }),
   component: AdminLayout,
 });
 

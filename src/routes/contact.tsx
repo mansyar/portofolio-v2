@@ -90,7 +90,7 @@ function Contact() {
   return (
     <div className="container mx-auto flex max-w-5xl flex-col gap-12 px-4 pt-10 pb-20 md:px-6">
       <Seo
-        title="Contact | Muhammad Ansyar Rafi Putra"
+        title="Contact"
         description="Get in touch with Muhammad Ansyar Rafi Putra for freelance opportunities, collaborations, or just to say hi."
       />
 

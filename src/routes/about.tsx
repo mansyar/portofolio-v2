@@ -23,7 +23,7 @@ function About() {
   return (
     <div className="flex flex-col gap-12 pb-20">
       <Seo
-        title="About Me | Muhammad Ansyar Rafi Putra"
+        title="About Me"
         description="Learn about Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer. Explore my professional journey, experience, technical skills, and educational background."
       />
 

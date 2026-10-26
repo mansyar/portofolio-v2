@@ -39,7 +39,7 @@ function Blog() {
   return (
     <div className="container flex flex-col gap-8 px-4 pt-10 pb-20 md:px-6">
       <Seo
-        title="Blog | Muhammad Ansyar Rafi Putra"
+        title="Blog"
         description="Thoughts, tutorials, and insights on web development and DevOps by Muhammad Ansyar Rafi Putra."
       />
 
