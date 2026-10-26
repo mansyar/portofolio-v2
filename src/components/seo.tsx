@@ -21,6 +21,8 @@ interface SeoProps {
   author?: string;
   keywords?: string[];
   jsonLd?: Record<string, unknown>;
+  /** Keep capability URLs and error pages out of search results. */
+  noindex?: boolean;
 }
 
 export function Seo({
@@ -32,6 +34,7 @@ export function Seo({
   author = "Muhammad Ansyar Rafi Putra",
   keywords,
   jsonLd,
+  noindex = false,
 }: SeoProps) {
   const rawSettings = useQuery(api.settings.getPublic);
   const settings = rawSettings as SiteSettings | undefined;
@@ -68,6 +71,7 @@ export function Seo({
   return (
     <>
       <title>{fullTitle}</title>
+      {noindex && <meta name="robots" content="noindex" />}
       <meta name="description" content={metaDescription} />
       <meta name="keywords" content={allKeywords.join(", ")} />
       <meta name="author" content={author} />

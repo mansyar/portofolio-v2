@@ -56,6 +56,14 @@ describe("head ownership", () => {
     }
   });
 
+  it("keeps token and admin paths out of the sitemap", () => {
+    const source = readFileSync(path.join(projectRoot, "convex/sitemap.ts"), "utf8");
+    const staticRoutes = source.match(/const staticRoutes = \[(.*?)\]/s)?.[1] ?? "";
+
+    expect(staticRoutes).not.toBe("");
+    expect(staticRoutes).not.toMatch(/newsletter|admin/);
+  });
+
   it("gives the admin tree one route-level title", () => {
     const head = (
       AdminRoute as unknown as { head?: () => { meta?: Array<Record<string, unknown>> } }

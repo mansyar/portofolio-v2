@@ -23,6 +23,18 @@ describe("Seo Component", () => {
     expect(document.querySelectorAll("title")).toHaveLength(1);
   });
 
+  it("marks a page noindex only when asked", () => {
+    render(<Seo title="Unsubscribe" noindex />);
+
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex");
+  });
+
+  it("leaves ordinary pages indexable", () => {
+    render(<Seo title="About Me" />);
+
+    expect(document.querySelector('meta[name="robots"]')).not.toBeInTheDocument();
+  });
+
   it("generates JSON-LD script tag", () => {
     const { container } = render(<Seo title="Test Title" description="Test Description" />);
     const scriptTag = container.querySelector('script[type="application/ld+json"]');
