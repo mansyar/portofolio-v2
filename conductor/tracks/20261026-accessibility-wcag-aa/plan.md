@@ -208,19 +208,19 @@
   `conductor/workflow.md`, `docs/PROGRESS.md`, `README.md` (only if a command
   changed)
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P7.T1: Close the known-gaps table** - covers: FR-13
-  - [ ] Close all four rows with evidence, or annotate what remains and why
-- [ ] **P7.T2: Resolve the tech-stack open questions** - covers: FR-13
-  - [ ] Answer open question 3: which rules were promoted, in what order, and what remains `warn`
-  - [ ] Confirm the lint row no longer describes pre-existing accessibility debt as open
-- [ ] **P7.T3: Changelog and workflow** - covers: FR-13
-  - [ ] Add the `docs/PROGRESS.md` changelog row
-  - [ ] Update the `conductor/workflow.md` quality-gate line about accessibility gaps if it is now inaccurate
-- [ ] **P7.T4: Full verification and evidence** - covers: AC-8, AC-9, AC-10
-  - [ ] Run the complete gate and record every exit code plus the final diagnostic counts
-  - [ ] Write `verification/phase-7.md`
+- [x] **P7.T1: Close the known-gaps table** - covers: FR-13
+  - [x] Close all four rows with evidence, or annotate what remains and why
+- [x] **P7.T2: Resolve the tech-stack open questions** - covers: FR-13
+  - [x] Answer open question 3: which rules were promoted, in what order, and what remains `warn`
+  - [x] Confirm the lint row no longer describes pre-existing accessibility debt as open
+- [x] **P7.T3: Changelog and workflow** - covers: FR-13
+  - [x] Add the `docs/PROGRESS.md` changelog row
+  - [x] Update the `conductor/workflow.md` quality-gate line about accessibility gaps if it is now inaccurate
+- [x] **P7.T4: Full verification and evidence** - covers: AC-8, AC-9, AC-10
+  - [x] Run the complete gate and record every exit code plus the final diagnostic counts
+  - [x] Write `verification/phase-7.md`
 
 **Risk:** P3.T1's submit-classification table is the safety net for the only change
 in this track that can silently break a user flow. Any site whose intent cannot be

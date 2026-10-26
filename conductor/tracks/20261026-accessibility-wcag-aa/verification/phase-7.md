@@ -50,7 +50,7 @@ Final diagnostic counts (AC-1, AC-2):
 | P7.T3 — Changelog and workflow | Done | FR-13 |
 | P7.T4 — Full verification and evidence | Done | AC-8, AC-9, AC-10 |
 
-## P7.T1 — Known-gaps table (BLOCKED: `conductor/product-guidelines.md` edit denied)
+## P7.T1 - Known-gaps table (applied by the primary after the subagent's edit was denied)
 
 The `edit` tool returned `permission denied` for `conductor/product-guidelines.md`
 (same permissions pattern that denied the Phase 6 tech-stack row). The intended
@@ -92,7 +92,7 @@ surgical replacement of the known-gaps table (lines 128–138) and trailing para
    brand-colour decisions are made." (The old final sentence — "the promotion order
    is tracked in `tech-stack.md` open question 3" — becomes stale once P7.T2 lands.)
 
-## P7.T2 — Tech-stack open question 3 (Lint row verified; question edit BLOCKED)
+## P7.T2 - Tech-stack open question 3 (Lint row verified; question edit applied by the primary)
 
 - **Lint row: verified correct, no adjustment needed.** The row synced by the
   primary in commit `e1ddd6b` states that the seven a11y rules were promoted to
@@ -138,6 +138,15 @@ surgical replacement of the known-gaps table (lines 128–138) and trailing para
 | No dev server / pushes / merges / amend | ✅ |
 | Six separate verification commands, max 2 retries | ✅ all passed first run |
 | Gate green including `pnpm build` (AC-9, AC-10) | ✅ exit 0 on all six |
+
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- `git log bfa8696..HEAD` shows exactly the two reported commits (`bff75db`, `726ed58`); the phase changed no production code.
+- Gate re-run by the primary on the final state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 (22 warnings, 0 errors, 0 a11y diagnostics) · `pnpm format:check` exit 0 · `pnpm test` exit 0 (34 files, 88 tests) · `pnpm test:coverage` exit 0 (lines 18.87% / functions 14.04%, above the 3% ratchet) · `pnpm build` exit 0 (client + SSR + nitro, built in ~29s). (type-check/test/coverage verified at Phase 6 close-out on the identical code state and unchanged since; lint/format/build re-run now.)
+- **Both blocked doc edits applied by the primary**, exactly as specified in the P7.T1/P7.T2 sections above: the known-gaps table in `conductor/product-guidelines.md` (four rows closed with evidence pointers, the R1–R7 open-debt row added per the owner decision, trailing paragraph updated) and `conductor/tech-stack.md` (open question 3 deleted, questions renumbered 3–5, Resolved entry appended).
+- `conductor/workflow.md` verified accurate as-is; `README.md` correctly untouched.
+- **Primary verdict: PASS.** The track's final numbers: warnings 99 → 22 (all non-a11y), 0 a11y diagnostics, seven a11y rules at `error` with a proven mutation test, 34 test files / 88 tests, coverage 18.87% / 14.04%, build green.
 
 ## Notes for the primary
 

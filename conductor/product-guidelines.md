@@ -127,15 +127,18 @@ inaccessible portfolio actively harms the product.
 
 | Gap | Evidence | Impact |
 | --- | --- | --- |
-| No `:focus-visible` rules | Zero matches across `src/**/*.css`; focus is shown only via `:focus-within` on wrappers | Buttons and links have no explicit visible focus state |
-| Reduced motion respected in one file only | `prefers-reduced-motion` appears only in `typing-effect.css` | Cursor blink and other animations run regardless of user preference |
-| Minimal ARIA labelling | One `aria-label` across all TSX files | Icon-only controls and dynamic regions may be unnamed |
-| 45 interaction and button findings | Biome `recommended` preset: `useButtonType` 39, `noStaticElementInteractions` 2, `useKeyWithClickEvents` 2, `noSvgWithoutTitle` 1, `useHtmlLang` 1, `noAutofocus` 1. Demoted to warnings in `biome.json` so they do not block the build | Buttons may submit forms implicitly; click handlers on static elements are unreachable by keyboard; inline SVGs are unlabelled |
+| No `:focus-visible` rules | **Closed by Phase 4** — focus-ring tokens defined in `variables.css` and `:focus-visible` rules added to every interactive primitive; all four `outline: none` suppressions replaced. See `conductor/tracks/20261026-accessibility-wcag-aa/verification/phase-4.md` | Buttons and links now have an explicit visible focus state in both themes |
+| Reduced motion respected in one file only | **Closed by Phase 4** — `prefers-reduced-motion: reduce` guards added to all seven animation-declaring files (the typing effect keeps its existing behaviour). See `phase-4.md` | Animations honour the user's reduced-motion preference |
+| Minimal ARIA labelling | **Closed by Phase 2** — all 31 unassociated labels associated with their controls, `aria-label` added to every icon-only control, dynamic regions marked `role="status"` / `aria-live`. See `phase-2.md` | Icon-only controls and dynamic regions are named and announced |
+| 46 interaction and button findings | **Closed by Phases 1–3, locked in Phase 6** — every finding fixed, then the seven rules promoted to `error` in `biome.json`; removing a fix fails the gate (mutation test). See `phase-1.md`–`phase-3.md` and `phase-6.md` | Buttons submit only where intended; click handlers are keyboard-reachable; inline SVGs are labelled — and the gate enforces it |
+| Sub-AA contrast pairs R1–R7 (open) | **Open debt by owner decision — not fixed in this track.** Seven residual sub-AA pairs from the Phase 5 audit (`verification/phase-5.md`, section P5.T4) | R2/R3 have mechanical token-level fixes available later (light-theme accent overrides plus one footer pin); the others need brand-colour decisions |
 
-These are recorded as real work to schedule, not as acceptable state. The Biome
-findings in the last row are pre-existing and were surfaced - not introduced - by the
-ESLint-to-Biome migration in track `20261024-tooling-modernization`; the promotion order
-is tracked in `tech-stack.md` open question 3.
+These rows are recorded as real work, not as acceptable state. The four closed gaps were
+fixed by track `20261026-accessibility-wcag-aa`; the Biome findings in the interaction row
+were pre-existing and were surfaced - not introduced - by the ESLint-to-Biome migration in
+track `20261024-tooling-modernization`, and the promotion decision is recorded in
+`tech-stack.md` (resolved open question 3). The R1–R7 contrast row is the remaining tracked
+debt and needs a follow-up track once the brand-colour decisions are made.
 
 ## Design System and Component Conventions
 

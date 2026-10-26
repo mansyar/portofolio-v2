@@ -239,17 +239,13 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 2. **Coverage threshold trajectory.** The floor is now a ratchet at 3% lines / 3%
    functions. What is the intended destination, and should it apply to new code only
    (changed lines) rather than the whole project?
-3. **Pre-existing lint debt.** Biome's `recommended` preset found 100 findings ESLint never
-   checked - mostly a11y (`useButtonType`, `noLabelWithoutControl`) and `noArrayIndexKey`.
-   They are warnings today, not errors. Which should be promoted back to errors, and in
-   what order?
-4. **`convex` script wrapper.** `convex dev` and `convex deploy` are invoked directly by
+3. **`convex` script wrapper.** `convex dev` and `convex deploy` are invoked directly by
    README and CI. Should they get `package.json` scripts?
-5. **Vite 8 migration.** The TanStack Router family is held back by `react-start` 1.169's
+4. **Vite 8 migration.** The TanStack Router family is held back by `react-start` 1.169's
    Vite 8 peer requirement. When should that upgrade happen, and what does it cost - the
    router generator also rejects `createFileRoute("/feed.xml" as any)`, so the two
    XML routes may need converting to Escape routes first.
-6. **Convex CLI/backend upgrade.** The CLI is pinned to `1.31.2` to match the self-hosted
+5. **Convex CLI/backend upgrade.** The CLI is pinned to `1.31.2` to match the self-hosted
    backend. When the backend is upgraded, the CLI follows in the same change; until then
    `convex deploy` fails with `appDefinition: missing field 'functions'`.
 
@@ -260,6 +256,15 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
   changes. The single incompatibility was `baseUrl`, which TypeScript 7 removed; `paths`
   resolves relative to the tsconfig directory without it, so deleting the line was
   behavior-preserving.
+- *Pre-existing lint debt promotion.* Track `20261026-accessibility-wcag-aa` fixed all 77
+  accessibility findings across Phases 1–3 (five single-instance rules in Phase 1,
+  `noLabelWithoutControl` ×31 in Phase 2, `useButtonType` ×39 in Phase 3), then promoted
+  the seven a11y rules (`noLabelWithoutControl`, `useButtonType`,
+  `noStaticElementInteractions`, `useKeyWithClickEvents`, `noAutofocus`,
+  `noSvgWithoutTitle`, `useHtmlLang`) from `warn` to `error` in `biome.json` in Phase 6,
+  mutation-tested. What remains `warn` is the non-accessibility debt: `noArrayIndexKey`
+  (16), `useOptionalChain` (3), `noNonNullAssertion` (3) — 22 warnings total, with no
+  promotion planned in this track.
 
 **Recorded assumptions**
 
