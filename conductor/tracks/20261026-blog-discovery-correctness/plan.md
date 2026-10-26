@@ -16,24 +16,28 @@
 - **Covers:** FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, NFR-2, NFR-3
 - **Touches:** `convex/blog.ts`, `convex/__tests__/blog.listPublished.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/blog.listPublished.test.ts`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Prove the bug before the fix** — covers: FR-3, FR-6
-  - [ ] Write the test that expects `tagSlug` to filter by tag membership and that expects
+- [x] **P1.T1: Prove the bug before the fix** — covers: FR-3, FR-6
+  - [x] Write the test that expects `tagSlug` to filter by tag membership and that expects
     a slug-substring post to be excluded from an unrelated category
-  - [ ] Run it against the current handler and capture the failing output as evidence
-- [ ] **P1.T2: Resolve slugs to ids** — covers: FR-2, FR-3, FR-5
-  - [ ] Look up the category and tag by `by_slug`; an unknown slug yields an empty page with
+  - [x] Run it against the current handler and capture the failing output as evidence
+- [x] **P1.T2: Resolve slugs to ids** — covers: FR-2, FR-3, FR-5
+  - [x] Look up the category and tag by `by_slug`; an unknown slug yields an empty page with
     `total: 0` instead of falling through to every post
-  - [ ] Pass `categoryId` into the index query and match tags by `tagIds` membership
-- [ ] **P1.T3: Page published posts and report the filtered total** — covers: FR-1, FR-4,
+  - [x] Pass `categoryId` into the index query and match tags by `tagIds` membership
+- [x] **P1.T3: Page published posts and report the filtered total** — covers: FR-1, FR-4,
   FR-5, NFR-2, NFR-3
-  - [ ] Read the published set through the `by_published` index, exclude drafts and
+  - [x] Read the published set through the `by_published` index, exclude drafts and
     not-yet-due scheduled posts, and slice the requested page
-  - [ ] Return `{ posts, total, totalPages }` and clamp a page past the end to the empty
+  - [x] Return `{ posts, total, totalPages }` and clamp a page past the end to the empty
     state
-  - [ ] Replace the unused `paginationOpts`/`tagSlug` argument shape with
+  - [x] Replace the unused `paginationOpts`/`tagSlug` argument shape with
     `{ page, pageSize, categorySlug, tagSlug }`, and confirm nothing else called it
+
+**Result:** verified
+**Checkpoint:** 1337b89
+**Evidence:** conductor/tracks/20261026-blog-discovery-correctness/verification/phase-1.md
 
 **Risk:** the function is currently API-dead, so changing its arguments cannot break a
 caller — but that must be re-verified with a grep rather than assumed. Tag filtering after
