@@ -22,12 +22,12 @@
   "review_verdict": "PASS",
   "review_rounds": 2,
   "doc_sync": "updated",
-  "pr_state": "open",
+  "pr_state": "merged",
   "reverted_at": null,
   "revert_commit": null,
   "revert_pr_url": null,
-  "archived_at": null,
-  "archive_path": null,
   "pr_url": "https://github.com/mansyar/portofolio-v2/pull/4",
-  "pr_number": 4
+  "pr_number": 4,
+  "archived_at": "2026-10-26T14:55:00+11:00",
+  "archive_path": "conductor/archive/20261026-accessibility-wcag-aa"
 }
