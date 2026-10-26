@@ -54,7 +54,7 @@ file.
 - **Covers:** FR-3, FR-4, FR-6, NFR-3, NFR-4, AC-4, AC-5
 - **Touches:** `src/routes/admin/index.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Wire "View All" to the messages inbox** — covers: FR-3
   - [ ] Replace the disabled span with a `Link` to `/admin/messages`
