@@ -94,3 +94,25 @@ token, tolerate StrictMode double-invocation, and never render the token itself.
 **Risk:** the harden track removed the public listing on purpose. The new query must be a
 separate name behind `requireAdmin`, and the existing removal test must remain untouched and
 green.
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review finding F1 — the page acts on every token it is given, not only
+  the first, so a second link opened in the same tab is honored.
+- **Depends on:** Phase 3
+- **Covers:** F1
+- **Touches:** `src/routes/newsletter/unsubscribe.tsx`,
+  `src/routes/__tests__/newsletter-unsubscribe.a11y.test.tsx`
+- **Verification:** `pnpm exec vitest run src/routes/__tests__/newsletter-unsubscribe.a11y.test.tsx`
+- **Status:** verified
+
+- [x] **R1.T1: Guard on the token value, not a one-shot flag** — covers: F1
+  - [x] Remember the last attempted token and re-run state when a different one arrives
+  - [x] Add a rerender case asserting the second token is sent to the mutation
+
+**Result:** verified
+**Checkpoint:** 88aed77
+**Evidence:** conductor/tracks/20261026-newsletter-lifecycle/verification/phase-r1.md
+
+**Risk:** the single-call guarantee under `StrictMode` must survive the change; the existing
+assertion that the mutation is called exactly once still has to pass.
