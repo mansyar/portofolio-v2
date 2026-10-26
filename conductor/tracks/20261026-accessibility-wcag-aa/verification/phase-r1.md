@@ -24,9 +24,10 @@
 ## R1.T1 — F1 (high): re-pin the dark secondary in `:root.dark`
 
 **Finding:** under an OS light preference with a manually selected dark theme, the
-`@media (prefers-color-scheme: light)` block — equal specificity to `:root.dark`, and the only
-rule that re-declared `--color-text-secondary` — supplied the light value `#6e675f` inside the
-dark theme: ~3.15:1 on `#300a24` and ~2.94:1 on `#3d0a2e`, both below AA. The `:root.dark`
+`@media (prefers-color-scheme: light)` block — whose `:root` (specificity 0,1,0) overrode the
+base `:root` on source order, and the only rule that re-declared `--color-text-secondary` —
+supplied the light value `#6e675f` inside the dark theme: ~3.15:1 on `#300a24` and ~2.94:1 on
+`#3d0a2e`, both below AA. The `:root.dark`
 block exists precisely to defeat that media rule, as its other three re-declarations show, but
 it omitted the secondary.
 

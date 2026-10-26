@@ -118,10 +118,10 @@
   --color-bg-primary: var(--color-terminal-bg-dark);
   --color-text-primary: var(--color-text-primary-dark);
   --color-surface: var(--color-surface-dark);
-  /* FR-9: re-pin the dark secondary so manual dark under an OS light
-     preference defeats the @media (prefers-color-scheme: light) rule
-     above — the same equal-specificity trick as the three
-     re-declarations here (#aea79f is ~7.39:1 on #300a24; the leaked
-     light value was ~3.15:1). */
+  /* FR-9: re-pin the dark secondary so manual dark survives an OS light
+     preference: :root.dark (specificity 0,2,0) beats the media rule's
+     :root (0,1,0) on higher specificity — the media block only ever
+     overrode the base :root because of source order. #aea79f is
+     ~7.39:1 on #300a24; the leaked light value was ~3.15:1. */
   --color-text-secondary: var(--color-text-secondary-dark);
 }

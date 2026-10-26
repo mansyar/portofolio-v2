@@ -139,14 +139,15 @@ equals the dark value.
 
 Phase 5's audit covered the two states reachable from OS preference alone. The round-1 review
 found a third state the fix above misses: when the OS prefers light but the user manually
-selects dark (`:root.dark`), the `@media (prefers-color-scheme: light)` block — equal
-specificity, and the only rule that re-declared `--color-text-secondary` — still supplied the
-light value `#6e675f`, because `:root.dark` re-declared bg/text/surface but not the secondary.
+selects dark (`:root.dark`), the `@media (prefers-color-scheme: light)` block still supplied the
+light value `#6e675f`, because the media rule's `:root` (specificity 0,1,0) overrode the base
+`:root` on source order and `:root.dark` re-declared bg/text/surface but not the secondary.
 Measured (same method): `#6e675f` on `#300a24` ≈ 3.15:1 and on `#3d0a2e` ≈ 2.94:1 — both FAIL.
 
 **Fix:** `variables.css` defines `--color-text-secondary-dark: #aea79f` beside the light
 variant, and `:root.dark` now re-declares `--color-text-secondary: var(--color-text-secondary-dark)`,
-mirroring its three existing re-declarations (source order then defeats the media rule).
+mirroring its three existing re-declarations (`:root.dark` at specificity 0,2,0 wins over the
+media rule's `:root` at 0,1,0 on higher specificity).
 
 | Pair | Before | After |
 |---|---|---|
