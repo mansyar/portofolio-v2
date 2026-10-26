@@ -16,7 +16,7 @@
 - **Covers:** FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, NFR-2, NFR-3
 - **Touches:** `convex/blog.ts`, `convex/__tests__/blog.listPublished.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/blog.listPublished.test.ts`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Prove the bug before the fix** — covers: FR-3, FR-6
   - [ ] Write the test that expects `tagSlug` to filter by tag membership and that expects
