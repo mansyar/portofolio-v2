@@ -16,7 +16,7 @@
 - **Touches:** `src/routes/demo/**`, `src/data/demo.punk-songs.ts`,
   `src/routeTree.gen.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Delete the seven demo route files** — covers: FR-1
   - [ ] Remove `api.names.ts`, `start.api-request.tsx`, `start.server-funcs.tsx`,
