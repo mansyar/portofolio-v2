@@ -30,6 +30,9 @@ describe("ProjectForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // as-cast justified: vi.mock swaps useRouter for an untyped vi.fn(),
+    // structurally incompatible with the hook's signature — the cast reaches
+    // mockReturnValue.
     (useRouter as unknown as { mockReturnValue: (v: unknown) => void }).mockReturnValue({
       navigate: mockNavigate,
       history: { back: vi.fn() },

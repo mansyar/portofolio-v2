@@ -7,7 +7,7 @@ export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
 });
 
-function AdminLogin() {
+export function AdminLogin() {
   const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
 
@@ -80,30 +80,37 @@ function AdminLogin() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block font-mono text-xs text-(--color-text-secondary)">
+              <label
+                className="mb-1 block font-mono text-xs text-(--color-text-secondary)"
+                htmlFor="login-email"
+              >
                 Email
               </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">$</span>
                 <input
+                  id="login-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="terminal-input w-full"
                   placeholder="admin@ansyar-world.top"
                   required
-                  autoFocus
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-1 block font-mono text-xs text-(--color-text-secondary)">
+              <label
+                className="mb-1 block font-mono text-xs text-(--color-text-secondary)"
+                htmlFor="login-password"
+              >
                 Password
               </label>
               <div className="terminal-input-wrapper">
                 <span className="terminal-prompt">$</span>
                 <input
+                  id="login-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

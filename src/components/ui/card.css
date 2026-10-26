@@ -45,7 +45,11 @@
 .card__title {
   font-family: var(--font-mono);
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  /* FR-9: the titlebar keeps its aubergine (fixed dark) background in both
+     themes, so the muted title is pinned to the shared warm grey rather than
+     the theme-flipping --color-text-secondary. Value is identical to the
+     dark-theme secondary (#aea79f), so rendering is unchanged in both themes. */
+  color: var(--color-warm-grey);
   font-weight: var(--font-weight-medium);
   flex: 1;
   text-align: center;

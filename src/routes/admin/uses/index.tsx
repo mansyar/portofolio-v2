@@ -179,6 +179,7 @@ function AdminUsesList() {
                   </td>
                   <td>
                     <button
+                      type="button"
                       onClick={() => handleToggleVisibility(item._id)}
                       className={`admin-badge ${item.isVisible ? "success" : "neutral"} cursor-pointer hover:opacity-80 transition-opacity`}
                     >
@@ -195,6 +196,7 @@ function AdminUsesList() {
                         [edit]
                       </Link>
                       <button
+                        type="button"
                         onClick={() => handleDelete(item._id)}
                         disabled={deletingId === item._id}
                         className="text-xs text-(--color-text-secondary) hover:text-(--color-terminal-red) transition-colors font-mono disabled:opacity-50"

@@ -85,6 +85,7 @@ function MediaLibraryPage() {
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   {file.url && (
                     <button
+                      type="button"
                       onClick={() => copyToClipboard(file.url!)}
                       className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
                       title="Copy URL"
@@ -104,6 +105,7 @@ function MediaLibraryPage() {
                     </a>
                   )}
                   <button
+                    type="button"
                     onClick={() => handleDelete(file._id)}
                     disabled={deletingId === file._id}
                     className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors"

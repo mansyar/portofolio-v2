@@ -42,8 +42,20 @@
   color: var(--color-text-primary);
   font-family: var(--font-mono);
   font-size: var(--font-size-small);
-  outline: none;
   width: 140px;
+}
+
+/* FR-7: the removed `outline: none` suppressed the browser's default focus
+   ring on the email input (the group's :focus-within border was the only
+   indicator). Text inputs always match :focus-visible when focused. */
+.newsletter-inline-input:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.newsletter-inline-submit:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .newsletter-inline-input::placeholder {

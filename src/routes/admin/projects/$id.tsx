@@ -24,7 +24,7 @@ function EditProjectPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4 text-(--color-text-secondary)">
         <p className="font-mono">Project not found</p>
-        <button onClick={() => history.back()} className="terminal-button">
+        <button type="button" onClick={() => history.back()} className="terminal-button">
           Go Back
         </button>
       </div>

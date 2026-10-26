@@ -102,7 +102,7 @@ function BlogAdmin() {
             <Terminal className="text-(--color-ubuntu-orange)" />
             BLOG_MANAGEMENT
           </h1>
-          <p className="text-sm text-(--color-text-secondary) font-mono mt-1">
+          <p className="text-sm text-(--color-text-secondary) font-mono mt-1" role="status">
             Status: {posts?.length || 0} posts found.
           </p>
         </div>
@@ -167,6 +167,7 @@ function BlogAdmin() {
                   </td>
                   <td className="p-4">
                     <button
+                      type="button"
                       onClick={() => handleToggle(post._id)}
                       className={`admin-badge ${post.status === "published" ? "success" : "neutral"} cursor-pointer flex items-center gap-1`}
                     >
@@ -199,6 +200,7 @@ function BlogAdmin() {
                         <PenTool size={16} />
                       </Link>
                       <button
+                        type="button"
                         onClick={() => handleDelete(post._id)}
                         className="p-1.5 rounded hover:bg-(--color-surface-dark) transition-colors text-(--color-text-secondary) hover:text-(--color-terminal-red)"
                         title="Delete Post"

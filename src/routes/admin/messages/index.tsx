@@ -10,7 +10,7 @@ export const Route = createFileRoute("/admin/messages/")({
   component: AdminMessagesInbox,
 });
 
-function AdminMessagesInbox() {
+export function AdminMessagesInbox() {
   const messages = useQuery(api.contact.listAll);
   const markAsRead = useMutation(api.contact.markAsRead);
   const removeMessage = useMutation(api.contact.remove);
@@ -116,26 +116,33 @@ function AdminMessagesInbox() {
                       <td className="truncate max-w-[300px]">{msg.subject}</td>
                       <td className="text-xs font-mono">{format(date, "MMM dd, HH:mm")}</td>
                       <td className="text-right">
-                        <div
-                          className="flex items-center justify-end gap-3"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        {/* Propagation is stopped on the buttons themselves so this
+                            stays a non-interactive container. */}
+                        <div className="flex items-center justify-end gap-3">
                           <button
-                            onClick={() => handleToggleRead(msg._id, msg.isRead)}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleRead(msg._id, msg.isRead);
+                            }}
                             className="text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors"
                             title={msg.isRead ? "Mark as unread" : "Mark as read"}
                           >
                             {msg.isRead ? <Mail size={16} /> : <MailOpen size={16} />}
                           </button>
                           <button
-                            onClick={() => handleDelete(msg._id)}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(msg._id);
+                            }}
                             disabled={deletingId === msg._id}
                             className="text-(--color-text-secondary) hover:text-(--color-terminal-red) transition-colors disabled:opacity-50"
                             title="Delete"
                           >
                             <Trash2 size={16} />
                           </button>
-                          <button className="text-(--color-text-secondary)">
+                          <button type="button" className="text-(--color-text-secondary)">
                             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </button>
                         </div>

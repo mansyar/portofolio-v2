@@ -21,6 +21,9 @@ describe("UsesItemForm", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // as-cast justified: vi.mock swaps these hooks for untyped vi.fn()s,
+    // structurally incompatible with the hook signatures — the casts reach
+    // mockReturnValue.
     (useRouter as unknown as { mockReturnValue: (v: unknown) => void }).mockReturnValue({
       navigate: mockNavigate,
     });

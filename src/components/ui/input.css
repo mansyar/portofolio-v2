@@ -41,8 +41,17 @@
   color: var(--color-text-primary);
   font-family: var(--font-mono);
   font-size: var(--font-size-body);
-  outline: none;
   width: 100%;
+}
+
+/* FR-7: the removed `outline: none` suppressed the browser's default focus
+   ring (the wrapper's :focus-within border was the only indicator). Text
+   inputs always match :focus-visible when focused, so this token-driven ring
+   replaces the default without changing non-focus appearance. Also covers the
+   `<textarea class="input">` usages. */
+.input:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .input::placeholder {
@@ -53,4 +62,12 @@
 .input:disabled {
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+/* Reduced motion (FR-8): the blinking terminal caret is decorative — disabled
+   (steady caret) rather than slowed. */
+@media (prefers-reduced-motion: reduce) {
+  .input-prompt {
+    animation: none;
+  }
 }

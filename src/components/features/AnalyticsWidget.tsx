@@ -98,6 +98,7 @@ export function AnalyticsWidget() {
           {(["today", "7d", "30d"] as const).map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setRange(r)}
               className={`px-3 py-1 text-xs font-mono transition-all rounded ${
                 range === r
@@ -109,10 +110,12 @@ export function AnalyticsWidget() {
             </button>
           ))}
           <button
+            type="button"
             onClick={fetchStats}
             disabled={loading}
             className="p-1 text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors disabled:opacity-50"
             title="Refresh logs"
+            aria-label="Refresh analytics"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
@@ -148,7 +151,7 @@ export function AnalyticsWidget() {
             <div className="absolute top-0 right-0 p-2">
               <div className="h-2 w-2 rounded-full bg-(--color-terminal-green) animate-ping" />
             </div>
-            <div>
+            <div role="status">
               <p className="text-(--color-text-secondary) text-sm font-mono mb-1">Active Now</p>
               <h3 className="text-3xl font-bold font-mono text-(--color-terminal-green)">
                 {stats?.activeVisitors ?? 0}

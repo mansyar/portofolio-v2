@@ -75,6 +75,7 @@ export function DownloadResumeButton() {
 
   return (
     <button
+      type="button"
       onClick={handleDownload}
       disabled={isGenerating}
       className="terminal-button btn-primary flex items-center gap-2"

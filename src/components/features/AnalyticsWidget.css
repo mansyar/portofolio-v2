@@ -35,3 +35,16 @@
     opacity: 0;
   }
 }
+
+/* Reduced motion (FR-8):
+   - fadeIn (one-shot entrance) and the infinite ping pulse are decorative
+     motion with no state information — disabled, not slowed.
+   - animate-spin (Tailwind's infinite loading spinner) is likewise disabled;
+     the loading state remains visible via the disabled button. */
+@media (prefers-reduced-motion: reduce) {
+  .analytics-widget,
+  .analytics-widget .animate-ping,
+  .analytics-widget .animate-spin {
+    animation: none;
+  }
+}

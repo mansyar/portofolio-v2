@@ -68,6 +68,7 @@ export function AdminSidebar() {
       {/* User Footer */}
       <div className="p-4 border-t border-(--color-border)">
         <button
+          type="button"
           onClick={() => signOut()}
           className="nav-link w-full rounded-md text-(--color-terminal-red) hover:bg-opacity-10 hover:bg-(--color-terminal-red)"
         >

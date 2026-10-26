@@ -21,7 +21,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
       <div className="bulk-action-bar">
         <div className="bulk-info">
           <CheckSquare className="text-(--color-ubuntu-orange)" size={18} />
-          <span className="font-mono text-sm">
+          <span className="font-mono text-sm" role="status">
             {selectedCount} item{selectedCount > 1 ? "s" : ""} selected
           </span>
         </div>
@@ -34,6 +34,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             return (
               <button
                 key={index}
+                type="button"
                 onClick={action.onClick}
                 disabled={action.disabled}
                 className={`bulk-action-button variant-${action.variant || "default"}`}
@@ -48,7 +49,13 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
 
         <div className="bulk-divider" />
 
-        <button onClick={onClear} className="bulk-clear-button" title="Clear Selection">
+        <button
+          type="button"
+          onClick={onClear}
+          className="bulk-clear-button"
+          title="Clear Selection"
+          aria-label="Clear selection"
+        >
           <X size={18} />
         </button>
       </div>

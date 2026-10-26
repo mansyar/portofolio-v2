@@ -81,9 +81,25 @@
 
 /* Tiptap specific styling */
 .ProseMirror, .editor-content {
-  outline: none;
   padding: 1rem;
   min-height: 200px;
+}
+
+/* FR-7: the removed `outline: none` suppressed the browser's default focus
+   outline on the contenteditable (the container's :focus-within border was
+   the only indicator). A contenteditable always matches :focus-visible while
+   focused, so the token-driven ring replaces the default. The offset is
+   negative (ring drawn just inside the edge) because the parent
+   `.rich-text-editor` has `overflow: hidden` and would clip an outward ring;
+   the container's :focus-within border remains as the surrounding indicator. */
+.ProseMirror:focus-visible, .editor-content:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: calc(var(--focus-ring-offset) * -1);
+}
+
+.toolbar-btn:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .ProseMirror p, .editor-content p {
@@ -108,7 +124,9 @@
   background: transparent;
   padding: 0;
   border-radius: 0;
-  color: #fff;
+  /* FR-9: token conversion — the pre background (#1a0614) is fixed dark in
+     both themes, so the dark-theme primary text colour is the correct pair. */
+  color: var(--color-text-primary-dark);
   font-size: 0.9rem;
 }
 

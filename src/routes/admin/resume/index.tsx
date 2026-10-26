@@ -39,6 +39,7 @@ function AdminResumePage() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => setActiveTab(tab.id as ResumeTab)}
             className={`px-4 py-2 text-sm font-mono flex items-center gap-2 transition-colors relative top-px ${
               activeTab === tab.id
@@ -112,10 +113,13 @@ function ProfileEditor() {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl py-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="input-container">
-          <label className="input-label">Full Name</label>
+          <label className="input-label" htmlFor="resume-profile-fullName">
+            Full Name
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
             <input
+              id="resume-profile-fullName"
               name="fullName"
               defaultValue={profile?.fullName || ""}
               required
@@ -124,64 +128,114 @@ function ProfileEditor() {
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">Title</label>
+          <label className="input-label" htmlFor="resume-profile-title">
+            Title
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="title" defaultValue={profile?.title || ""} className="input" />
+            <input
+              id="resume-profile-title"
+              name="title"
+              defaultValue={profile?.title || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">Email</label>
+          <label className="input-label" htmlFor="resume-profile-email">
+            Email
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="email" defaultValue={profile?.email || ""} className="input" />
+            <input
+              id="resume-profile-email"
+              name="email"
+              defaultValue={profile?.email || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">Phone</label>
+          <label className="input-label" htmlFor="resume-profile-phone">
+            Phone
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="phone" defaultValue={profile?.phone || ""} className="input" />
+            <input
+              id="resume-profile-phone"
+              name="phone"
+              defaultValue={profile?.phone || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">Location</label>
+          <label className="input-label" htmlFor="resume-profile-location">
+            Location
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="location" defaultValue={profile?.location || ""} className="input" />
+            <input
+              id="resume-profile-location"
+              name="location"
+              defaultValue={profile?.location || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">LinkedIn URL</label>
+          <label className="input-label" htmlFor="resume-profile-linkedinUrl">
+            LinkedIn URL
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="linkedinUrl" defaultValue={profile?.linkedinUrl || ""} className="input" />
+            <input
+              id="resume-profile-linkedinUrl"
+              name="linkedinUrl"
+              defaultValue={profile?.linkedinUrl || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">GitHub URL</label>
+          <label className="input-label" htmlFor="resume-profile-githubUrl">
+            GitHub URL
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="githubUrl" defaultValue={profile?.githubUrl || ""} className="input" />
+            <input
+              id="resume-profile-githubUrl"
+              name="githubUrl"
+              defaultValue={profile?.githubUrl || ""}
+              className="input"
+            />
           </div>
         </div>
         <div className="input-container">
-          <label className="input-label">Website URL</label>
+          <label className="input-label" htmlFor="resume-profile-websiteUrl">
+            Website URL
+          </label>
           <div className="input-wrapper">
             <span className="input-prompt">{">"}</span>
-            <input name="websiteUrl" defaultValue={profile?.websiteUrl || ""} className="input" />
+            <input
+              id="resume-profile-websiteUrl"
+              name="websiteUrl"
+              defaultValue={profile?.websiteUrl || ""}
+              className="input"
+            />
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <label className="input-label">Services</label>
+          <span className="input-label">Services</span>
           <div className="space-y-2">
             {services.map((service, index) => (
               <div key={index} className="input-wrapper group">
                 <span className="input-prompt text-(--color-terminal-green)">✓</span>
                 <input
+                  aria-label={`Service ${index + 1}`}
                   value={service}
                   onChange={(e) => {
                     const newServices = [...services];
@@ -210,12 +264,13 @@ function ProfileEditor() {
         </div>
 
         <div className="space-y-4">
-          <label className="input-label">Interests</label>
+          <span className="input-label">Interests</span>
           <div className="space-y-2">
             {interests.map((interest, index) => (
               <div key={index} className="input-wrapper group">
                 <span className="input-prompt text-(--color-ubuntu-orange)">➜</span>
                 <input
+                  aria-label={`Interest ${index + 1}`}
                   value={interest}
                   onChange={(e) => {
                     const newInterests = [...interests];
@@ -245,10 +300,13 @@ function ProfileEditor() {
       </div>
 
       <div className="input-container">
-        <label className="input-label">Summary</label>
+        <label className="input-label" htmlFor="resume-profile-summary">
+          Summary
+        </label>
         <div className="input-wrapper">
           <span className="input-prompt">{">"}</span>
           <textarea
+            id="resume-profile-summary"
             name="summary"
             defaultValue={profile?.summary || ""}
             className="input min-h-[100px] py-1"
@@ -256,6 +314,7 @@ function ProfileEditor() {
         </div>
       </div>
       <button
+        type="submit"
         disabled={isSubmitting}
         className="terminal-button btn-primary flex items-center gap-2"
       >
@@ -324,6 +383,7 @@ function ExperienceManager() {
                 </td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => {
                       setEditingId(exp._id);
                       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -340,6 +400,7 @@ function ExperienceManager() {
                     [edit]
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       if (confirm("Delete?")) remove({ id: exp._id });
                     }}
@@ -461,6 +522,7 @@ function EducationManager() {
                 <td>{edu.institution}</td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => remove({ id: edu._id })}
                     className="hover:text-(--color-terminal-red)"
                   >
@@ -509,7 +571,9 @@ function EducationManager() {
             className="input text-xs"
           />
         </div>
-        <button className="terminal-button btn-primary w-full py-1 text-xs">Add Education</button>
+        <button type="submit" className="terminal-button btn-primary w-full py-1 text-xs">
+          Add Education
+        </button>
       </form>
     </div>
   );
@@ -549,6 +613,7 @@ function CertificationsManager() {
                 <td>{c.issuer}</td>
                 <td className="text-right">
                   <button
+                    type="button"
                     onClick={() => remove({ id: c._id })}
                     className="hover:text-(--color-terminal-red)"
                   >
@@ -605,7 +670,9 @@ function CertificationsManager() {
             className="input text-xs"
           />
         </div>
-        <button className="terminal-button btn-primary w-full py-1 text-xs">Add Cert</button>
+        <button type="submit" className="terminal-button btn-primary w-full py-1 text-xs">
+          Add Cert
+        </button>
       </form>
     </div>
   );

@@ -76,6 +76,12 @@
   height: 1.25rem;
 }
 
+/* FR-7: navigation-item primitive focus ring. */
+.nav-link:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
 /* Terminal Input Styles */
 .terminal-input-wrapper {
   display: flex;
@@ -106,9 +112,19 @@
   font-family: var(--font-mono) !important;
   padding: 0.75rem 0 !important;
   flex: 1;
-  outline: none !important;
+  /* The former `outline: none !important` suppressed the browser's default
+     focus outline on the admin terminal inputs (the wrapper's :focus-within
+     border was the only indicator); `box-shadow: none !important` suppressed
+     inherited/focus box-shadows from global input styles. The focus outline is
+     now replaced by the token-driven :focus-visible rule below; the box-shadow
+     suppression stays because unrelated shadows must not bleed through. */
   box-shadow: none !important;
   font-size: 0.875rem;
+}
+
+.terminal-input:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* Data Tables */
@@ -179,4 +195,13 @@
 .admin-badge.neutral {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-secondary);
+}
+
+/* FR-7: table-row-action primitive focus ring. Row actions ([edit]/[del]/
+   visibility toggles) are bare buttons and links inside admin tables with no
+   shared class, so the ring is scoped to interactive elements within the
+   table. */
+.admin-table :is(button, a):focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }

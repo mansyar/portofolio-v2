@@ -43,6 +43,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
           rel="noopener noreferrer"
           className="share-button twitter"
           title="Share on Twitter"
+          aria-label="Share on Twitter"
         >
           <Twitter size={18} />
         </a>
@@ -52,13 +53,16 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
           rel="noopener noreferrer"
           className="share-button linkedin"
           title="Share on LinkedIn"
+          aria-label="Share on LinkedIn"
         >
           <Linkedin size={18} />
         </a>
         <button
+          type="button"
           onClick={copyToClipboard}
           className={`share-button copy ${copied ? "copied" : ""}`}
           title="Copy Link"
+          aria-label="Copy link"
         >
           {copied ? <Check size={18} /> : <LinkIcon size={18} />}
         </button>

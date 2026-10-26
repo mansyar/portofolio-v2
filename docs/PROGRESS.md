@@ -356,6 +356,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Oct 26, 2026 | Accessibility WCAG 2.2 AA burn-down: seven a11y lint rules promoted to error, all seven target rules at zero diagnostics, warnings 99 → 22, labels/types/focus/motion/contrast fixes, 88 tests |
 | Oct 25, 2026 | Security hardening: Convex auth gaps closed, newsletter rate limited, real Convex tests |
 | Jan 12, 2026 | Phase 8 complete: Admin Settings, Bulk Actions, Scheduling, Activity Log, Image Optimization |
 | Jan 12, 2026 | Phase 7 complete: Related Content, RSS Feed, Tag Cloud, Progress Bar   |

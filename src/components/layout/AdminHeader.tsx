@@ -13,8 +13,10 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
     <header className="admin-header">
       <div className="flex items-center gap-4">
         <button
+          type="button"
           className="md:hidden text-(--color-text-secondary) hover:text-(--color-text-primary)"
           onClick={onToggleSidebar}
+          aria-label="Toggle navigation sidebar"
         >
           <Menu />
         </button>

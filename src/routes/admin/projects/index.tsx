@@ -229,6 +229,7 @@ function AdminProjectsList() {
                   <td>
                     <div className="flex flex-col gap-1 items-start">
                       <button
+                        type="button"
                         onClick={() => handleToggleVisibility(project._id)}
                         className={`admin-badge ${project.isVisible ? "success" : "neutral"} cursor-pointer hover:opacity-80 transition-opacity`}
                       >
@@ -258,6 +259,7 @@ function AdminProjectsList() {
                         [edit]
                       </Link>
                       <button
+                        type="button"
                         onClick={() => handleDelete(project._id)}
                         disabled={deletingId === project._id}
                         className="text-xs text-(--color-text-secondary) hover:text-(--color-terminal-red) transition-colors font-mono disabled:opacity-50"

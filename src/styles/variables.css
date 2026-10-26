@@ -17,6 +17,14 @@
   --color-text-primary-dark: #ffffff;
   --color-text-primary-light: #2c001e;
   --color-text-secondary: #aea79f;
+  /* FR-9: #aea79f (Ubuntu warm grey) clears AA on every dark surface but falls
+     to ~2.2:1 on the light surfaces (#f5f5f5 / #ffffff). The light-theme blocks
+     below override the token with this darker warm grey — same hue and chroma
+     family — instead of changing the shared value, so the dark theme's
+     warm-grey-on-aubergine pairing is untouched. Measured (WCAG relative
+     luminance): 5.1:1 on #f5f5f5, 5.6:1 on #ffffff. */
+  --color-text-secondary-light: #6e675f;
+  --color-text-secondary-dark: #aea79f;
   --color-border: #5e2750;
   --color-surface-dark: #3d0a2e;
   --color-surface-light: #f5f5f5;
@@ -44,6 +52,14 @@
   --transition-page: 300ms ease-in-out;
   --transition-hover: 100ms ease;
   --animation-blink-interval: 500ms;
+
+  /* Focus Ring (FR-7): Ubuntu orange clears 3:1 against every surface in both
+     themes — dark #300a24: 4.8:1, dark surface #3d0a2e: 4.5:1, aubergine
+     #2c001e: 5.1:1, light #ffffff: 3.7:1, light surface #f5f5f5: 3.3:1.
+     Pair: the ring colour and its visible offset; components must use these
+     tokens, never raw hex. */
+  --focus-ring-color: var(--color-ubuntu-orange);
+  --focus-ring-offset: 2px;
 }
 
 @keyframes fade-in {
@@ -60,6 +76,16 @@
   animation: scanline 8s linear infinite;
 }
 
+/* Reduced motion (FR-8): both animations are decorative entrance/scan effects
+   with no state information — they are disabled, not slowed. fade-in is applied
+   via the `animate-fade-in` utility, scanline via `.animate-scanline`. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-scanline {
+    animation: none;
+  }
+}
+
 /* Dark Mode Defaults (Base) */
 :root {
   --color-bg-primary: var(--color-terminal-bg-dark);
@@ -73,6 +99,8 @@
     --color-bg-primary: var(--color-terminal-bg-light);
     --color-text-primary: var(--color-text-primary-light);
     --color-surface: var(--color-surface-light);
+    /* FR-9: darker warm grey so muted text clears 4.5:1 on the light surfaces. */
+    --color-text-secondary: var(--color-text-secondary-light);
   }
 }
 
@@ -81,6 +109,8 @@
   --color-bg-primary: var(--color-terminal-bg-light);
   --color-text-primary: var(--color-text-primary-light);
   --color-surface: var(--color-surface-light);
+  /* FR-9: darker warm grey so muted text clears 4.5:1 on the light surfaces. */
+  --color-text-secondary: var(--color-text-secondary-light);
 }
 
 /* Manual Dark Mode Override */
@@ -88,4 +118,10 @@
   --color-bg-primary: var(--color-terminal-bg-dark);
   --color-text-primary: var(--color-text-primary-dark);
   --color-surface: var(--color-surface-dark);
+  /* FR-9: re-pin the dark secondary so manual dark survives an OS light
+     preference: :root.dark (specificity 0,2,0) beats the media rule's
+     :root (0,1,0) on higher specificity — the media block only ever
+     overrode the base :root because of source order. #aea79f is
+     ~7.39:1 on #300a24; the leaked light value was ~3.15:1. */
+  --color-text-secondary: var(--color-text-secondary-dark);
 }

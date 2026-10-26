@@ -6,18 +6,51 @@
   50% { opacity: 0; }
 }
 
+/* Reduced motion (FR-8) catch-all. The `blink` keyframes declared in this file
+   are applied in input.css (`.input-prompt`) and Footer.css
+   (`.footer__status-dot`), which disable them explicitly under reduced motion.
+   This global guard additionally forces any remaining animation or transition
+   (including Tailwind utilities such as `animate-spin`) to be effectively
+   instantaneous; the typing effect keeps its own, more specific guard in
+   typing-effect.css. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 :root {
   color-scheme: dark light;
 }
 
+/* Theme parity (FR-9/NFR-3): the authenticated admin shell renders on fixed
+   dark terminal surfaces — `.admin-content` is always `--color-terminal-bg-dark`
+   — so the light-theme override of `--color-text-secondary` (see
+   variables.css) must not reach it, and `--color-text-primary` flipping to
+   near-black would put dark text on those dark surfaces. Pin the theme tokens
+   to their dark values for the admin subtree: the admin stays one coherent
+   dark terminal in both themes. Dark-theme rendering is byte-identical,
+   because these are already the dark-theme values. */
+.admin-layout {
+  --color-bg-primary: var(--color-terminal-bg-dark);
+  --color-text-primary: var(--color-text-primary-dark);
+  --color-surface: var(--color-surface-dark);
+  --color-text-secondary: var(--color-warm-grey);
+}
+
 html {
-  background-color: #300a24;
+  background-color: var(--color-terminal-bg-dark);
 }
 
 body {
   margin: 0;
-  background-color: var(--color-bg-primary, #300a24);
-  color: var(--color-text-primary, #ffffff);
+  background-color: var(--color-bg-primary, var(--color-terminal-bg-dark));
+  color: var(--color-text-primary, var(--color-text-primary-dark));
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -42,6 +75,18 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Focus visibility (FR-7): token-driven baseline for every interactive element.
+   Component stylesheets add the same treatment for their primitives; Tailwind
+   `focus-visible:` utilities on individual elements win by specificity where a
+   bespoke treatment already exists. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 ::-webkit-scrollbar {

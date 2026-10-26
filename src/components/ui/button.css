@@ -10,6 +10,13 @@
   border: 1px solid transparent;
 }
 
+/* FR-7: visible, token-driven focus ring (2px offset keeps it clear of the
+   button edge so it contrasts with the page surface, not the button fill). */
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
 .btn-primary {
   background: var(--color-ubuntu-orange);
   color: white;
