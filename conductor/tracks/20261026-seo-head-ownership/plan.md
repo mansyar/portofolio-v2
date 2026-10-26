@@ -19,22 +19,22 @@
   `src/routes/admin.tsx`, `src/components/NotFound.tsx`, `src/lib/site.ts`,
   `src/components/__tests__/seo.test.tsx`, `src/routes/__tests__/seo-surface.test.ts`
 - **Verification:** `pnpm exec vitest run src/components/__tests__/seo.test.tsx src/routes/__tests__/seo-surface.test.ts`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Remove the second title owner** — covers: FR-1
-  - [ ] Delete the `title` entry from the root route's `head` meta, leaving charset and viewport
-  - [ ] Export `DEFAULT_SITE_NAME` from `src/lib/site.ts` and consume it in `Seo`
-- [ ] **P1.T2: Give every surface a bare title** — covers: FR-2, FR-3
-  - [ ] Strip `| Muhammad Ansyar Rafi Putra` from the seven route titles
-  - [ ] Add a route-level `Admin | <site name>` title on `/admin`
-  - [ ] Render `Seo` with `Page not found` in `NotFound`
-- [ ] **P1.T3: Pin the composition with tests** — covers: AC-1, AC-2, AC-3, AC-6
-  - [ ] Assert `document.title` equals `<page> | Test Site` and exactly one `<title>` exists
-  - [ ] Add a source guard: root `head` declares no title; no route title embeds the owner name
-  - [ ] Assert the admin route's `head` title is present and unique
+- [x] **P1.T1: Remove the second title owner** — covers: FR-1
+  - [x] Delete the `title` entry from the root route's `head` meta, leaving charset and viewport
+  - [x] Export `DEFAULT_SITE_NAME` from `src/lib/site.ts` and consume it in `Seo`
+- [x] **P1.T2: Give every surface a bare title** — covers: FR-2, FR-3
+  - [x] Strip `| Muhammad Ansyar Rafi Putra` from the seven route titles
+  - [x] Add a route-level `Admin | <site name>` title on `/admin`
+  - [x] Render `Seo` with `Page not found` in `NotFound`
+- [x] **P1.T3: Pin the composition with tests** — covers: AC-1, AC-2, AC-3, AC-6
+  - [x] Assert `document.title` equals `<page> | Test Site` and exactly one `<title>` exists
+  - [x] Add a source guard: root `head` declares no title; no route title embeds the owner name
+  - [x] Assert the admin route's `head` title is present and unique
 
-**Result:** pending
-**Checkpoint:** pending
+**Result:** verified
+**Checkpoint:** 15dc4d0
 **Evidence:** conductor/tracks/20261026-seo-head-ownership/verification/phase-1.md
 
 **Risk:** removing the root title leaves any surface without `Seo` title-less. The guard test
