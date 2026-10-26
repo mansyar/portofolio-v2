@@ -4,7 +4,7 @@
 - **Phase:** 1 — One title owner
 - **Date:** 2026-10-26
 - **Branch:** `fix/20261026-seo-head-ownership`
-- **Base:** `e5fd84a` (phase base)
+- **Base:** `7d2709f` (phase base)
 - **Head:** `15dc4d0`
 - **Result:** verified
 
