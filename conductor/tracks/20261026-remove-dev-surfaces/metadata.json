@@ -1,0 +1,32 @@
+{
+  "id": "20261026-remove-dev-surfaces",
+  "title": "Remove Dev Surfaces and Admin Dead Ends",
+  "type": "chore",
+  "status": "new",
+  "priority": "medium",
+  "depends_on": [],
+  "created_at": "2026-10-26T14:37:00+11:00",
+  "updated_at": "2026-10-26T14:37:00+11:00",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "chore/20261026-remove-dev-surfaces",
+  "base_branch": "main",
+  "base_sha": "8c9fb790880d49852efc178c5bdee6c3d560f82c",
+  "progress": {
+    "phases_total": 4,
+    "phases_verified": 0,
+    "tasks_total": 14,
+    "tasks_done": 0
+  },
+  "last_checkpoint": null,
+  "review_verdict": null,
+  "review_rounds": 0,
+  "doc_sync": "pending",
+  "pr_url": null,
+  "pr_state": null,
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": null,
+  "archive_path": null
+}
