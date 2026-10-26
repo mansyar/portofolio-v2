@@ -35,9 +35,15 @@ describe("AdminLogin (Phase 1 a11y)", () => {
     const emailInput = screen.getByRole("textbox");
     expect(emailInput).toHaveAttribute("type", "email");
     expect(screen.getByPlaceholderText("admin@ansyar-world.top")).toBe(emailInput);
-    // The visible "Email" label is present; full programmatic label association
-    // lands in Phase 2 (noLabelWithoutControl).
-    expect(screen.getByText("Email")).toBeInTheDocument();
+    // FR-2: the visible labels are programmatically associated with the
+    // inputs (htmlFor/id, landed in Phase 2).
+    expect(screen.getByLabelText("Email")).toBe(emailInput);
+  });
+
+  it("associates the password field with its visible label (FR-2)", () => {
+    render(<AdminLogin />);
+
+    expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
   });
 
   it("does not autofocus the email input on mount (FR-6)", () => {
