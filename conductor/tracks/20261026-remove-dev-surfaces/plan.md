@@ -120,18 +120,22 @@ reverted before the phase result is reported.
 - **Touches:** `docs/PROGRESS.md`,
   `conductor/tracks/20261026-remove-dev-surfaces/verification/`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P4.T1: Reconcile the Phase 9 roadmap row** — covers: FR-5, AC-6
-  - [ ] Change the Phase 9 table row to complete, matching the header and section
-  - [ ] Confirm no other roadmap status changes are made
-- [ ] **P4.T2: Re-prove the final build artifact** — covers: AC-2
-  - [ ] Remove `.output/` and run the authoritative build
-  - [ ] Repeat the demo-string and demo-chunk grep
-- [ ] **P4.T3: Run the full gate and write evidence** — covers: NFR-6, AC-7
-  - [ ] Run every command in the verification line as separate commands and record each
+- [x] **P4.T1: Reconcile the Phase 9 roadmap row** — covers: FR-5, AC-6
+  - [x] Change the Phase 9 table row to complete, matching the header and section
+  - [x] Confirm no other roadmap status changes are made
+- [x] **P4.T2: Re-prove the final build artifact** — covers: AC-2
+  - [x] Remove `.output/` and run the authoritative build
+  - [x] Repeat the demo-string and demo-chunk grep
+- [x] **P4.T3: Run the full gate and write evidence** — covers: NFR-6, AC-7
+  - [x] Run every command in the verification line as separate commands and record each
     exit code
-  - [ ] Write `verification/phase-4.md` with the acceptance-criteria table
+  - [x] Write `verification/phase-4.md` with the acceptance-criteria table
+
+**Result:** verified
+**Checkpoint:** aa4f611
+**Evidence:** conductor/tracks/20261026-remove-dev-surfaces/verification/phase-4.md
 
 **Risk:** Low; the docs edit is textual and the final gate is the standard project gate.
 Coverage cannot fall below the 3% floor by deleting untested files.
