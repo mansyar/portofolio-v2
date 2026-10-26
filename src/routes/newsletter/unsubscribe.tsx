@@ -33,13 +33,15 @@ const MESSAGES: Record<UnsubscribeState, string> = {
 export function UnsubscribePage({ token }: { token?: string }) {
   const unsubscribe = useMutation(api.newsletter.unsubscribe);
   const [state, setState] = useState<UnsubscribeState>(token ? "pending" : "missing");
-  // The token authorises one action, and the effect must not re-fire on every render
-  // (StrictMode, or a re-created mutation reference).
-  const attempted = useRef(false);
+  // Remember *which* token was handled rather than that one was: the effect must not
+  // re-fire on every render (StrictMode, a re-created mutation reference), but a second
+  // link opened in the same tab carries a different token and must still be honored.
+  const handledToken = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!token || attempted.current) return;
-    attempted.current = true;
+    if (!token || handledToken.current === token) return;
+    handledToken.current = token;
+    setState("pending");
 
     unsubscribe({ token })
       .then(() => setState("done"))

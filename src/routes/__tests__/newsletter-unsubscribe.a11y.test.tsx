@@ -53,6 +53,19 @@ describe("newsletter unsubscribe page", () => {
     expect(unsubscribe).toHaveBeenCalledWith({ token: "token-abc" });
   });
 
+  it("acts on a second token opened in the same tab", async () => {
+    unsubscribe.mockResolvedValue({ success: true, status: "unsubscribed" });
+
+    const { rerender } = render(<UnsubscribePage token="token-first" />);
+    await waitFor(() => expect(unsubscribe).toHaveBeenCalledWith({ token: "token-first" }));
+
+    // Same route, different search: a one-shot boolean guard would stop here.
+    rerender(<UnsubscribePage token="token-second" />);
+
+    await waitFor(() => expect(unsubscribe).toHaveBeenCalledWith({ token: "token-second" }));
+    expect(unsubscribe).toHaveBeenCalledTimes(2);
+  });
+
   it("reports a failure without claiming success", async () => {
     unsubscribe.mockRejectedValue(new Error("network"));
 
