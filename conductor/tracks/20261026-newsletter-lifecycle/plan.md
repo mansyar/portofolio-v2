@@ -17,18 +17,22 @@
   `convex/__tests__/newsletter.subscribe.identity.test.ts`,
   `convex/__tests__/newsletter.normalizeSubscribers.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/newsletter.subscribe.identity.test.ts convex/__tests__/newsletter.normalizeSubscribers.test.ts`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Give subscribers a token** — covers: FR-2
-  - [ ] Add `unsubscribeToken` and `unsubscribedAt` to the schema, with a `by_token` index
-  - [ ] Generate a token on insert and refresh it in the re-subscribe branch
-- [ ] **P1.T2: Normalize the address before every comparison** — covers: FR-1
-  - [ ] Use the normalized address for the dedupe lookup, the insert, and the stored record
-  - [ ] Keep both rate-limit keys on the normalized address
-- [ ] **P1.T3: Backfill existing rows** — covers: FR-5
-  - [ ] Add an idempotent internal mutation that lowercases addresses, collapses duplicates
+- [x] **P1.T1: Give subscribers a token** — covers: FR-2
+  - [x] Add `unsubscribeToken` and `unsubscribedAt` to the schema, with a `by_token` index
+  - [x] Generate a token on insert and refresh it in the re-subscribe branch
+- [x] **P1.T2: Normalize the address before every comparison** — covers: FR-1
+  - [x] Use the normalized address for the dedupe lookup, the insert, and the stored record
+  - [x] Keep both rate-limit keys on the normalized address
+- [x] **P1.T3: Backfill existing rows** — covers: FR-5
+  - [x] Add an idempotent internal mutation that lowercases addresses, collapses duplicates
     onto the earliest `subscribedAt`, and backfills tokens
-  - [ ] Assert a second run changes nothing
+  - [x] Assert a second run changes nothing
+
+**Result:** verified
+**Checkpoint:** 557757d
+**Evidence:** conductor/tracks/20261026-newsletter-lifecycle/verification/phase-1.md
 
 **Risk:** the migration rewrites subscriber rows. It is an internal mutation the owner runs
 against the live backend, never part of `convex deploy`; the test proves idempotence so a
