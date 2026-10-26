@@ -50,18 +50,18 @@ documented exception.
 - **Touches:** `src/lib/site.ts`, `src/components/seo.tsx`,
   `src/routes/sitemap[.]xml.ts`, `src/routes/feed[.]xml.ts`, `src/lib/__tests__/site.test.ts`
 - **Verification:** `pnpm exec vitest run src/lib/__tests__/site.test.ts`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Add the resolver and consume it** — covers: FR-4
-  - [ ] Implement `siteUrl()`: trim, strip trailing slashes, reject loopback, fall back to the
+- [x] **P2.T1: Add the resolver and consume it** — covers: FR-4
+  - [x] Implement `siteUrl()`: trim, strip trailing slashes, reject loopback, fall back to the
         production origin
-  - [ ] Use it in `Seo` for canonical and OG URLs, and in the sitemap and feed routes
-- [ ] **P2.T2: Pin the resolver behaviour** — covers: AC-4
-  - [ ] Cover missing, loopback, trailing-slash, and valid origins
-  - [ ] Assert the mail helper's default origin equals `siteUrl()`'s default
+  - [x] Use it in `Seo` for canonical and OG URLs, and in the sitemap and feed routes
+- [x] **P2.T2: Pin the resolver behaviour** — covers: AC-4
+  - [x] Cover missing, loopback, trailing-slash, and valid origins
+  - [x] Assert the mail helper's default origin equals `siteUrl()`'s default
 
-**Result:** pending
-**Checkpoint:** pending
+**Result:** verified
+**Checkpoint:** 5f29b3c
 **Evidence:** conductor/tracks/20261026-seo-head-ownership/verification/phase-2.md
 
 **Risk:** `import.meta.env` is inlined at build time, so the resolver must read it inside the
