@@ -53,7 +53,7 @@ passes against the new code would not satisfy P1.T1, so the failing run is captu
 - **Touches:** `src/components/features/blog/BlogContent.tsx`,
   `src/components/features/blog/__tests__/blog-content.test.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Render the server page** — covers: FR-1, FR-4
   - [ ] Query the new listing shape with `page`, `pageSize`, `category`, and `tag`
