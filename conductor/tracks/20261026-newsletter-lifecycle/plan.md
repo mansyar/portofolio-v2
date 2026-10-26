@@ -48,7 +48,7 @@ double run is harmless.
   `convex/__tests__/newsletter.unsubscribe.test.ts`,
   `convex/__tests__/newsletter.welcomeEmail.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/newsletter.unsubscribe.test.ts convex/__tests__/newsletter.welcomeEmail.test.ts`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Add the token-bearing unsubscribe mutation** — covers: FR-3
   - [ ] Resolve the subscriber by token; set `status: "unsubscribed"` and `unsubscribedAt`
