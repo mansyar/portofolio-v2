@@ -19,7 +19,7 @@
   `src/routes/admin.tsx`, `src/components/NotFound.tsx`, `src/lib/site.ts`,
   `src/components/__tests__/seo.test.tsx`, `src/routes/__tests__/seo-surface.test.ts`
 - **Verification:** `pnpm exec vitest run src/components/__tests__/seo.test.tsx src/routes/__tests__/seo-surface.test.ts`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Remove the second title owner** — covers: FR-1
   - [ ] Delete the `title` entry from the root route's `head` meta, leaving charset and viewport
