@@ -1,13 +1,27 @@
 import { v } from "convex/values";
-import { mutation, internalAction } from "./_generated/server";
+import { mutation, internalMutation, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Resend } from "resend";
+
+/**
+ * One address is one subscriber. Trimming and lowercasing before every comparison
+ * keeps `Ana@Example.com ` from becoming a second row next to `ana@example.com`.
+ */
+const normalizeEmail = (email: string): string => email.trim().toLowerCase();
+
+/**
+ * Opt-out token. Stored in plaintext because it only authorises unsubscribing that
+ * address, and a database read that could hash it already exposes the address.
+ */
+const createUnsubscribeToken = (): string => crypto.randomUUID();
 
 export const subscribe = mutation({
   args: { email: v.string(), clientIp: v.string() },
   handler: async (ctx, { email, clientIp }) => {
+    const normalized = normalizeEmail(email);
+
     // Basic validation
-    if (!email.includes("@")) {
+    if (!normalized.includes("@")) {
       throw new Error("Invalid email address");
     }
 
@@ -24,7 +38,7 @@ export const subscribe = mutation({
     // Together they mean neither rotating the IP nor replaying one address
     // defeats the limit.
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = normalized;
 
     const recentFromIp = await ctx.db
       .query("rateLimits")
@@ -59,25 +73,30 @@ export const subscribe = mutation({
       timestamp: Date.now(),
     });
 
+    // The lookup uses the normalized address, matching how it is stored below.
     const existing = await ctx.db
       .query("newsletterSubscribers")
-      .withIndex("by_email", (q) => q.eq("email", email))
+      .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .unique();
 
     if (existing) {
       if (existing.status === "active") {
         return { success: true, alreadySubscribed: true };
       }
-      // Re-subscribe if they were unsubscribed
+      // Re-subscribe if they were unsubscribed. The token rotates so links in the
+      // mail that prompted the opt-out stop working.
       await ctx.db.patch(existing._id, {
         status: "active",
         subscribedAt: Date.now(),
+        unsubscribeToken: createUnsubscribeToken(),
+        unsubscribedAt: undefined,
       });
     } else {
       await ctx.db.insert("newsletterSubscribers", {
-        email,
+        email: normalizedEmail,
         subscribedAt: Date.now(),
         status: "active",
+        unsubscribeToken: createUnsubscribeToken(),
       });
     }
 
@@ -85,6 +104,57 @@ export const subscribe = mutation({
     await ctx.scheduler.runAfter(0, internal.newsletter.sendWelcomeEmail, { email });
 
     return { success: true, alreadySubscribed: false };
+  },
+});
+
+/**
+ * One-off backfill for subscribers written before normalization and tokens existed.
+ * Lowercases every address, folds duplicates onto the earliest subscription, and gives
+ * each surviving row a token. Idempotent: it only writes rows that differ, so a second
+ * run reports zero changes. Run with `npx convex run newsletter:normalizeSubscribers`.
+ */
+export const normalizeSubscribers = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("newsletterSubscribers").collect();
+    const groups = new Map<string, (typeof rows)[number][]>();
+
+    for (const row of rows) {
+      const key = normalizeEmail(row.email);
+      const group = groups.get(key);
+      if (group) group.push(row);
+      else groups.set(key, [row]);
+    }
+
+    let normalized = 0;
+    let duplicatesRemoved = 0;
+    let tokensBackfilled = 0;
+
+    for (const [email, group] of groups) {
+      // The earliest subscription is the record that survives a merge.
+      const [survivor, ...duplicates] = [...group].sort((a, b) => a.subscribedAt - b.subscribedAt);
+      const status = group.some((row) => row.status === "active") ? "active" : "unsubscribed";
+      const needsWrite =
+        survivor.email !== email || !survivor.unsubscribeToken || survivor.status !== status;
+
+      if (survivor.email !== email) normalized += 1;
+      if (!survivor.unsubscribeToken) tokensBackfilled += 1;
+
+      if (needsWrite) {
+        await ctx.db.patch(survivor._id, {
+          email,
+          status,
+          unsubscribeToken: survivor.unsubscribeToken ?? createUnsubscribeToken(),
+        });
+      }
+
+      for (const duplicate of duplicates) {
+        await ctx.db.delete(duplicate._id);
+        duplicatesRemoved += 1;
+      }
+    }
+
+    return { scanned: rows.length, normalized, duplicatesRemoved, tokensBackfilled };
   },
 });
 
