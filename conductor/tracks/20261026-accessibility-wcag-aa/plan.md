@@ -160,7 +160,7 @@
   component CSS whose literal value must become a token
 - **Verification:** the gate, plus the contrast table and a re-measurement of every
   changed pair
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P5.T1: Build the pair inventory** - covers: FR-9
   - [ ] Enumerate every foreground/background token pair actually used in dark and light, with computed contrast ratios
