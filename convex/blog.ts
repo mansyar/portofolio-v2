@@ -1,8 +1,8 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
-import { paginationOptsValidator } from "convex/server";
 import { internal } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 
 // Utility to calculate reading time
 const calculateReadingTime = (content: string): number => {
@@ -12,43 +12,97 @@ const calculateReadingTime = (content: string): number => {
   return Math.ceil(words / wordsPerMinute);
 };
 
+// Blog listing window. Nine matches the card grid on the index page, and the
+// cap keeps a hand-edited `?pageSize=` from asking for an unbounded read.
+const DEFAULT_PAGE_SIZE = 9;
+const MAX_PAGE_SIZE = 50;
+
+// The published set is read in batches so a page view never materialises every
+// post (and every post body) in one array.
+const LISTING_BATCH = 100;
+
 // =============================================================================
 // Public Queries
 // =============================================================================
 
+/**
+ * Public listing for the blog index. Returns one page of published posts plus the
+ * filtered total, so the page-number control can render an honest page count.
+ *
+ * Category and tag filters resolve their slug to an id and match on that id: a slug
+ * that merely appears inside a post's own slug never matches. An unknown slug is an
+ * empty result rather than a silent fall-through to every post.
+ */
 export const listPublished = query({
   args: {
-    paginationOpts: paginationOptsValidator,
+    page: v.optional(v.number()),
+    pageSize: v.optional(v.number()),
     categorySlug: v.optional(v.string()),
     tagSlug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (args.categorySlug) {
-      // Find category ID first
-      const category = await ctx.db
+    // Floor before clamping: a hand-edited `?page=1.5` must not produce a
+    // fractional window or a fractional page number in the control.
+    const pageSize = Math.min(
+      Math.max(Math.floor(args.pageSize ?? DEFAULT_PAGE_SIZE), 1),
+      MAX_PAGE_SIZE
+    );
+    const page = Math.max(Math.floor(args.page ?? 1), 1);
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const empty = { posts: [], total: 0, totalPages: 0 };
+
+    let category: Doc<"blogCategories"> | null = null;
+    if (args.categorySlug !== undefined) {
+      const slug = args.categorySlug;
+      category = await ctx.db
         .query("blogCategories")
-        .withIndex("by_slug", (q) => q.eq("slug", args.categorySlug!))
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
         .first();
-
-      if (!category) {
-        return { page: [], isDone: true, continueCursor: "" };
-      }
-
-      return await ctx.db
-        .query("blogPosts")
-        .withIndex("by_category", (q) => q.eq("categoryId", category._id))
-        .filter((q) => q.eq(q.field("status"), "published"))
-        .order("desc")
-        .paginate(args.paginationOpts);
+      // An unknown slug must not fall through to the unfiltered listing.
+      if (!category) return empty;
     }
 
-    // Default: List all published posts by publication date
-    return await ctx.db
-      .query("blogPosts")
-      .withIndex("by_published")
-      .filter((q) => q.eq(q.field("status"), "published"))
-      .order("desc")
-      .paginate(args.paginationOpts);
+    let tag: Doc<"blogTags"> | null = null;
+    if (args.tagSlug !== undefined) {
+      const slug = args.tagSlug;
+      tag = await ctx.db
+        .query("blogTags")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .first();
+      if (!tag) return empty;
+    }
+
+    const now = Date.now();
+    const posts: Doc<"blogPosts">[] = [];
+    let total = 0;
+    let cursor: string | null = null;
+
+    for (;;) {
+      // Rebuild the query each round: a paginate call consumes the builder.
+      const batch = await ctx.db
+        .query("blogPosts")
+        .withIndex("by_published")
+        .filter((q) => q.eq(q.field("status"), "published"))
+        .order("desc")
+        .paginate({ numItems: LISTING_BATCH, cursor });
+
+      for (const post of batch.page) {
+        // A published post stamped in the future is not visible yet, even if a
+        // cron or a manual edit left the status ahead of its timestamp.
+        if (post.publishedAt !== undefined && post.publishedAt > now) continue;
+        if (category && post.categoryId !== category._id) continue;
+        if (tag && !post.tagIds.includes(tag._id)) continue;
+
+        if (total >= start && total < end) posts.push(post);
+        total += 1;
+      }
+
+      if (batch.isDone) break;
+      cursor = batch.continueCursor;
+    }
+
+    return { posts, total, totalPages: Math.ceil(total / pageSize) };
   },
 });
 

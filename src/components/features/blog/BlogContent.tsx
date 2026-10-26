@@ -4,6 +4,8 @@ import { api } from "../../../../convex/_generated/api";
 import { BlogCard } from "../../ui/blog-card";
 import { Pagination } from "../../ui/pagination";
 
+const ITEMS_PER_PAGE = 9;
+
 interface BlogContentProps {
   page: number;
   category?: string;
@@ -11,25 +13,23 @@ interface BlogContentProps {
 }
 
 export function BlogContent({ page, category, tag }: BlogContentProps) {
-  const { data: allPosts } = useSuspenseQuery(convexQuery(api.blog.listRecent, { limit: 100 }));
-
-  const ITEMS_PER_PAGE = 9;
-  const filteredPosts = allPosts.filter((post) => {
-    // If we have a category, filter by category slug (assuming it's the first part of the post slug)
-    // or if we have a tag, filter by tag slug (same assumption for now as placeholder)
-    if (category && post.slug.includes(category)) return true;
-    if (tag && post.slug.includes(tag)) return true;
-    return !category && !tag;
-  });
-
-  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
-  const displayedPosts = filteredPosts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  // The listing is filtered and paged by the backend: category and tag resolve to ids
+  // there, so a slug that only appears inside a post's own slug never matches, and every
+  // published post stays reachable no matter how many there are.
+  const { data } = useSuspenseQuery(
+    convexQuery(api.blog.listPublished, {
+      page,
+      pageSize: ITEMS_PER_PAGE,
+      categorySlug: category,
+      tagSlug: tag,
+    })
+  );
 
   return (
     <>
       <div className="grid min-h-[50vh] grid-cols-1 content-start gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-        {displayedPosts.length > 0 ? (
-          displayedPosts.map((post) => (
+        {data.posts.length > 0 ? (
+          data.posts.map((post) => (
             <BlogCard
               key={post._id}
               title={post.title}
@@ -46,10 +46,10 @@ export function BlogContent({ page, category, tag }: BlogContentProps) {
         )}
       </div>
 
-      {totalPages > 1 && (
+      {data.totalPages > 1 && (
         <Pagination
           currentPage={page}
-          totalPages={totalPages}
+          totalPages={data.totalPages}
           baseUrl="/blog"
           searchParams={{ category, tag }}
           className="mt-8"
