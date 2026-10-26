@@ -86,7 +86,7 @@ invalid path. No auth or query code is touched.
 - **Touches:** `src/routes/__tests__/route-surface.test.ts`,
   `src/routes/__tests__/admin-dashboard.test.tsx`
 - **Verification:** `pnpm exec vitest run src/routes/__tests__/route-surface.test.ts src/routes/__tests__/admin-dashboard.test.tsx`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Add the route-surface guard** — covers: FR-6, AC-1
   - [ ] Assert `src/routes/demo` and `src/data/demo.punk-songs.ts` do not exist
