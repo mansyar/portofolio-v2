@@ -36,22 +36,22 @@
 - **Verification:** the gate, plus `useHtmlLang`, `noAutofocus`,
   `noSvgWithoutTitle`, `noStaticElementInteractions` and `useKeyWithClickEvents`
   each report zero diagnostics
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Add `lang` to the standalone health document** - covers: FR-5
-  - [ ] Add `lang="en"` to the `<html>` element in `health.tsx`
-  - [ ] Confirm `/health` still returns `OK` and the Docker healthcheck contract is unchanged
-- [ ] **P1.T2: Replace the `autoFocus` on the admin login form** - covers: FR-6
-  - [ ] Remove `autoFocus`; if the flow depends on it, focus the email field with a ref instead, and record which path was taken
-  - [ ] Test: the email input is reachable and labelled without relying on autofocus
-- [ ] **P1.T3: Give the `SkillForm` icon SVG an accessible treatment** - covers: FR-4
-  - [ ] Decide decorative vs meaningful, then `aria-hidden="true"` or `<title>` plus `role="img"`
-- [ ] **P1.T4: Make the two static-element click targets real controls** - covers: FR-3
-  - [ ] `src/routes/admin.tsx` and `src/routes/admin/messages/index.tsx`: convert to `<button>` or `<a>`, or add `role`, `tabIndex` and a keyboard handler where the element must stay generic
-  - [ ] Test: each converted target is reachable by role and activates with Enter and Space
-- [ ] **P1.T5: Re-verify the phase** - covers: AC-1
-  - [ ] Record the per-rule diagnostic count before and after
-  - [ ] Write `conductor/tracks/20261026-accessibility-wcag-aa/verification/phase-1.md`
+- [x] **P1.T1: Add `lang` to the standalone health document** - covers: FR-5
+  - [x] Add `lang="en"` to the `<html>` element in `health.tsx`
+  - [x] Confirm `/health` still returns `OK` and the Docker healthcheck contract is unchanged
+- [x] **P1.T2: Replace the `autoFocus` on the admin login form** - covers: FR-6
+  - [x] Remove `autoFocus`; if the flow depends on it, focus the email field with a ref instead, and record which path was taken
+  - [x] Test: the email input is reachable and labelled without relying on autofocus
+- [x] **P1.T3: Give the `SkillForm` icon SVG an accessible treatment** - covers: FR-4
+  - [x] Decide decorative vs meaningful, then `aria-hidden="true"` or `<title>` plus `role="img"`
+- [x] **P1.T4: Make the two static-element click targets real controls** - covers: FR-3
+  - [x] `src/routes/admin.tsx` and `src/routes/admin/messages/index.tsx`: convert to `<button>` or `<a>`, or add `role`, `tabIndex` and a keyboard handler where the element must stay generic
+  - [x] Test: each converted target is reachable by role and activates with Enter and Space
+- [x] **P1.T5: Re-verify the phase** - covers: AC-1
+  - [x] Record the per-rule diagnostic count before and after
+  - [x] Write `conductor/tracks/20261026-accessibility-wcag-aa/verification/phase-1.md`
 
 ## Phase 2: Labels and accessible names
 
