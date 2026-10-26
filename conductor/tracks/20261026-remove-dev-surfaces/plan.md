@@ -54,21 +54,25 @@ file.
 - **Covers:** FR-3, FR-4, FR-6, NFR-3, NFR-4, AC-4, AC-5
 - **Touches:** `src/routes/admin/index.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Wire "View All" to the messages inbox** — covers: FR-3
-  - [ ] Replace the disabled span with a `Link` to `/admin/messages`
-  - [ ] Remove the stale TODO comment and the `cursor-not-allowed`/`opacity-50`
+- [x] **P2.T1: Wire "View All" to the messages inbox** — covers: FR-3
+  - [x] Replace the disabled span with a `Link` to `/admin/messages`
+  - [x] Remove the stale TODO comment and the `cursor-not-allowed`/`opacity-50`
     treatment
-- [ ] **P2.T2: Wire "Draft New Post" to the blog editor** — covers: FR-3
-  - [ ] Replace the disabled div with a `Link` to `/admin/blog/new`
-  - [ ] Remove the stale TODO comment
-- [ ] **P2.T3: Remove the hardcoded System Status block** — covers: FR-4
-  - [ ] Delete the Uptime/CPU/Memory/Disk panel and its literals
-  - [ ] Leave the real Convex-backed stats and recent messages untouched
-- [ ] **P2.T4: Export `Dashboard` for direct rendering** — covers: FR-6
-  - [ ] Add a named export, matching the existing `AdminLayout`/`AdminMessagesInbox`
+- [x] **P2.T2: Wire "Draft New Post" to the blog editor** — covers: FR-3
+  - [x] Replace the disabled div with a `Link` to `/admin/blog/new`
+  - [x] Remove the stale TODO comment
+- [x] **P2.T3: Remove the hardcoded System Status block** — covers: FR-4
+  - [x] Delete the Uptime/CPU/Memory/Disk panel and its literals
+  - [x] Leave the real Convex-backed stats and recent messages untouched
+- [x] **P2.T4: Export `Dashboard` for direct rendering** — covers: FR-6
+  - [x] Add a named export, matching the existing `AdminLayout`/`AdminMessagesInbox`
     testability pattern
+
+**Result:** verified
+**Checkpoint:** 17ecf67
+**Evidence:** conductor/tracks/20261026-remove-dev-surfaces/verification/phase-2.md
 
 **Risk:** The only typed surface is the `Link` target; `pnpm type-check` catches an
 invalid path. No auth or query code is touched.
