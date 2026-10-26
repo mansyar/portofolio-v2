@@ -6,6 +6,24 @@
   50% { opacity: 0; }
 }
 
+/* Reduced motion (FR-8) catch-all. The `blink` keyframes declared in this file
+   are applied in input.css (`.input-prompt`) and Footer.css
+   (`.footer__status-dot`), which disable them explicitly under reduced motion.
+   This global guard additionally forces any remaining animation or transition
+   (including Tailwind utilities such as `animate-spin`) to be effectively
+   instantaneous; the typing effect keeps its own, more specific guard in
+   typing-effect.css. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 :root {
   color-scheme: dark light;
 }
@@ -42,6 +60,18 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Focus visibility (FR-7): token-driven baseline for every interactive element.
+   Component stylesheets add the same treatment for their primitives; Tailwind
+   `focus-visible:` utilities on individual elements win by specificity where a
+   bespoke treatment already exists. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 ::-webkit-scrollbar {

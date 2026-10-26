@@ -44,6 +44,14 @@
   --transition-page: 300ms ease-in-out;
   --transition-hover: 100ms ease;
   --animation-blink-interval: 500ms;
+
+  /* Focus Ring (FR-7): Ubuntu orange clears 3:1 against every surface in both
+     themes — dark #300a24: 4.8:1, dark surface #3d0a2e: 4.5:1, aubergine
+     #2c001e: 5.1:1, light #ffffff: 3.7:1, light surface #f5f5f5: 3.3:1.
+     Pair: the ring colour and its visible offset; components must use these
+     tokens, never raw hex. */
+  --focus-ring-color: var(--color-ubuntu-orange);
+  --focus-ring-offset: 2px;
 }
 
 @keyframes fade-in {
@@ -58,6 +66,16 @@
 
 .animate-scanline {
   animation: scanline 8s linear infinite;
+}
+
+/* Reduced motion (FR-8): both animations are decorative entrance/scan effects
+   with no state information — they are disabled, not slowed. fade-in is applied
+   via the `animate-fade-in` utility, scanline via `.animate-scanline`. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-scanline {
+    animation: none;
+  }
 }
 
 /* Dark Mode Defaults (Base) */

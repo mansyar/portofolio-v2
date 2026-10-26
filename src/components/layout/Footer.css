@@ -60,3 +60,12 @@
   border-radius: 50%;
   animation: blink 2s infinite;
 }
+
+/* Reduced motion (FR-8): the blinking status dot is decorative — disabled;
+   the dot stays steadily visible so the "status" signal is not lost. Link
+   focus rings come from the global `a:focus-visible` baseline in globals.css. */
+@media (prefers-reduced-motion: reduce) {
+  .footer__status-dot {
+    animation: none;
+  }
+}

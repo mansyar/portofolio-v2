@@ -67,6 +67,13 @@
   cursor: not-allowed;
 }
 
+/* FR-7: token-driven focus rings for the bar's two button primitives. */
+.bulk-action-button:focus-visible,
+.bulk-clear-button:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
 .bulk-action-button.variant-danger:hover:not(:disabled) {
   background: var(--color-terminal-red);
   color: white;
@@ -101,5 +108,14 @@
   to {
     transform: translate(-50%, 0);
     opacity: 1;
+  }
+}
+
+/* Reduced motion (FR-8): the slide-up entrance is decorative movement of a
+   fixed bar — disabled; the bar appears in place at its final position (the
+   base `transform: translateX(-50%)` is preserved). */
+@media (prefers-reduced-motion: reduce) {
+  .bulk-action-bar-container {
+    animation: none;
   }
 }
