@@ -183,7 +183,7 @@
 - **Touches:** `biome.json`, `conductor/tech-stack.md`, tests under
   `src/components/**/__tests__/`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P6.T1: Flip the seven rules to `error`** - covers: FR-11
   - [ ] `noLabelWithoutControl`, `useButtonType`, `noStaticElementInteractions`, `useKeyWithClickEvents`, `noAutofocus`, `noSvgWithoutTitle`, `useHtmlLang`
