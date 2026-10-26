@@ -77,19 +77,19 @@ function (not at module load) for `vi.stubEnv` and for runtime overrides to work
   `src/components/NotFound.tsx`, `src/components/__tests__/seo.test.tsx`,
   `convex/sitemap.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Add the noindex capability** — covers: FR-5, AC-5
-  - [ ] Emit `<meta name="robots" content="noindex">` when `noindex` is set
-  - [ ] Set it on the unsubscribe page and the 404 boundary
-  - [ ] Assert the sitemap's static routes exclude `/newsletter` and `/admin`
-- [ ] **P3.T2: Run the gate and the built-server check** — covers: NFR-1, NFR-2, NFR-3, NFR-4, NFR-5, AC-7
-  - [ ] Run the five gate commands and `pnpm test:coverage`; record exit codes
-  - [ ] Start the built server; count titles on `/about`, `/blog/`, `/admin/login`, and a 404;
+- [x] **P3.T1: Add the noindex capability** — covers: FR-5, AC-5
+  - [x] Emit `<meta name="robots" content="noindex">` when `noindex` is set
+  - [x] Set it on the unsubscribe page and the 404 boundary
+  - [x] Assert the sitemap's static routes exclude `/newsletter` and `/admin`
+- [x] **P3.T2: Run the gate and the built-server check** — covers: NFR-1, NFR-2, NFR-3, NFR-4, NFR-5, AC-7
+  - [x] Run the five gate commands and `pnpm test:coverage`; record exit codes
+  - [x] Start the built server; count titles on `/about`, `/blog/`, `/admin/login`, and a 404;
         confirm the canonical host and the robots tag
 
-**Result:** pending
-**Checkpoint:** pending
+**Result:** verified
+**Checkpoint:** b1a03f1
 **Evidence:** conductor/tracks/20261026-seo-head-ownership/verification/phase-3.md
 
 **Risk:** the built server needs a reachable Convex backend to render settings-backed pages;
