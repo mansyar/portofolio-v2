@@ -17,7 +17,7 @@
   `convex/__tests__/newsletter.subscribe.identity.test.ts`,
   `convex/__tests__/newsletter.normalizeSubscribers.test.ts`
 - **Verification:** `pnpm exec vitest run convex/__tests__/newsletter.subscribe.identity.test.ts convex/__tests__/newsletter.normalizeSubscribers.test.ts`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Give subscribers a token** — covers: FR-2
   - [ ] Add `unsubscribeToken` and `unsubscribedAt` to the schema, with a `by_token` index
