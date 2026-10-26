@@ -105,20 +105,20 @@
   `src/routes/demo/start.server-funcs.tsx`, `src/routes/projects.$slug.tsx`
 - **Verification:** the gate, plus `useButtonType` reports zero diagnostics and the
   submit-classification table is attached to the evidence
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Classify every call site before editing** - covers: FR-1
-  - [ ] Produce a table of all 39 sites: file, line, and intended `type`; flag every site inside a `<form>` where submitting is the intent
-  - [ ] Report `blocked` for any site whose intent cannot be determined from its markup rather than guessing
-- [ ] **P3.T2: Default the shared primitive** - covers: FR-1
-  - [ ] `button.tsx` defaults `type="button"` while still allowing an explicit `type="submit"`
-  - [ ] Record that a primitive default does not satisfy the rule at literal `<button>` call sites, so it is not a substitute for P3.T3
-- [ ] **P3.T3: Apply `type` to the remaining literal buttons** - covers: FR-1
-  - [ ] Work the classification table; no submit-intent site receives `type="button"`
-  - [ ] Test: a submit-intent button submits its form and a plain action button does not
-- [ ] **P3.T4: Re-verify the phase** - covers: FR-1
-  - [ ] Record `useButtonType` = 0 and the classification table
-  - [ ] Write `verification/phase-3.md`
+- [x] **P3.T1: Classify every call site before editing** - covers: FR-1
+  - [x] Produce a table of all 39 sites: file, line, and intended `type`; flag every site inside a `<form>` where submitting is the intent
+  - [x] Report `blocked` for any site whose intent cannot be determined from its markup rather than guessing
+- [x] **P3.T2: Default the shared primitive** - covers: FR-1
+  - [x] `button.tsx` defaults `type="button"` while still allowing an explicit `type="submit"`
+  - [x] Record that a primitive default does not satisfy the rule at literal `<button>` call sites, so it is not a substitute for P3.T3
+- [x] **P3.T3: Apply `type` to the remaining literal buttons** - covers: FR-1
+  - [x] Work the classification table; no submit-intent site receives `type="button"`
+  - [x] Test: a submit-intent button submits its form and a plain action button does not
+- [x] **P3.T4: Re-verify the phase** - covers: FR-1
+  - [x] Record `useButtonType` = 0 and the classification table
+  - [x] Write `verification/phase-3.md`
 
 ## Phase 4: Focus visibility and reduced motion
 
