@@ -16,26 +16,30 @@
 - **Touches:** `src/routes/demo/**`, `src/data/demo.punk-songs.ts`,
   `src/routeTree.gen.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Delete the seven demo route files** — covers: FR-1
-  - [ ] Remove `api.names.ts`, `start.api-request.tsx`, `start.server-funcs.tsx`,
+- [x] **P1.T1: Delete the seven demo route files** — covers: FR-1
+  - [x] Remove `api.names.ts`, `start.api-request.tsx`, `start.server-funcs.tsx`,
     `start.ssr.data-only.tsx`, `start.ssr.full-ssr.tsx`, `start.ssr.index.tsx`, and
     `start.ssr.spa-mode.tsx`
-  - [ ] Confirm no file outside `src/routes/demo/` imports them
-- [ ] **P1.T2: Delete the demo-only data module** — covers: FR-2
-  - [ ] Remove `src/data/demo.punk-songs.ts` after confirming its only importers were
+  - [x] Confirm no file outside `src/routes/demo/` imports them
+- [x] **P1.T2: Delete the demo-only data module** — covers: FR-2
+  - [x] Remove `src/data/demo.punk-songs.ts` after confirming its only importers were
     demo routes
-  - [ ] Record `grep -rn "demo.punk-songs" src` returning no matches
-- [ ] **P1.T3: Regenerate the committed route tree** — covers: FR-1
-  - [ ] Run `pnpm build` so the router plugin rewrites `src/routeTree.gen.ts`; do not
+  - [x] Record `grep -rn "demo.punk-songs" src` returning no matches
+- [x] **P1.T3: Regenerate the committed route tree** — covers: FR-1
+  - [x] Run `pnpm build` so the router plugin rewrites `src/routeTree.gen.ts`; do not
     hand-edit it
-  - [ ] Confirm the generated file has no `Demo*` imports, `Demo*` children, or `/demo`
+  - [x] Confirm the generated file has no `Demo*` imports, `Demo*` children, or `/demo`
     paths
-- [ ] **P1.T4: Prove the production artifact is clean** — covers: AC-2
-  - [ ] Remove `.output/`, rebuild, and grep for `demo/start`, `SSR Demos`,
+- [x] **P1.T4: Prove the production artifact is clean** — covers: AC-2
+  - [x] Remove `.output/`, rebuild, and grep for `demo/start`, `SSR Demos`,
     `Start Server Functions`, and `start.server-funcs`
-  - [ ] Record the commands and empty results in `verification/phase-1.md`
+  - [x] Record the commands and empty results in `verification/phase-1.md`
+
+**Result:** verified
+**Checkpoint:** 86b4a62
+**Evidence:** conductor/tracks/20261026-remove-dev-surfaces/verification/phase-1.md
 
 **Risk:** A stale `.output/` would produce a false pass; the artifact check always starts
 from a removed directory. Regeneration depends on the router plugin running during the
