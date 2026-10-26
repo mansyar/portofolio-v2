@@ -139,7 +139,13 @@ New file `src/components/ui/__tests__/button.a11y.test.tsx` (6 tests, Testing Li
 
 ## Primary verification
 
-*(To be completed by the orchestrator after phase review.)*
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean before verification; `git log f131613..HEAD` shows exactly the two reported commits (`a68310a`, `33fa479`); changed-file list matches the report.
+- Gate re-run as four separate commands on the final code state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 (22 warnings, 0 errors) · `pnpm format:check` exit 0 · `pnpm test` exit 0 (30 files, 78 tests).
+- Per-rule re-check: `useButtonType` absent from lint output; remaining warnings are exactly `noArrayIndexKey` 16, `useOptionalChain` 3, `noNonNullAssertion` 3 — all out of scope. Total 61 → 22.
+- Diff spot-checks: `button.tsx` primitive now defaults `type="button"` with pass-through; `admin/resume/index.tsx` gained exactly three `type="submit"` sites (Save Profile + two Add forms) plus `type="button"` on plain actions; `AdminHeader.tsx` hamburger and `demo/start.server-funcs.tsx` todo button received `type="button"` — all match the classification table.
+- The submit-intent classification (3 submit / 36 button) is consistent with the diff evidence and the no-behavior-change requirement (NFR-1).
+- **Primary verdict: PASS.**
 
 ## Notes for the primary
 
