@@ -72,7 +72,7 @@
   tests under `src/components/**/__tests__/`
 - **Verification:** the gate, plus `noLabelWithoutControl` reports zero diagnostics
   and the icon-only control list is enumerated
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Associate the admin form labels** - covers: FR-2
   - [ ] Derive stable `id`s from record ids — never array indices — and wire `htmlFor` in the resume, settings, blog category/tag, and login forms
