@@ -72,22 +72,22 @@
   tests under `src/components/**/__tests__/`
 - **Verification:** the gate, plus `noLabelWithoutControl` reports zero diagnostics
   and the icon-only control list is enumerated
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Associate the admin form labels** - covers: FR-2
-  - [ ] Derive stable `id`s from record ids — never array indices — and wire `htmlFor` in the resume, settings, blog category/tag, and login forms
-  - [ ] Confirm the prompt-input primitive's label relationship is a real association, not implied by the `>` glyph
-- [ ] **P2.T2: Associate the feature-form labels** - covers: FR-2
-  - [ ] `BlogPostForm` (6 findings) and `RichTextEditor` (1)
-  - [ ] Where Tiptap cannot host a native `<label>`, use `aria-labelledby` against the visible label text and record why
-- [ ] **P2.T3: Name the icon-only controls** - covers: FR-10
-  - [ ] Inventory every icon-only button in `AdminSidebar`, `AdminHeader`, `BulkActionBar`, `AnalyticsWidget` and `ShareButtons`; add `aria-label` to each
-  - [ ] Test: each named control resolves an accessible name by role and name query
-- [ ] **P2.T4: Mark the dynamic regions** - covers: FR-10
-  - [ ] Bulk-selection count, analytics ping, filter result counts and toasts get `role="status"` or `aria-live`; counts never use `assertive`
-- [ ] **P2.T5: Re-verify the phase** - covers: AC-7
-  - [ ] Record `noLabelWithoutControl` = 0 and the enumerated accessible-name list
-  - [ ] Write `verification/phase-2.md`
+- [x] **P2.T1: Associate the admin form labels** - covers: FR-2
+  - [x] Derive stable `id`s from record ids — never array indices — and wire `htmlFor` in the resume, settings, blog category/tag, and login forms
+  - [x] Confirm the prompt-input primitive's label relationship is a real association, not implied by the `>` glyph
+- [x] **P2.T2: Associate the feature-form labels** - covers: FR-2
+  - [x] `BlogPostForm` (6 findings) and `RichTextEditor` (1)
+  - [x] Where Tiptap cannot host a native `<label>`, use `aria-labelledby` against the visible label text and record why
+- [x] **P2.T3: Name the icon-only controls** - covers: FR-10
+  - [x] Inventory every icon-only button in `AdminSidebar`, `AdminHeader`, `BulkActionBar`, `AnalyticsWidget` and `ShareButtons`; add `aria-label` to each
+  - [x] Test: each named control resolves an accessible name by role and name query
+- [x] **P2.T4: Mark the dynamic regions** - covers: FR-10
+  - [x] Bulk-selection count, analytics ping, filter result counts and toasts get `role="status"` or `aria-live`; counts never use `assertive`
+- [x] **P2.T5: Re-verify the phase** - covers: AC-7
+  - [x] Record `noLabelWithoutControl` = 0 and the enumerated accessible-name list
+  - [x] Write `verification/phase-2.md`
 
 ## Phase 3: Button type sweep
 
