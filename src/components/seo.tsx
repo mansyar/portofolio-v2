@@ -1,7 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { DEFAULT_SITE_NAME } from "../lib/site";
+import { DEFAULT_SITE_NAME, siteUrl } from "../lib/site";
 
 interface SiteSettings {
   siteTitle?: string;
@@ -37,9 +37,9 @@ export function Seo({
   const settings = rawSettings as SiteSettings | undefined;
   const location = useLocation();
 
-  // Use environment variable for site URL or fallback
-  const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
-  const url = `${siteUrl}${location.pathname}`;
+  // One resolver for canonical, OG, sitemap, and feed URLs.
+  const origin = siteUrl();
+  const url = `${origin}${location.pathname}`;
 
   const siteName = settings?.siteTitle || DEFAULT_SITE_NAME;
   const fullTitle = `${title} | ${siteName}`;
@@ -48,8 +48,8 @@ export function Seo({
     settings?.metaDescription ||
     "Portfolio of Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer.";
 
-  const defaultImage = settings?.defaultOgImage || `${siteUrl}/og-image.jpg`;
-  const ogImage = image ? (image.startsWith("http") ? image : `${siteUrl}${image}`) : defaultImage;
+  const defaultImage = settings?.defaultOgImage || `${origin}/og-image.jpg`;
+  const ogImage = image ? (image.startsWith("http") ? image : `${origin}${image}`) : defaultImage;
 
   const twitterHandle = settings?.socialTwitter
     ? `@${settings.socialTwitter.replace("@", "")}`
@@ -102,7 +102,7 @@ export function Seo({
           author: {
             "@type": "Person",
             name: author,
-            url: siteUrl,
+            url: origin,
           },
           image: ogImage,
           ...jsonLd,

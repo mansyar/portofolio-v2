@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ConvexClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
+import { siteUrl } from "../lib/site";
 
 // biome-ignore lint/suspicious/noExplicitAny: the route path is generated at runtime, so it is not part of the typed route union
 export const Route = createFileRoute("/feed.xml" as any)({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/feed.xml" as any)({
         const client = new ConvexClient(convexUrl);
 
         const posts = await client.query(api.blog.listForRss, {});
-        const siteUrl = "https://ansyar-world.top";
+        const origin = siteUrl();
         const now = new Date().toUTCString();
 
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -19,8 +20,8 @@ export const Route = createFileRoute("/feed.xml" as any)({
   <channel>
     <title>Muhammad Ansyar Rafi Putra - Dev Log</title>
     <description>Technical blog posts by Muhammad Ansyar Rafi Putra about DevOps, web development, and software engineering</description>
-    <link>${siteUrl}/blog</link>
-    <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>${origin}/blog</link>
+    <atom:link href="${origin}/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
     <lastBuildDate>${now}</lastBuildDate>
     ${posts
@@ -29,8 +30,8 @@ export const Route = createFileRoute("/feed.xml" as any)({
     <item>
       <title><![CDATA[${post.title}]]></title>
       <description><![CDATA[${post.excerpt || ""}]]></description>
-      <link>${siteUrl}/blog/${post.slug}</link>
-      <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+      <link>${origin}/blog/${post.slug}</link>
+      <guid isPermaLink="true">${origin}/blog/${post.slug}</guid>
       <pubDate>${post.publishedAt ? new Date(post.publishedAt).toUTCString() : ""}</pubDate>
     </item>`
       )
