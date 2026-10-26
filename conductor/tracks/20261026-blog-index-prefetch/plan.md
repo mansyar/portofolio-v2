@@ -52,7 +52,7 @@ assertion would not.
 - **Touches:** `src/routes/__tests__/blog-index-prefetch.test.tsx`,
   `src/routes/blog.index.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Table-drive the search states** — covers: AC-2
   - [ ] Cover `page: 2`, `category` only, `tag` only, and both together; assert each key
