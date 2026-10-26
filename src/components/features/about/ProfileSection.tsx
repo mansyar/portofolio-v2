@@ -13,7 +13,11 @@ export function ProfileSection() {
       <div className="flex flex-col items-start gap-10 md:flex-row">
         <div className="w-full shrink-0 md:w-1/3">
           <div className="group relative aspect-square overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface) shadow-2xl">
-            <div className="absolute inset-0 flex items-center justify-center bg-(--color-surface-dark) text-(--color-text-secondary)">
+            {/* FR-9: this pane keeps the fixed-dark --color-surface-dark in both
+              themes, so the icon colour is pinned to the shared warm grey instead
+              of the theme-flipping --color-text-secondary (value-identical to the
+              dark secondary, so dark rendering is unchanged). */}
+            <div className="absolute inset-0 flex items-center justify-center bg-(--color-surface-dark) text-(--color-warm-grey)">
               <Terminal size={64} className="opacity-50" />
             </div>
             <div className="pointer-events-none absolute inset-0 bg-(--color-ubuntu-orange)/10 opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-100"></div>
