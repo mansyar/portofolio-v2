@@ -6,7 +6,7 @@ export const Route = createFileRoute("/health")({
 
 function Health() {
   return (
-    <html>
+    <html lang="en">
       <head>
         <title>Health Check</title>
       </head>
