@@ -1,0 +1,32 @@
+{
+  "id": "20261026-accessibility-wcag-aa",
+  "title": "Accessibility WCAG 2.2 AA Burn-Down",
+  "type": "chore",
+  "status": "new",
+  "priority": "high",
+  "depends_on": [],
+  "created_at": "2026-10-26T11:26:07+11:00",
+  "updated_at": "2026-10-26T11:26:07+11:00",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "chore/20261026-accessibility-wcag-aa",
+  "base_branch": "main",
+  "base_sha": "2cc3505fa4d2fda7fd52fddb0d9b9f414a0b4f05",
+  "progress": {
+    "phases_total": 7,
+    "phases_verified": 0,
+    "tasks_total": 30,
+    "tasks_done": 0
+  },
+  "last_checkpoint": null,
+  "review_verdict": null,
+  "review_rounds": 0,
+  "doc_sync": "pending",
+  "pr_url": null,
+  "pr_state": null,
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": null,
+  "archive_path": null
+}
