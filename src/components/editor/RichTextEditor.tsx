@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { useId } from "react";
 import { common, createLowlight } from "lowlight";
 import {
   Bold,
@@ -32,6 +33,11 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ content, onChange, label, placeholder }: RichTextEditorProps) {
+  // Tiptap renders a contenteditable surface, which cannot host a native
+  // <label htmlFor> association (a contenteditable <div> is not a labelable
+  // element). The visible label text is kept and referenced with
+  // aria-labelledby on the editor region instead.
+  const labelId = useId();
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -59,6 +65,7 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
     editorProps: {
       attributes: {
         class: "editor-content",
+        ...(label ? { "aria-labelledby": labelId } : {}),
       },
     },
   });
@@ -83,7 +90,11 @@ export function RichTextEditor({ content, onChange, label, placeholder }: RichTe
 
   return (
     <div className="rich-text-editor-container">
-      {label && <label className="rich-text-editor-label">{label}</label>}
+      {label && (
+        <span className="rich-text-editor-label" id={labelId}>
+          {label}
+        </span>
+      )}
       <div className="rich-text-editor">
         <div className="editor-toolbar">
           <button

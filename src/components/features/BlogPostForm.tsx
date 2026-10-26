@@ -123,10 +123,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           <div className="input-container">
-            <label className="input-label">Title</label>
+            <label className="input-label" htmlFor="blogpost-title">
+              Title
+            </label>
             <div className="input-wrapper">
               <span className="input-prompt">$</span>
               <input
+                id="blogpost-title"
                 type="text"
                 name="title"
                 value={formData.title}
@@ -139,10 +142,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           </div>
 
           <div className="input-container">
-            <label className="input-label">Slug</label>
+            <label className="input-label" htmlFor="blogpost-slug">
+              Slug
+            </label>
             <div className="input-wrapper">
               <span className="input-prompt">/</span>
               <input
+                id="blogpost-slug"
                 type="text"
                 name="slug"
                 value={formData.slug}
@@ -155,10 +161,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
           </div>
 
           <div className="input-container">
-            <label className="input-label">Excerpt</label>
+            <label className="input-label" htmlFor="blogpost-excerpt">
+              Excerpt
+            </label>
             <div className="input-wrapper">
               <span className="input-prompt">{">"}</span>
               <textarea
+                id="blogpost-excerpt"
                 name="excerpt"
                 value={formData.excerpt}
                 onChange={handleChange}
@@ -206,12 +215,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
             </div>
 
             <div className="input-container">
-              <label className="input-label flex items-center gap-2">
+              <label className="input-label flex items-center gap-2" htmlFor="blogpost-scheduledAt">
                 <Calendar size={12} />
                 Schedule Publish
               </label>
               <div className="input-wrapper">
                 <input
+                  id="blogpost-scheduledAt"
                   type="datetime-local"
                   name="scheduledAt"
                   value={
@@ -237,8 +247,11 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
             </div>
 
             <div className="input-container">
-              <label className="input-label">Category</label>
+              <label className="input-label" htmlFor="blogpost-categoryId">
+                Category
+              </label>
               <select
+                id="blogpost-categoryId"
                 name="categoryId"
                 value={formData.categoryId || ""}
                 onChange={handleChange}
@@ -254,10 +267,13 @@ export function BlogPostForm({ initialData, mode }: BlogPostFormProps) {
             </div>
 
             <div className="input-container">
-              <label className="input-label">Cover Image URL</label>
+              <label className="input-label" htmlFor="blogpost-coverImageUrl">
+                Cover Image URL
+              </label>
               <div className="input-wrapper">
                 <span className="input-prompt">{">"}</span>
                 <input
+                  id="blogpost-coverImageUrl"
                   type="text"
                   name="coverImageUrl"
                   value={formData.coverImageUrl}

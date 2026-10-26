@@ -8,7 +8,9 @@ export const Route = createFileRoute("/admin/blog/categories")({
   component: CategoriesAdmin,
 });
 
-function CategoriesAdmin() {
+// Exported for Testing Library accessibility assertions (Phase 2 evidence);
+// module-private route components cannot be rendered in tests.
+export function CategoriesAdmin() {
   const categories = useQuery(api.blog.getCategories);
   const createCategory = useMutation(api.blog.createCategory);
   const deleteCategory = useMutation(api.blog.deleteCategory);
@@ -65,12 +67,16 @@ function CategoriesAdmin() {
             </h2>
 
             <div className="space-y-2">
-              <label className="text-xs text-(--color-text-secondary) font-mono uppercase">
+              <label
+                className="text-xs text-(--color-text-secondary) font-mono uppercase"
+                htmlFor="category-name"
+              >
                 Name
               </label>
               <div className="input-wrapper">
                 <span className="input-prompt">{">"}</span>
                 <input
+                  id="category-name"
                   type="text"
                   value={newName}
                   onChange={(e) => {
@@ -87,12 +93,16 @@ function CategoriesAdmin() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-(--color-text-secondary) font-mono uppercase">
+              <label
+                className="text-xs text-(--color-text-secondary) font-mono uppercase"
+                htmlFor="category-slug"
+              >
                 Slug
               </label>
               <div className="input-wrapper">
                 <span className="input-prompt">{">"}</span>
                 <input
+                  id="category-slug"
                   type="text"
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value)}

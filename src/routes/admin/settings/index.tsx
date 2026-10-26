@@ -9,7 +9,9 @@ export const Route = createFileRoute("/admin/settings/")({
   component: AdminSettings,
 });
 
-function AdminSettings() {
+// Exported for Testing Library accessibility assertions (Phase 2 evidence);
+// module-private route components cannot be rendered in tests.
+export function AdminSettings() {
   const currentSettings = useQuery(api.settings.getAll);
   const setBulk = useToastMutation(api.settings.setBulk, {
     loadingMessage: "Saving system configurations...",
@@ -124,10 +126,14 @@ function AdminSettings() {
           {activeTab === "general" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="space-y-1">
-                <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                <label
+                  className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                  htmlFor="settings-siteTitle"
+                >
                   &gt; Site Title
                 </label>
                 <input
+                  id="settings-siteTitle"
                   type="text"
                   value={settings.siteTitle}
                   onChange={(e) => updateSetting("siteTitle", e.target.value)}
@@ -144,10 +150,14 @@ function AdminSettings() {
           {activeTab === "seo" && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="space-y-1">
-                <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                <label
+                  className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                  htmlFor="settings-metaDescription"
+                >
                   &gt; Global Meta Description
                 </label>
                 <textarea
+                  id="settings-metaDescription"
                   value={settings.metaDescription}
                   onChange={(e) => updateSetting("metaDescription", e.target.value)}
                   className="terminal-input w-full min-h-[100px] py-2"
@@ -155,10 +165,14 @@ function AdminSettings() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                <label
+                  className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                  htmlFor="settings-defaultOgImage"
+                >
                   &gt; Default OG Image URL
                 </label>
                 <input
+                  id="settings-defaultOgImage"
                   type="text"
                   value={settings.defaultOgImage}
                   onChange={(e) => updateSetting("defaultOgImage", e.target.value)}
@@ -176,10 +190,14 @@ function AdminSettings() {
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                  <label
+                    className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                    htmlFor="settings-socialTwitter"
+                  >
                     &gt; Twitter URL
                   </label>
                   <input
+                    id="settings-socialTwitter"
                     type="text"
                     value={settings.socialTwitter}
                     onChange={(e) => updateSetting("socialTwitter", e.target.value)}
@@ -188,10 +206,14 @@ function AdminSettings() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                  <label
+                    className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                    htmlFor="settings-socialLinkedIn"
+                  >
                     &gt; LinkedIn URL
                   </label>
                   <input
+                    id="settings-socialLinkedIn"
                     type="text"
                     value={settings.socialLinkedIn}
                     onChange={(e) => updateSetting("socialLinkedIn", e.target.value)}
@@ -200,10 +222,14 @@ function AdminSettings() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider">
+                  <label
+                    className="text-xs font-mono text-(--color-ubuntu-orange) uppercase tracking-wider"
+                    htmlFor="settings-socialGitHub"
+                  >
                     &gt; GitHub URL
                   </label>
                   <input
+                    id="settings-socialGitHub"
                     type="text"
                     value={settings.socialGitHub}
                     onChange={(e) => updateSetting("socialGitHub", e.target.value)}

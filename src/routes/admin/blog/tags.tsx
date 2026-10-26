@@ -8,7 +8,9 @@ export const Route = createFileRoute("/admin/blog/tags")({
   component: TagsAdmin,
 });
 
-function TagsAdmin() {
+// Exported for Testing Library accessibility assertions (Phase 2 evidence);
+// module-private route components cannot be rendered in tests.
+export function TagsAdmin() {
   const tags = useQuery(api.blog.getTags);
   const createTag = useMutation(api.blog.createTag);
   const deleteTag = useMutation(api.blog.deleteTag);
@@ -60,12 +62,16 @@ function TagsAdmin() {
             </h2>
 
             <div className="space-y-2">
-              <label className="text-xs text-(--color-text-secondary) font-mono uppercase">
+              <label
+                className="text-xs text-(--color-text-secondary) font-mono uppercase"
+                htmlFor="tag-name"
+              >
                 Name
               </label>
               <div className="input-wrapper">
                 <span className="input-prompt">{">"}</span>
                 <input
+                  id="tag-name"
                   type="text"
                   value={newName}
                   onChange={(e) => {
@@ -82,12 +88,16 @@ function TagsAdmin() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-(--color-text-secondary) font-mono uppercase">
+              <label
+                className="text-xs text-(--color-text-secondary) font-mono uppercase"
+                htmlFor="tag-slug"
+              >
                 Slug
               </label>
               <div className="input-wrapper">
                 <span className="input-prompt">{">"}</span>
                 <input
+                  id="tag-slug"
                   type="text"
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value)}
