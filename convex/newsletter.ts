@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Resend } from "resend";
+import { buildWelcomeEmailHtml } from "./lib/welcomeEmail";
 
 /**
  * One address is one subscriber. Trimming and lowercasing before every comparison
@@ -79,29 +80,37 @@ export const subscribe = mutation({
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .unique();
 
+    let token: string;
+
     if (existing) {
       if (existing.status === "active") {
         return { success: true, alreadySubscribed: true };
       }
       // Re-subscribe if they were unsubscribed. The token rotates so links in the
       // mail that prompted the opt-out stop working.
+      token = createUnsubscribeToken();
       await ctx.db.patch(existing._id, {
         status: "active",
         subscribedAt: Date.now(),
-        unsubscribeToken: createUnsubscribeToken(),
+        unsubscribeToken: token,
         unsubscribedAt: undefined,
       });
     } else {
+      token = createUnsubscribeToken();
       await ctx.db.insert("newsletterSubscribers", {
         email: normalizedEmail,
         subscribedAt: Date.now(),
         status: "active",
-        unsubscribeToken: createUnsubscribeToken(),
+        unsubscribeToken: token,
       });
     }
 
-    // Trigger welcome email action
-    await ctx.scheduler.runAfter(0, internal.newsletter.sendWelcomeEmail, { email });
+    // Trigger welcome email action. The token travels with it so the mail carries a
+    // working opt-out link without a second lookup.
+    await ctx.scheduler.runAfter(0, internal.newsletter.sendWelcomeEmail, {
+      email: normalizedEmail,
+      token,
+    });
 
     return { success: true, alreadySubscribed: false };
   },
@@ -158,9 +167,33 @@ export const normalizeSubscribers = internalMutation({
   },
 });
 
+/**
+ * Opt out with the token from the email. Possession of the token is the authorisation, so
+ * no account is needed; an unknown token performs no write and returns the same result as
+ * a known one, because a distinguishable answer would reveal which tokens exist.
+ */
+export const unsubscribe = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    const subscriber = await ctx.db
+      .query("newsletterSubscribers")
+      .withIndex("by_token", (q) => q.eq("unsubscribeToken", token))
+      .first();
+
+    if (subscriber && subscriber.status === "active") {
+      await ctx.db.patch(subscriber._id, {
+        status: "unsubscribed",
+        unsubscribedAt: Date.now(),
+      });
+    }
+
+    return { success: true, status: "unsubscribed" as const };
+  },
+});
+
 export const sendWelcomeEmail = internalAction({
-  args: { email: v.string() },
-  handler: async (_ctx, { email }) => {
+  args: { email: v.string(), token: v.optional(v.string()) },
+  handler: async (_ctx, { email, token }) => {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
       console.error("RESEND_API_KEY not set");
@@ -174,15 +207,7 @@ export const sendWelcomeEmail = internalAction({
         from: "Ansyar <newsletter@ansyar-world.top>",
         to: email,
         subject: "Welcome to Ansyar's Newsletter!",
-        html: `
-          <div style="font-family: monospace; background: #000; color: #0f0; padding: 20px;">
-            <h1>$ subscribe --success</h1>
-            <p>> Thank you for joining my newsletter!</p>
-            <p>> You'll receive updates on new blog posts and projects.</p>
-            <br />
-            <p>-- <br />Ansyar</p>
-          </div>
-        `,
+        html: buildWelcomeEmailHtml(token),
       });
     } catch (error) {
       console.error("Failed to send welcome email:", error);
