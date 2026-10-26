@@ -11,6 +11,8 @@ vi.mock("@tanstack/react-router", () => ({
   useRouter: vi.fn(),
 }));
 
+// as-cast justified: vi.mock swaps the hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the cast reaches mockReturnValue.
 const mockUseRouter = useRouter as unknown as { mockReturnValue: (v: unknown) => void };
 
 describe("SkillForm label association (Phase 6 a11y)", () => {

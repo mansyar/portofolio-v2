@@ -11,6 +11,8 @@ vi.mock("../../hooks/use-toast-mutation", () => ({
   useToastMutation: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }));
 
+// as-cast justified: vi.mock swaps the hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the cast reaches mockReturnValue.
 const mockUseQuery = useQuery as unknown as { mockReturnValue: (v: unknown) => void };
 
 const emptySettings = {

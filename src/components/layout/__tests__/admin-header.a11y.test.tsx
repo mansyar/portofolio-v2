@@ -7,6 +7,8 @@ vi.mock("../../../hooks/use-auth", () => ({
   useAuth: vi.fn(),
 }));
 
+// as-cast justified: vi.mock swaps the hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the cast reaches mockReturnValue.
 const mockUseAuth = useAuth as unknown as { mockReturnValue: (v: unknown) => void };
 
 describe("AdminHeader icon-only control (Phase 2 a11y)", () => {

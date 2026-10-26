@@ -15,6 +15,8 @@ vi.mock("@tanstack/react-router", () => ({
 
 vi.mock("../../styles/admin.css", () => ({}));
 
+// as-cast justified: vi.mock swaps each hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the casts reach mockReturnValue.
 const mockUseAuth = useAuth as unknown as { mockReturnValue: (v: unknown) => void };
 const mockUseRouter = useRouter as unknown as { mockReturnValue: (v: unknown) => void };
 

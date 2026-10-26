@@ -29,6 +29,8 @@ vi.mock("../../components/layout/AdminHeader", () => ({
 
 vi.mock("../../styles/admin.css", () => ({}));
 
+// as-cast justified: vi.mock swaps each hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the casts reach mockReturnValue.
 const mockUseConvexAuth = useConvexAuth as unknown as {
   mockReturnValue: (v: unknown) => void;
 };

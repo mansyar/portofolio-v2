@@ -15,6 +15,8 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to }: { children: ReactNode; to: string }) => <a href={to}>{children}</a>,
 }));
 
+// as-cast justified: vi.mock swaps each hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the casts reach mockReturnValue.
 const mockUseQuery = useQuery as unknown as { mockReturnValue: (v: unknown) => void };
 const mockUseMutation = useMutation as unknown as { mockReturnValue: (v: unknown) => void };
 

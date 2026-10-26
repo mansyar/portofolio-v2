@@ -4,6 +4,8 @@ import { Route as ResumeRoute } from "../admin/resume";
 import { useQuery, useMutation } from "convex/react";
 import type { ComponentType } from "react";
 
+// as-cast justified: TanStack's createFileRoute() return type does not expose
+// .component — the cast reads it off the route module for rendering.
 const AdminResumePage = (ResumeRoute as unknown as { component: ComponentType }).component;
 
 vi.mock("convex/react", () => ({
@@ -15,6 +17,8 @@ vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (options: unknown) => options,
 }));
 
+// as-cast justified: vi.mock swaps each hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the casts reach mockReturnValue.
 const mockUseQuery = useQuery as unknown as { mockReturnValue: (v: unknown) => void };
 const mockUseMutation = useMutation as unknown as { mockReturnValue: (v: unknown) => void };
 

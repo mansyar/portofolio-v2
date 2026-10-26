@@ -24,6 +24,8 @@ vi.mock("../editor/RichTextEditor", () => ({
   RichTextEditor: () => <div data-testid="rich-text-editor" />,
 }));
 
+// as-cast justified: vi.mock swaps each hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the casts reach mockReturnValue.
 const mockUseQuery = useQuery as unknown as { mockReturnValue: (v: unknown) => void };
 const mockUseRouter = useRouter as unknown as { mockReturnValue: (v: unknown) => void };
 

@@ -7,6 +7,8 @@ vi.mock("convex/react", () => ({
   useAction: vi.fn(),
 }));
 
+// as-cast justified: vi.mock swaps the hook for an untyped vi.fn(), structurally
+// incompatible with the hook's signature — the cast reaches mockReturnValue.
 const mockUseAction = useAction as unknown as { mockReturnValue: (v: unknown) => void };
 
 const stats = {
