@@ -135,20 +135,20 @@
   `src/components/ui/typing-effect.css`
 - **Verification:** the gate, plus grep evidence for `:focus-visible` and
   `prefers-reduced-motion`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P4.T1: Add the focus-ring tokens** - covers: FR-7
-  - [ ] Define a focus-ring token pair in `variables.css` that clears 3:1 against both surfaces
-  - [ ] Use the token in every rule; introduce no raw hex in component CSS
-- [ ] **P4.T2: Replace each `outline: none` with a real focus treatment** - covers: FR-7
-  - [ ] Four sites today: `RichTextEditor.css:84`, `NewsletterForm.css:45`, `input.css:44`, `admin.css:109` — identify what the `!important` declaration was suppressing before replacing it
-  - [ ] Add `:focus-visible` rules for the button, input, select, textarea, link, navigation-item and table-row-action primitives
-- [ ] **P4.T3: Guard every animation** - covers: FR-8
-  - [ ] Add a `prefers-reduced-motion: reduce` block to all seven animation-declaring files; the typing effect keeps its existing behaviour and is not duplicated
-  - [ ] Record per animation whether it is disabled or reduced, and why
-- [ ] **P4.T4: Re-verify the phase** - covers: AC-4, AC-5
-  - [ ] Grep evidence per file, stating explicitly that jsdom cannot evaluate CSS and this is static evidence rather than runtime proof
-  - [ ] Write `verification/phase-4.md`
+- [x] **P4.T1: Add the focus-ring tokens** - covers: FR-7
+  - [x] Define a focus-ring token pair in `variables.css` that clears 3:1 against both surfaces
+  - [x] Use the token in every rule; introduce no raw hex in component CSS
+- [x] **P4.T2: Replace each `outline: none` with a real focus treatment** - covers: FR-7
+  - [x] Four sites today: `RichTextEditor.css:84`, `NewsletterForm.css:45`, `input.css:44`, `admin.css:109` — identify what the `!important` declaration was suppressing before replacing it
+  - [x] Add `:focus-visible` rules for the button, input, select, textarea, link, navigation-item and table-row-action primitives
+- [x] **P4.T3: Guard every animation** - covers: FR-8
+  - [x] Add a `prefers-reduced-motion: reduce` block to all seven animation-declaring files; the typing effect keeps its existing behaviour and is not duplicated
+  - [x] Record per animation whether it is disabled or reduced, and why
+- [x] **P4.T4: Re-verify the phase** - covers: AC-4, AC-5
+  - [x] Grep evidence per file, stating explicitly that jsdom cannot evaluate CSS and this is static evidence rather than runtime proof
+  - [x] Write `verification/phase-4.md`
 
 ## Phase 5: Contrast audit and token corrections
 
