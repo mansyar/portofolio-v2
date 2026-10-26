@@ -183,20 +183,20 @@
 - **Touches:** `biome.json`, `conductor/tech-stack.md`, tests under
   `src/components/**/__tests__/`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P6.T1: Flip the seven rules to `error`** - covers: FR-11
-  - [ ] `noLabelWithoutControl`, `useButtonType`, `noStaticElementInteractions`, `useKeyWithClickEvents`, `noAutofocus`, `noSvgWithoutTitle`, `useHtmlLang`
-  - [ ] Confirm the 22 non-accessibility warnings are untouched and still `warn`
-- [ ] **P6.T2: Mutation-test the gate** - covers: AC-3
-  - [ ] Remove a `type` attribute and an `htmlFor` in a scratch edit, confirm `pnpm lint` exits non-zero, then revert
-  - [ ] Record the failing output as evidence
-- [ ] **P6.T3: Consolidate the regression tests** - covers: FR-12, AC-8
-  - [ ] Ensure every primitive and admin component touched has accessible-name, role, `type` and label-association assertions, using Testing Library only
-  - [ ] Coverage stays at or above the 3% ratchet, and rises if the new tests lift it
-- [ ] **P6.T4: Re-verify the phase** - covers: AC-1, AC-2
-  - [ ] Record `biome check` output: 0 accessibility diagnostics, at most 22 warnings total
-  - [ ] Write `verification/phase-6.md`
+- [x] **P6.T1: Flip the seven rules to `error`** - covers: FR-11
+  - [x] `noLabelWithoutControl`, `useButtonType`, `noStaticElementInteractions`, `useKeyWithClickEvents`, `noAutofocus`, `noSvgWithoutTitle`, `useHtmlLang`
+  - [x] Confirm the 22 non-accessibility warnings are untouched and still `warn`
+- [x] **P6.T2: Mutation-test the gate** - covers: AC-3
+  - [x] Remove a `type` attribute and an `htmlFor` in a scratch edit, confirm `pnpm lint` exits non-zero, then revert
+  - [x] Record the failing output as evidence
+- [x] **P6.T3: Consolidate the regression tests** - covers: FR-12, AC-8
+  - [x] Ensure every primitive and admin component touched has accessible-name, role, `type` and label-association assertions, using Testing Library only
+  - [x] Coverage stays at or above the 3% ratchet, and rises if the new tests lift it
+- [x] **P6.T4: Re-verify the phase** - covers: AC-1, AC-2
+  - [x] Record `biome check` output: 0 accessibility diagnostics, at most 22 warnings total
+  - [x] Write `verification/phase-6.md`
 
 ## Phase 7: Documentation sync and final verification
 

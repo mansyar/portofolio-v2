@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-26T11:26:07+11:00",
-  "updated_at": "2026-10-26T12:26:00+11:00",
+  "updated_at": "2026-10-26T13:12:00+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "chore/20261026-accessibility-wcag-aa",
@@ -14,11 +14,11 @@
   "base_sha": "2cc3505fa4d2fda7fd52fddb0d9b9f414a0b4f05",
   "progress": {
     "phases_total": 7,
-    "phases_verified": 5,
+    "phases_verified": 6,
     "tasks_total": 30,
-    "tasks_done": 22
+    "tasks_done": 26
   },
-  "last_checkpoint": "Phase 5 verified (commits ae853b3, 216528a + b988b0d); text-secondary light override 2.18/2.38 to 5.11/5.58; 4 literals converted, 17 exceptions documented; R1-R7 residual pairs flagged for owner decision; gate green; 78 tests.",
+  "last_checkpoint": "Phase 6 verified (commits 5cde569, b06bcaf, b9bc21e + e1ddd6b); 7 a11y rules promoted to error, mutation test proven, 88 tests, coverage 18.87%/14.04%; tech-stack lint row synced; gate green.",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",
