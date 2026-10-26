@@ -215,5 +215,12 @@ export default defineSchema({
     email: v.string(),
     subscribedAt: v.number(),
     status: v.union(v.literal("active"), v.literal("unsubscribed")),
-  }).index("by_email", ["email"]),
+    // Opaque opt-out token: possessing it authorises unsubscribing that address and
+    // nothing else. Optional so rows written before the token existed stay valid
+    // until the backfill runs.
+    unsubscribeToken: v.optional(v.string()),
+    unsubscribedAt: v.optional(v.number()),
+  })
+    .index("by_email", ["email"])
+    .index("by_token", ["unsubscribeToken"]),
 });
