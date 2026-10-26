@@ -67,11 +67,12 @@ function clientWith(data: unknown = defaultListing) {
   });
 }
 
+async function runLoaderFor(queryClient: QueryClient, search: ListingSearch) {
+  await runLoader({ context: { queryClient }, deps: search });
+}
+
 async function runDefaultLoader(queryClient: QueryClient) {
-  await runLoader({
-    context: { queryClient },
-    deps: { page: 1, category: undefined, tag: undefined },
-  });
+  await runLoaderFor(queryClient, { page: 1, category: undefined, tag: undefined });
 }
 
 describe("/blog loader prefetch", () => {
@@ -103,6 +104,65 @@ describe("/blog loader prefetch", () => {
 
     expect(screen.getByText("Prefetched Post One")).toBeInTheDocument();
     expect(screen.getByText("Prefetched Post Two")).toBeInTheDocument();
+    expect(screen.queryByText("listing-skeleton")).not.toBeInTheDocument();
+  });
+});
+
+describe("/blog loader search states", () => {
+  const states: Array<{
+    name: string;
+    search: ListingSearch;
+    queryArgs: { page: number; categorySlug?: string; tagSlug?: string };
+  }> = [
+    {
+      name: "a later page",
+      search: { page: 2 },
+      queryArgs: { page: 2 },
+    },
+    {
+      name: "a category",
+      search: { page: 1, category: "devops" },
+      queryArgs: { page: 1, categorySlug: "devops" },
+    },
+    {
+      name: "a tag",
+      search: { page: 1, tag: "tanstack" },
+      queryArgs: { page: 1, tagSlug: "tanstack" },
+    },
+    {
+      name: "a category and a tag",
+      search: { page: 1, category: "devops", tag: "tanstack" },
+      queryArgs: { page: 1, categorySlug: "devops", tagSlug: "tanstack" },
+    },
+  ];
+
+  it.each(states)("prefetches $name under its own key", async ({ search, queryArgs }) => {
+    const queryClient = clientWith();
+    const ensureQueryData = vi.spyOn(queryClient, "ensureQueryData");
+
+    await runLoaderFor(queryClient, search);
+
+    expect(ensureQueryData).toHaveBeenCalledTimes(1);
+    const options = ensureQueryData.mock.calls[0]?.[0] as unknown as { queryKey: unknown };
+    expect(options.queryKey).toEqual(
+      convexQuery(api.blog.listPublished, { ...queryArgs, pageSize: 9 }).queryKey
+    );
+  });
+
+  it("keeps the empty state for a page past the last one", async () => {
+    const queryClient = clientWith({ posts: [], total: 0, totalPages: 0 });
+
+    await runLoaderFor(queryClient, { page: 99 });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={<p>listing-skeleton</p>}>
+          <BlogContent page={99} />
+        </Suspense>
+      </QueryClientProvider>
+    );
+
+    expect(screen.getByText("No posts found.")).toBeInTheDocument();
     expect(screen.queryByText("listing-skeleton")).not.toBeInTheDocument();
   });
 });
