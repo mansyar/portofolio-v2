@@ -77,15 +77,19 @@ token, tolerate StrictMode double-invocation, and never render the token itself.
 - **Touches:** `convex/newsletter.ts`, `src/routes/admin/newsletter/index.tsx`,
   `convex/__tests__/newsletter.adminList.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Add the guarded listing query** — covers: FR-6
-  - [ ] `requireAdmin` first, then return email, status, `subscribedAt`, newest first
-  - [ ] Assert an unauthenticated call throws and that `newsletter` still exports no
+- [x] **P3.T1: Add the guarded listing query** — covers: FR-6
+  - [x] `requireAdmin` first, then return email, status, `subscribedAt`, newest first
+  - [x] Assert an unauthenticated call throws and that `newsletter` still exports no
     `listSubscribers`
-- [ ] **P3.T2: Render the admin page** — covers: FR-6, NFR-2
-  - [ ] Table with email, status, and subscribed date, including an empty state
-  - [ ] Follow the existing admin layout and accessible table conventions
+- [x] **P3.T2: Render the admin page** — covers: FR-6, NFR-2
+  - [x] Table with email, status, and subscribed date, including an empty state
+  - [x] Follow the existing admin layout and accessible table conventions
+
+**Result:** verified
+**Checkpoint:** 4f0596e
+**Evidence:** conductor/tracks/20261026-newsletter-lifecycle/verification/phase-3.md
 
 **Risk:** the harden track removed the public listing on purpose. The new query must be a
 separate name behind `requireAdmin`, and the existing removal test must remain untouched and
