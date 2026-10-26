@@ -232,19 +232,19 @@ determined from its markup is reported `blocked` rather than guessed.
 **Goal:** resolve the three review findings without regressing any verified phase
 **Touches:** `src/styles/variables.css`, `src/components/features/about/ProfileSection.tsx`, test files under `__tests__`, `conductor/tracks/20261026-accessibility-wcag-aa/verification/phase-5.md`
 **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm test:coverage && pnpm build`
-**Status:** pending
+**Status:** verified
 
-- [ ] **R1.T1: Fix F1 — re-pin the dark secondary in `:root.dark`** - covers: FR-9, NFR-3
-  - [ ] Define `--color-text-secondary-dark: #aea79f` alongside the light variant
-  - [ ] Add `--color-text-secondary: var(--color-text-secondary-dark);` to the `:root.dark` block (mirroring its existing re-declarations), defeating the OS-preference media rule in manual dark
-  - [ ] Extend the Phase 5 contrast table with the third theme state (manual dark under an OS light preference) and the before/after ratios for it
-- [ ] **R1.T2: Fix F2 — pin the fixed-dark icon consumer** - covers: FR-9
-  - [ ] In `ProfileSection.tsx:16`, replace `text-(--color-text-secondary)` with `text-(--color-warm-grey)` plus the same rationale comment pattern used in `terminal-window.tsx` (value-identical to the dark secondary; rendering unchanged in dark)
-- [ ] **R1.T3: Fix F3 — justify or remove the `as` casts in new tests** - covers: style guide (project.md)
-  - [ ] In the listed a11y test files, add the required one-line justification comment for each `as` cast (mock typing is structurally incompatible with the hook signature) or switch to `vi.mocked(...)` where it removes the cast
-- [ ] **R1.T4: Verify the review-fix phase**
-  - [ ] Full gate (six commands) green; warnings still 22, a11y diagnostics 0; dark-theme rendering unchanged
-  - [ ] Write `verification/phase-r1.md` mapping each finding to its fix and evidence
+- [x] **R1.T1: Fix F1 — re-pin the dark secondary in `:root.dark`** - covers: FR-9, NFR-3
+  - [x] Define `--color-text-secondary-dark: #aea79f` alongside the light variant
+  - [x] Add `--color-text-secondary: var(--color-text-secondary-dark);` to the `:root.dark` block (mirroring its existing re-declarations), defeating the OS-preference media rule in manual dark
+  - [x] Extend the Phase 5 contrast table with the third theme state (manual dark under an OS light preference) and the before/after ratios for it
+- [x] **R1.T2: Fix F2 — pin the fixed-dark icon consumer** - covers: FR-9
+  - [x] In `ProfileSection.tsx:16`, replace `text-(--color-text-secondary)` with `text-(--color-warm-grey)` plus the same rationale comment pattern used in `terminal-window.tsx` (value-identical to the dark secondary; rendering unchanged in dark)
+- [x] **R1.T3: Fix F3 — justify or remove the `as` casts in new tests** - covers: style guide (project.md)
+  - [x] In the listed a11y test files, add the required one-line justification comment for each `as` cast (mock typing is structurally incompatible with the hook signature) or switch to `vi.mocked(...)` where it removes the cast
+- [x] **R1.T4: Verify the review-fix phase**
+  - [x] Full gate (six commands) green; warnings still 22, a11y diagnostics 0; dark-theme rendering unchanged
+  - [x] Write `verification/phase-r1.md` mapping each finding to its fix and evidence
 
 <!--
 The primary appends after acceptance:

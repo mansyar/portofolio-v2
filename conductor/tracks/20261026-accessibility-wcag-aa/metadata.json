@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-26T11:26:07+11:00",
-  "updated_at": "2026-10-26T13:40:00+11:00",
+  "updated_at": "2026-10-26T13:58:00+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "chore/20261026-accessibility-wcag-aa",
@@ -18,7 +18,7 @@
     "tasks_total": 30,
     "tasks_done": 30
   },
-  "last_checkpoint": "Phase 7 verified (commits bff75db, 726ed58 + primary doc edits); known-gaps closed with R1-R7 open-debt row; open question 3 resolved; full six-command gate incl. build green; 88 tests, warnings 99 to 22.",
+  "last_checkpoint": "Review round 1 BLOCKED (F1 high/F2 medium/F3 low); Phase R1 fix phase verified (commits 8867a01, 1c7451a, c1c4daf, ab7cbfa): dark secondary re-pinned in :root.dark, ProfileSection icon pinned, as-cast comments added; gate green.",
   "review_verdict": null,
   "review_rounds": 1,
   "doc_sync": "pending",

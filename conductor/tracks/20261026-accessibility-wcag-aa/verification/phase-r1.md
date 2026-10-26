@@ -116,6 +116,14 @@ re-declaration resolves to exactly the value that state already received.
 | No rendering change in OS-dark, `:root.light`, OS-light default | ✅ see R1.T1 constraint check |
 | Max 2 retries per command | ✅ |
 
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean; `git log 849adb6..HEAD` shows exactly the four reported commits (`8867a01`, `1c7451a`, `c1c4daf`, `ab7cbfa`).
+- Diff verification: `variables.css` defines `--color-text-secondary-dark: #aea79f` beside the light variant and re-declares it in the `:root.dark` block only — the OS-light default, `:root.light`, and the base `:root` blocks are untouched, so the other three theme states are provably unchanged and manual dark now wins the cascade over the media rule. `ProfileSection.tsx:16` re-pointed to `text-(--color-warm-grey)` with the rationale comment; lines 25/30/83/95 untouched. F3 addressed by comments only across 13 test files (option (a), justified: the mocks return partial objects that `vi.mocked(...)` rewriting cannot type-check) — no behaviour change.
+- Gate re-run as six separate commands on the final state: `pnpm type-check` 0 · `pnpm lint` 0 (22 warnings, 0 errors, 0 a11y diagnostics) · `pnpm format:check` 0 · `pnpm test` 0 (34 files, 88 tests) · `pnpm test:coverage` 0 (statements 18.41%, functions 14.04%, above the ratchet) · `pnpm build` 0.
+- **Primary verdict: PASS.** All three round-1 findings are resolved; the phase-5 contrast table now covers all four theme states.
+
 ## Notes for the primary
 
 - F1/F2/F3 all resolved; the third theme state is now recorded in the Phase 5 evidence so the
