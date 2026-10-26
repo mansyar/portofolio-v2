@@ -32,6 +32,7 @@ import { Route as AdminSkillsIndexRouteImport } from './routes/admin/skills/inde
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
 import { Route as AdminResumeIndexRouteImport } from './routes/admin/resume/index'
 import { Route as AdminProjectsIndexRouteImport } from './routes/admin/projects/index'
+import { Route as AdminNewsletterIndexRouteImport } from './routes/admin/newsletter/index'
 import { Route as AdminMessagesIndexRouteImport } from './routes/admin/messages/index'
 import { Route as AdminMediaIndexRouteImport } from './routes/admin/media/index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin/blog/index'
@@ -162,6 +163,11 @@ const AdminProjectsIndexRoute = AdminProjectsIndexRouteImport.update({
   path: '/projects/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNewsletterIndexRoute = AdminNewsletterIndexRouteImport.update({
+  id: '/newsletter/',
+  path: '/newsletter/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMessagesIndexRoute = AdminMessagesIndexRouteImport.update({
   id: '/messages/',
   path: '/messages/',
@@ -266,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/media': typeof AdminMediaIndexRoute
   '/admin/messages': typeof AdminMessagesIndexRoute
+  '/admin/newsletter': typeof AdminNewsletterIndexRoute
   '/admin/projects': typeof AdminProjectsIndexRoute
   '/admin/resume': typeof AdminResumeIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
@@ -302,6 +309,7 @@ export interface FileRoutesByTo {
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/media': typeof AdminMediaIndexRoute
   '/admin/messages': typeof AdminMessagesIndexRoute
+  '/admin/newsletter': typeof AdminNewsletterIndexRoute
   '/admin/projects': typeof AdminProjectsIndexRoute
   '/admin/resume': typeof AdminResumeIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/media/': typeof AdminMediaIndexRoute
   '/admin/messages/': typeof AdminMessagesIndexRoute
+  '/admin/newsletter/': typeof AdminNewsletterIndexRoute
   '/admin/projects/': typeof AdminProjectsIndexRoute
   '/admin/resume/': typeof AdminResumeIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
@@ -383,6 +392,7 @@ export interface FileRouteTypes {
     | '/admin/blog'
     | '/admin/media'
     | '/admin/messages'
+    | '/admin/newsletter'
     | '/admin/projects'
     | '/admin/resume'
     | '/admin/settings'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/admin/blog'
     | '/admin/media'
     | '/admin/messages'
+    | '/admin/newsletter'
     | '/admin/projects'
     | '/admin/resume'
     | '/admin/settings'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/admin/blog/'
     | '/admin/media/'
     | '/admin/messages/'
+    | '/admin/newsletter/'
     | '/admin/projects/'
     | '/admin/resume/'
     | '/admin/settings/'
@@ -643,6 +655,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjectsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/newsletter/': {
+      id: '/admin/newsletter/'
+      path: '/newsletter'
+      fullPath: '/admin/newsletter'
+      preLoaderRoute: typeof AdminNewsletterIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/messages/': {
       id: '/admin/messages/'
       path: '/messages'
@@ -761,6 +780,7 @@ interface AdminRouteChildren {
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminMediaIndexRoute: typeof AdminMediaIndexRoute
   AdminMessagesIndexRoute: typeof AdminMessagesIndexRoute
+  AdminNewsletterIndexRoute: typeof AdminNewsletterIndexRoute
   AdminProjectsIndexRoute: typeof AdminProjectsIndexRoute
   AdminResumeIndexRoute: typeof AdminResumeIndexRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
@@ -785,6 +805,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminMediaIndexRoute: AdminMediaIndexRoute,
   AdminMessagesIndexRoute: AdminMessagesIndexRoute,
+  AdminNewsletterIndexRoute: AdminNewsletterIndexRoute,
   AdminProjectsIndexRoute: AdminProjectsIndexRoute,
   AdminResumeIndexRoute: AdminResumeIndexRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,

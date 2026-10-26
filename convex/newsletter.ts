@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { mutation, internalMutation, internalAction } from "./_generated/server";
+import { query, mutation, internalMutation, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { requireAdmin } from "./lib/auth";
 import { Resend } from "resend";
 import { buildWelcomeEmailHtml } from "./lib/welcomeEmail";
 
@@ -188,6 +189,29 @@ export const unsubscribe = mutation({
     }
 
     return { success: true, status: "unsubscribed" as const };
+  },
+});
+
+/**
+ * Subscriber list for the CMS. Guarded on every call, and deliberately not named
+ * `listSubscribers`: the public function of that name was removed on purpose and a
+ * regression test asserts it stays gone. Tokens stay server-side.
+ */
+export const listForAdmin = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    const rows = await ctx.db.query("newsletterSubscribers").collect();
+
+    return rows
+      .map(({ email, status, subscribedAt, unsubscribedAt }) => ({
+        email,
+        status,
+        subscribedAt,
+        unsubscribedAt,
+      }))
+      .sort((a, b) => b.subscribedAt - a.subscribedAt);
   },
 });
 
