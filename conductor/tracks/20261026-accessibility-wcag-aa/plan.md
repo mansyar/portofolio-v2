@@ -160,19 +160,19 @@
   component CSS whose literal value must become a token
 - **Verification:** the gate, plus the contrast table and a re-measurement of every
   changed pair
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P5.T1: Build the pair inventory** - covers: FR-9
-  - [ ] Enumerate every foreground/background token pair actually used in dark and light, with computed contrast ratios
-- [ ] **P5.T2: Fix the failing pairs at token level** - covers: FR-9
-  - [ ] The known failure is `--color-text-secondary` (`#aea79f`) on the light surface (`#f5f5f5`); add a light-theme override rather than changing the shared value, so amber-on-aubergine stays intact
-  - [ ] Re-measure and record before and after
-- [ ] **P5.T3: Classify the 21 literal hex values** - covers: FR-9
-  - [ ] Document the `hljs-*` syntax-highlighting palette and the brand colours (Twitter, LinkedIn) as legitimate exceptions; convert anything else with a token equivalent
-  - [ ] Do not invent tokens with no second consumer purely to eliminate a literal
-- [ ] **P5.T4: Re-verify the phase** - covers: AC-6
-  - [ ] Record the table and the exception list
-  - [ ] Write `verification/phase-5.md`
+- [x] **P5.T1: Build the pair inventory** - covers: FR-9
+  - [x] Enumerate every foreground/background token pair actually used in dark and light, with computed contrast ratios
+- [x] **P5.T2: Fix the failing pairs at token level** - covers: FR-9
+  - [x] The known failure is `--color-text-secondary` (`#aea79f`) on the light surface (`#f5f5f5`); add a light-theme override rather than changing the shared value, so amber-on-aubergine stays intact
+  - [x] Re-measure and record before and after
+- [x] **P5.T3: Classify the 21 literal hex values** - covers: FR-9
+  - [x] Document the `hljs-*` syntax-highlighting palette and the brand colours (Twitter, LinkedIn) as legitimate exceptions; convert anything else with a token equivalent
+  - [x] Do not invent tokens with no second consumer purely to eliminate a literal
+- [x] **P5.T4: Re-verify the phase** - covers: AC-6
+  - [x] Record the table and the exception list
+  - [x] Write `verification/phase-5.md`
 
 ## Phase 6: Promote the rules and lock the regression
 

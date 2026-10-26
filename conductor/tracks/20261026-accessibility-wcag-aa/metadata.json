@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-26T11:26:07+11:00",
-  "updated_at": "2026-10-26T12:14:00+11:00",
+  "updated_at": "2026-10-26T12:26:00+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "chore/20261026-accessibility-wcag-aa",
@@ -14,11 +14,11 @@
   "base_sha": "2cc3505fa4d2fda7fd52fddb0d9b9f414a0b4f05",
   "progress": {
     "phases_total": 7,
-    "phases_verified": 4,
+    "phases_verified": 5,
     "tasks_total": 30,
-    "tasks_done": 18
+    "tasks_done": 22
   },
-  "last_checkpoint": "Phase 4 verified (commits 56cc3b8, 1285689 + b9bd596); focus-ring tokens added, 4 outline:none sites replaced, 7 animation files guarded; gate green; 78 tests passing.",
+  "last_checkpoint": "Phase 5 verified (commits ae853b3, 216528a + b988b0d); text-secondary light override 2.18/2.38 to 5.11/5.58; 4 literals converted, 17 exceptions documented; R1-R7 residual pairs flagged for owner decision; gate green; 78 tests.",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",
