@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-26T19:46:00+11:00",
-  "updated_at": "2026-10-26T08:52:42.268Z",
+  "updated_at": "2026-10-26T08:58:21.794Z",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "fix/20261026-blog-index-prefetch",
@@ -14,11 +14,11 @@
   "base_sha": "a3ef7cd8ea149808891176db8bd19cfb5d5d089e",
   "progress": {
     "phases_total": 2,
-    "phases_verified": 1,
+    "phases_verified": 2,
     "tasks_total": 5,
-    "tasks_done": 2
+    "tasks_done": 5
   },
-  "last_checkpoint": "3923c06",
+  "last_checkpoint": "4435244",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",

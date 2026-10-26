@@ -52,22 +52,22 @@ assertion would not.
 - **Touches:** `src/routes/__tests__/blog-index-prefetch.test.tsx`,
   `src/routes/blog.index.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Table-drive the search states** — covers: AC-2
-  - [ ] Cover `page: 2`, `category` only, `tag` only, and both together; assert each key
+- [x] **P2.T1: Table-drive the search states** — covers: AC-2
+  - [x] Cover `page: 2`, `category` only, `tag` only, and both together; assert each key
         carries the supplied value and leaves the other filter `undefined`.
-- [ ] **P2.T2: Keep the out-of-range page honest** — covers: AC-4
-  - [ ] Stub an empty listing for a page past `totalPages`; assert the loader resolves and
+- [x] **P2.T2: Keep the out-of-range page honest** — covers: AC-4
+  - [x] Stub an empty listing for a page past `totalPages`; assert the loader resolves and
         the route's empty state renders without an error.
-- [ ] **P2.T3: Run the gate, build, and coverage** — covers: NFR-1, NFR-2, NFR-3, NFR-4, AC-5
-  - [ ] Run the full verification command and `pnpm test:coverage`; record both in
+- [x] **P2.T3: Run the gate, build, and coverage** — covers: NFR-1, NFR-2, NFR-3, NFR-4, AC-5
+  - [x] Run the full verification command and `pnpm test:coverage`; record both in
         `verification/phase-2.md`.
-  - [ ] Confirm `package.json` and `pnpm-lock.yaml` are unchanged and the coverage floor was
+  - [x] Confirm `package.json` and `pnpm-lock.yaml` are unchanged and the coverage floor was
         not edited.
 
-**Result:** pending
-**Checkpoint:** pending
+**Result:** verified
+**Checkpoint:** 4435244
 **Evidence:** conductor/tracks/20261026-blog-index-prefetch/verification/phase-2.md
 
 **Risk:** the test renders a route component outside a router. If `Link` or another router
