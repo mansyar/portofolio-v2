@@ -88,6 +88,15 @@ No-new-warnings rule: satisfied — warning count fell monotonically 99 → 92 a
 2. **`export` added to `AdminLogin`, `AdminLayout`, `AdminMessagesInbox`** (within `Touches` files) — route components were module-private, making them untestable. Export-only change; no behavior change; `createFileRoute` wiring untouched.
 3. **`npx biome check . --reporter=summary`** (exact command named in the brief) was denied for the executor; the identical binary was run as `pnpm exec biome check . --reporter=summary`, which succeeded and is recorded above.
 
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean before the gate; diff `efd99d4..02e0dfe` matches the reported Touches + deviations (6 source/test files + evidence).
+- Gate re-run as four separate commands on the final code state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 (92 warnings) · `pnpm format:check` exit 0 · `pnpm test` exit 0 (20 files, 52 tests).
+- Per-rule re-check via `pnpm exec biome check . --reporter=summary`: `useHtmlLang`, `noAutofocus`, `noSvgWithoutTitle`, `noStaticElementInteractions`, `useKeyWithClickEvents` all absent (0); `useButtonType` 39 and `noLabelWithoutControl` 31 unchanged, as planned for Phases 3 and 2.
+- Spot-checked diffs: `<html lang="en">` in `health.tsx`, `autoFocus` removed in `login.tsx` — match the report.
+- **Primary verdict: PASS.**
+
 ## Notes
 
 - Scope discipline maintained: the two `noLabelWithoutControl` findings in `login.tsx` and the three `useButtonType` findings in `admin/messages/index.tsx` remain untouched (Phase 2 / Phase 3); the `<tr onClick>` row toggle in messages is not flagged by these rules and stays for a later phase decision.
