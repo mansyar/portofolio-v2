@@ -216,6 +216,15 @@ inline fallback.
 | P5.T3 — 21-literal classification (4 converted, 17 exceptions) | Done |
 | P5.T4 — verification + this file | Done |
 
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean before verification; `git log 29a773e..HEAD` shows exactly the two reported commits (`ae853b3`, `216528a`); changed-file list matches the report.
+- Gate re-run as four separate commands on the final code state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 (22 warnings, 0 errors) · `pnpm format:check` exit 0 · `pnpm test` exit 0 (30 files, 78 tests). Baseline unchanged; accessibility rules still 0.
+- Diff spot-checks: `variables.css` — shared `--color-text-secondary: #aea79f` byte-untouched, new `--color-text-secondary-light: #6e675f` defined once and overridden in **both** light-theme blocks; `globals.css` — admin dark pin sets the four theme tokens to their dark values (dark rendering identical by construction) and the three html/body literal fallbacks converted to tokens at identical values; `Footer.css`/`card.css`/`terminal-window.tsx`/`admin.tsx` — re-points to `var(--color-warm-grey)`/`text-(--color-warm-grey)`, whose value (`#aea79f`) equals the dark-theme secondary, so dark rendering is unchanged; `RichTextEditor.css` — `#fff` → `var(--color-text-primary-dark)` at identical value on a fixed-dark pre background.
+- Arithmetic cross-check: the reported before/after ratios (2.18/2.38 → 5.11/5.58) are consistent with the WCAG relative-luminance formula shown in the evidence and reproduce phase-4's focus-ring ratios.
+- **Primary verdict: PASS.** The phase's prescribed scope (the known failing pair + literal classification) is complete; the R1–R7 residual pairs flagged in this file are recorded above as an explicit decision item for the track owner.
+
 ## Notes for the primary
 
 - The 22-warning baseline is unchanged; no tests modified (78 passing).
