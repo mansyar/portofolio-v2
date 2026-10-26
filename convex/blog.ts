@@ -41,8 +41,13 @@ export const listPublished = query({
     tagSlug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const pageSize = Math.min(Math.max(args.pageSize ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
-    const page = Math.max(args.page ?? 1, 1);
+    // Floor before clamping: a hand-edited `?page=1.5` must not produce a
+    // fractional window or a fractional page number in the control.
+    const pageSize = Math.min(
+      Math.max(Math.floor(args.pageSize ?? DEFAULT_PAGE_SIZE), 1),
+      MAX_PAGE_SIZE
+    );
+    const page = Math.max(Math.floor(args.page ?? 1), 1);
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
     const empty = { posts: [], total: 0, totalPages: 0 };

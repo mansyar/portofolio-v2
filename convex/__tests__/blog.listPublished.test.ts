@@ -163,6 +163,24 @@ describe("blog.listPublished", () => {
     expect(result.totalPages).toBe(1);
   });
 
+  it("floors a fractional page and page size instead of slicing between posts", async () => {
+    const t = convexTest(schema, modules);
+    await seed(
+      t,
+      Array.from({ length: 8 }, (_, index) => ({
+        slug: `post-${index + 1}`,
+        status: "published" as const,
+        publishedAt: BASE_TIME + index * 1000,
+      }))
+    );
+
+    const result = await t.query(api.blog.listPublished, { page: 1.5, pageSize: 3.7 });
+
+    // Floored to page 1, size 3: the three newest posts, and 3 pages of 8.
+    expect(result.posts.map((post) => post.slug)).toEqual(["post-8", "post-7", "post-6"]);
+    expect(result.totalPages).toBe(3);
+  });
+
   it("excludes drafts and published posts dated in the future", async () => {
     const t = convexTest(schema, modules);
     await seed(t, [
