@@ -22,10 +22,15 @@
   }
 }
 
+/* FR-9: the footer keeps its aubergine (fixed dark) background in both themes,
+   so its muted text is pinned to the shared warm grey rather than the
+   theme-flipping --color-text-secondary, whose light-theme override is tuned
+   for light surfaces. Value is identical to the dark-theme secondary (#aea79f),
+   so dark rendering is unchanged. */
 .footer__copyright {
   font-family: var(--font-mono);
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  color: var(--color-warm-grey);
 }
 
 .footer__links {
@@ -36,7 +41,7 @@
 .footer__link {
   font-family: var(--font-mono);
   font-size: var(--font-size-small);
-  color: var(--color-text-secondary);
+  color: var(--color-warm-grey);
   transition: var(--transition-default);
 }
 

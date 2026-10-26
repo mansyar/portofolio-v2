@@ -17,6 +17,13 @@
   --color-text-primary-dark: #ffffff;
   --color-text-primary-light: #2c001e;
   --color-text-secondary: #aea79f;
+  /* FR-9: #aea79f (Ubuntu warm grey) clears AA on every dark surface but falls
+     to ~2.2:1 on the light surfaces (#f5f5f5 / #ffffff). The light-theme blocks
+     below override the token with this darker warm grey — same hue and chroma
+     family — instead of changing the shared value, so the dark theme's
+     warm-grey-on-aubergine pairing is untouched. Measured (WCAG relative
+     luminance): 5.1:1 on #f5f5f5, 5.6:1 on #ffffff. */
+  --color-text-secondary-light: #6e675f;
   --color-border: #5e2750;
   --color-surface-dark: #3d0a2e;
   --color-surface-light: #f5f5f5;
@@ -91,6 +98,8 @@
     --color-bg-primary: var(--color-terminal-bg-light);
     --color-text-primary: var(--color-text-primary-light);
     --color-surface: var(--color-surface-light);
+    /* FR-9: darker warm grey so muted text clears 4.5:1 on the light surfaces. */
+    --color-text-secondary: var(--color-text-secondary-light);
   }
 }
 
@@ -99,6 +108,8 @@
   --color-bg-primary: var(--color-terminal-bg-light);
   --color-text-primary: var(--color-text-primary-light);
   --color-surface: var(--color-surface-light);
+  /* FR-9: darker warm grey so muted text clears 4.5:1 on the light surfaces. */
+  --color-text-secondary: var(--color-text-secondary-light);
 }
 
 /* Manual Dark Mode Override */

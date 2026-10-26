@@ -35,7 +35,10 @@ export function AdminLayout() {
       <div className="flex h-screen items-center justify-center bg-(--color-terminal-bg-dark) text-(--color-text-primary)">
         <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-(--color-ubuntu-orange) border-t-transparent" />
-          <div className="font-mono text-sm animate-pulse text-(--color-text-secondary)">
+          {/* FR-9: the splash sits on the fixed-dark --color-terminal-bg-dark in
+              both themes, so the muted text is pinned to the shared warm grey
+              instead of the theme-flipping --color-text-secondary. */}
+          <div className="font-mono text-sm animate-pulse text-(--color-warm-grey)">
             Initializing secure session...
           </div>
         </div>

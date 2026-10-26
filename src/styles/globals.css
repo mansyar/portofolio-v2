@@ -28,14 +28,29 @@
   color-scheme: dark light;
 }
 
+/* Theme parity (FR-9/NFR-3): the authenticated admin shell renders on fixed
+   dark terminal surfaces — `.admin-content` is always `--color-terminal-bg-dark`
+   — so the light-theme override of `--color-text-secondary` (see
+   variables.css) must not reach it, and `--color-text-primary` flipping to
+   near-black would put dark text on those dark surfaces. Pin the theme tokens
+   to their dark values for the admin subtree: the admin stays one coherent
+   dark terminal in both themes. Dark-theme rendering is byte-identical,
+   because these are already the dark-theme values. */
+.admin-layout {
+  --color-bg-primary: var(--color-terminal-bg-dark);
+  --color-text-primary: var(--color-text-primary-dark);
+  --color-surface: var(--color-surface-dark);
+  --color-text-secondary: var(--color-warm-grey);
+}
+
 html {
-  background-color: #300a24;
+  background-color: var(--color-terminal-bg-dark);
 }
 
 body {
   margin: 0;
-  background-color: var(--color-bg-primary, #300a24);
-  color: var(--color-text-primary, #ffffff);
+  background-color: var(--color-bg-primary, var(--color-terminal-bg-dark));
+  color: var(--color-text-primary, var(--color-text-primary-dark));
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

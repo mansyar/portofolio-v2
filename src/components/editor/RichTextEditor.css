@@ -124,7 +124,9 @@
   background: transparent;
   padding: 0;
   border-radius: 0;
-  color: #fff;
+  /* FR-9: token conversion — the pre background (#1a0614) is fixed dark in
+     both themes, so the dark-theme primary text colour is the correct pair. */
+  color: var(--color-text-primary-dark);
   font-size: 0.9rem;
 }
 

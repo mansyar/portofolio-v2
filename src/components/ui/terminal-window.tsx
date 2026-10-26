@@ -25,7 +25,10 @@ export function TerminalWindow({
           <div className="h-3 w-3 rounded-full bg-(--color-terminal-yellow)"></div>
           <div className="h-3 w-3 rounded-full bg-(--color-terminal-green)"></div>
         </div>
-        <div className="absolute left-1/2 -translate-x-1/2 font-mono text-sm text-(--color-text-secondary)">
+        {/* FR-9: the titlebar keeps the fixed-dark --color-surface-dark in both
+            themes, so the muted title is pinned to the shared warm grey instead
+            of the theme-flipping --color-text-secondary. */}
+        <div className="absolute left-1/2 -translate-x-1/2 font-mono text-sm text-(--color-warm-grey)">
           {title}
         </div>
         <div className="w-14"></div> {/* Spacer for centering */}
