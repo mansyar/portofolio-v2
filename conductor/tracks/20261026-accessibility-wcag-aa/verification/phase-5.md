@@ -135,6 +135,29 @@ on *fixed-dark* surfaces that do not follow the theme):
 Dark-theme rendering is untouched: the shared token value is byte-identical and the pin value
 equals the dark value.
 
+### Third theme state — manual dark under an OS light preference (added by Phase R1, F1)
+
+Phase 5's audit covered the two states reachable from OS preference alone. The round-1 review
+found a third state the fix above misses: when the OS prefers light but the user manually
+selects dark (`:root.dark`), the `@media (prefers-color-scheme: light)` block — equal
+specificity, and the only rule that re-declared `--color-text-secondary` — still supplied the
+light value `#6e675f`, because `:root.dark` re-declared bg/text/surface but not the secondary.
+Measured (same method): `#6e675f` on `#300a24` ≈ 3.15:1 and on `#3d0a2e` ≈ 2.94:1 — both FAIL.
+
+**Fix:** `variables.css` defines `--color-text-secondary-dark: #aea79f` beside the light
+variant, and `:root.dark` now re-declares `--color-text-secondary: var(--color-text-secondary-dark)`,
+mirroring its three existing re-declarations (source order then defeats the media rule).
+
+| Pair | Before | After |
+|---|---|---|
+| text-secondary on `#300a24` (bg) | ≈3.15 FAIL | **7.39 PASS** |
+| text-secondary on `#3d0a2e` (surface) | ≈2.94 FAIL | **6.89 PASS** |
+
+The other three states are unaffected: OS-dark default and `:root.dark` under OS dark resolve
+to the same declarations they already had (`#aea79f`), `:root.light` re-declares the light
+value on top of the media rule regardless, and OS-light default is unchanged — only the
+OS-light + manual-dark state changes (back to the pre-track dark values).
+
 ## P5.T3 — Classification of the 21 literal hex values (FR-9)
 
 Baseline census (component CSS, excluding the token definitions in `variables.css`):
