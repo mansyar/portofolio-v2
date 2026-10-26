@@ -53,17 +53,21 @@ passes against the new code would not satisfy P1.T1, so the failing run is captu
 - **Touches:** `src/components/features/blog/BlogContent.tsx`,
   `src/components/features/blog/__tests__/blog-content.test.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Render the server page** — covers: FR-1, FR-4
-  - [ ] Query the new listing shape with `page`, `pageSize`, `category`, and `tag`
-  - [ ] Delete the `listRecent` snapshot, the `slug.includes` filter, and the in-memory
+- [x] **P2.T1: Render the server page** — covers: FR-1, FR-4
+  - [x] Query the new listing shape with `page`, `pageSize`, `category`, and `tag`
+  - [x] Delete the `listRecent` snapshot, the `slug.includes` filter, and the in-memory
     slice
-  - [ ] Feed `totalPages` from the query into the existing `Pagination`
-- [ ] **P2.T2: Pin the boundaries in a component test** — covers: FR-4, FR-5, FR-6
-  - [ ] Assert a filtered page renders only its returned posts and the reported page count
-  - [ ] Assert the empty state for an empty page and that no substring match is performed
+  - [x] Feed `totalPages` from the query into the existing `Pagination`
+- [x] **P2.T2: Pin the boundaries in a component test** — covers: FR-4, FR-5, FR-6
+  - [x] Assert a filtered page renders only its returned posts and the reported page count
+  - [x] Assert the empty state for an empty page and that no substring match is performed
     (fixture whose slug contains another tag's text is not listed)
+
+**Result:** verified
+**Checkpoint:** be78b77
+**Evidence:** conductor/tracks/20261026-blog-discovery-correctness/verification/phase-2.md
 
 **Risk:** `BlogContent` sits inside `Suspense` with a `SectionSkeleton` fallback and is
 called from `blog.index.tsx` with the validated search params; the props must stay the same

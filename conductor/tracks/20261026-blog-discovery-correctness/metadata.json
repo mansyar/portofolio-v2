@@ -6,7 +6,7 @@
   "priority": "high",
   "depends_on": [],
   "created_at": "2026-10-26T16:20:00+11:00",
-  "updated_at": "2026-10-26T17:05:00+11:00",
+  "updated_at": "2026-10-26T17:30:00+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "fix/20261026-blog-discovery-correctness",
@@ -14,11 +14,11 @@
   "base_sha": "048e99fc1e090e583c416269f8085008bbfe665b",
   "progress": {
     "phases_total": 2,
-    "phases_verified": 1,
+    "phases_verified": 2,
     "tasks_total": 5,
-    "tasks_done": 3
+    "tasks_done": 5
   },
-  "last_checkpoint": "1337b89",
+  "last_checkpoint": "be78b77",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",
