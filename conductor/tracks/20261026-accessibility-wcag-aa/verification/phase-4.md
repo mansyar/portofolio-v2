@@ -147,3 +147,13 @@ No animation was left unguarded; no typing-effect logic was re-implemented.
   its bespoke `focus-visible:ring-1` treatment and additionally receives the
   token outline — both are token-driven orange, so no conflicting indicator.
 - Test count remains 78; no tests were modified.
+
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean before verification; git log 0b902bf..HEAD shows exactly the two reported commits (56cc3b8, 1285689); 11 changed files match the report.
+- Gate re-run as four separate commands on the final code state: pnpm type-check exit 0 · pnpm lint exit 0 (22 warnings, 0 errors, unchanged baseline; accessibility rules still 0) · pnpm format:check exit 0 · pnpm test exit 0 (30 files, 78 tests).
+- Static re-checks: all remaining outline: none occurrences in src/**/*.css are explanatory comments (four documented replacement sites — RichTextEditor.css, dmin.css, input.css, NewsletterForm.css); no active suppression remains. prefers-reduced-motion present in exactly 7 CSS files; :focus-visible present in 8 CSS files including the new global baseline in globals.css.
+- Focus-ring token defined in ariables.css with documented per-surface contrast ratios (all ≥ 3:1); no raw hex introduced in component CSS per report.
+- jsdom cannot evaluate CSS; the evidence is static grep evidence as stated in this file — consistent with the plan's P4.T4 requirement.
+- **Primary verdict: PASS.**
