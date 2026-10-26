@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin/")({
   component: Dashboard,
 });
 
-function Dashboard() {
+export function Dashboard() {
   const stats = useQuery(api.dashboard.getStats);
   const recentMessages = useQuery(api.dashboard.getRecentMessages);
 
@@ -71,10 +71,12 @@ function Dashboard() {
             <h2 className="text-xl font-bold font-mono text-(--color-ubuntu-orange)">
               Warning System Logs
             </h2>
-            {/* TODO: Create /admin/messages route */}
-            <span className="text-sm text-(--color-text-secondary) flex items-center gap-1 cursor-not-allowed opacity-50">
+            <Link
+              to="/admin/messages"
+              className="text-sm text-(--color-text-secondary) flex items-center gap-1 hover:text-(--color-ubuntu-orange) transition-colors"
+            >
               View All <ArrowRight size={14} />
-            </span>
+            </Link>
           </div>
 
           <div className="card p-0 overflow-hidden">
@@ -132,27 +134,14 @@ function Dashboard() {
               <span>Initialize Project</span>
               <Plus size={18} className="group-hover:rotate-90 transition-transform" />
             </Link>
-            {/* TODO: Create /admin/blog routes */}
-            <div className="terminal-button justify-between group opacity-50 cursor-not-allowed">
+            <Link to="/admin/blog/new" className="terminal-button justify-between group">
               <span>Draft New Post</span>
-              <Plus size={18} />
-            </div>
+              <Plus size={18} className="group-hover:rotate-90 transition-transform" />
+            </Link>
             <Link to="/admin/skills/new" className="terminal-button justify-between group">
               <span>Add Skill Node</span>
               <Plus size={18} className="group-hover:rotate-90 transition-transform" />
             </Link>
-          </div>
-
-          <div className="card mt-8 bg-black/20 p-4">
-            <div className="font-mono text-xs text-(--color-text-secondary)">
-              <div className="mb-2 text-(--color-terminal-yellow)">System Status:</div>
-              <div className="grid grid-cols-2 gap-2">
-                <span>Uptime:</span> <span className="text-(--color-terminal-green)">99.9%</span>
-                <span>CPU:</span> <span className="text-(--color-terminal-green)">12%</span>
-                <span>Memory:</span> <span className="text-(--color-terminal-green)">456MB</span>
-                <span>Disk:</span> <span className="text-(--color-terminal-green)">45%</span>
-              </div>
-            </div>
           </div>
         </section>
       </div>
