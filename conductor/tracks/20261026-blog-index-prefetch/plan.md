@@ -17,7 +17,7 @@
   `src/components/features/blog/BlogContent.tsx`,
   `src/routes/__tests__/blog-index-prefetch.test.tsx`
 - **Verification:** `pnpm exec vitest run src/routes/__tests__/blog-index-prefetch.test.tsx`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Write the failing regression test** — covers: AC-1, AC-3
   - [ ] Mock `createFileRoute` as identity (the existing route-test convention), read
