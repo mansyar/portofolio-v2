@@ -7,7 +7,7 @@ export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
 });
 
-function AdminLogin() {
+export function AdminLogin() {
   const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
 
@@ -92,7 +92,6 @@ function AdminLogin() {
                   className="terminal-input w-full"
                   placeholder="admin@ansyar-world.top"
                   required
-                  autoFocus
                 />
               </div>
             </div>
