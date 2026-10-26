@@ -1,6 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { DEFAULT_SITE_NAME, siteUrl } from "../lib/site";
 
 interface SiteSettings {
   siteTitle?: string;
@@ -20,6 +21,8 @@ interface SeoProps {
   author?: string;
   keywords?: string[];
   jsonLd?: Record<string, unknown>;
+  /** Keep capability URLs and error pages out of search results. */
+  noindex?: boolean;
 }
 
 export function Seo({
@@ -31,24 +34,25 @@ export function Seo({
   author = "Muhammad Ansyar Rafi Putra",
   keywords,
   jsonLd,
+  noindex = false,
 }: SeoProps) {
   const rawSettings = useQuery(api.settings.getPublic);
   const settings = rawSettings as SiteSettings | undefined;
   const location = useLocation();
 
-  // Use environment variable for site URL or fallback
-  const siteUrl = import.meta.env.VITE_APP_URL || "https://ansyar-world.top";
-  const url = `${siteUrl}${location.pathname}`;
+  // One resolver for canonical, OG, sitemap, and feed URLs.
+  const origin = siteUrl();
+  const url = `${origin}${location.pathname}`;
 
-  const siteName = settings?.siteTitle || "Muhammad Ansyar Rafi Putra | Portfolio";
+  const siteName = settings?.siteTitle || DEFAULT_SITE_NAME;
   const fullTitle = `${title} | ${siteName}`;
   const metaDescription =
     description ||
     settings?.metaDescription ||
     "Portfolio of Muhammad Ansyar Rafi Putra — Full-Stack Developer and DevOps Engineer.";
 
-  const defaultImage = settings?.defaultOgImage || `${siteUrl}/og-image.jpg`;
-  const ogImage = image ? (image.startsWith("http") ? image : `${siteUrl}${image}`) : defaultImage;
+  const defaultImage = settings?.defaultOgImage || `${origin}/og-image.jpg`;
+  const ogImage = image ? (image.startsWith("http") ? image : `${origin}${image}`) : defaultImage;
 
   const twitterHandle = settings?.socialTwitter
     ? `@${settings.socialTwitter.replace("@", "")}`
@@ -67,6 +71,7 @@ export function Seo({
   return (
     <>
       <title>{fullTitle}</title>
+      {noindex && <meta name="robots" content="noindex" />}
       <meta name="description" content={metaDescription} />
       <meta name="keywords" content={allKeywords.join(", ")} />
       <meta name="author" content={author} />
@@ -101,7 +106,7 @@ export function Seo({
           author: {
             "@type": "Person",
             name: author,
-            url: siteUrl,
+            url: origin,
           },
           image: ogImage,
           ...jsonLd,

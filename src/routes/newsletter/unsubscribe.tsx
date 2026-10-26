@@ -50,10 +50,7 @@ export function UnsubscribePage({ token }: { token?: string }) {
 
   return (
     <div className="container flex flex-col gap-6 px-4 pt-10 pb-20 md:px-6">
-      <Seo
-        title="Unsubscribe | Muhammad Ansyar Rafi Putra"
-        description="Opt out of the newsletter."
-      />
+      <Seo title="Unsubscribe" description="Opt out of the newsletter." noindex />
 
       <h1 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
         <span aria-hidden="true" className="font-mono text-(--color-ubuntu-orange)">

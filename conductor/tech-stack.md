@@ -183,6 +183,23 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 `ADMIN_EMAIL`, `VITE_UMAMI_URL`, `VITE_UMAMI_WEBSITE_ID`. Optional:
 `SLACK_WEBHOOK_URL`, `RESEND_API_KEY`, plus Convex-side `UMAMI_*`.
 
+### Site head and origin (2026-10-26)
+
+- **One title owner.** `src/components/seo.tsx` renders the only `<title>` on public pages,
+  composing `<page title> | <site name>`. Route components pass bare page titles. The root
+  route's `head` must not declare a title; `src/routes/__tests__/seo-surface.test.tsx` fails
+  if it reappears. Admin pages (which do not render `Seo`) and the 404 boundary each own one
+  title of their own.
+- **One origin.** `siteUrl()` in `src/lib/site.ts` is the only source for canonical, Open
+  Graph, sitemap, and feed URLs. It rejects loopback values and falls back to
+  `https://ansyar-world.top`, because a canonical must never name a developer machine.
+- **Mail keeps `SITE_URL`.** Convex functions cannot import `src/`, so `convex/lib/welcomeEmail.ts`
+  reads `SITE_URL` with the same default and treats an empty value as unset. A test pins the
+  two defaults together.
+- **Indexability.** `Seo` accepts `noindex`; capability URLs (`/newsletter/unsubscribe`) and
+  the 404 boundary set it. `public/robots.txt` keeps only `Disallow: /admin/` — token pages
+  are excluded with the meta tag, not `Disallow`, so crawlers can see the signal.
+
 ## Constraints
 
 - **Self-hosting is load-bearing.** Convex, R2, Umami, and Coolify are all

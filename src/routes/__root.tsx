@@ -27,9 +27,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      {
-        title: "Muhammad Ansyar Rafi Putra | Portfolio",
-      },
     ],
     links: [],
   }),

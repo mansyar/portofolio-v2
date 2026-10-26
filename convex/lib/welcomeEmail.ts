@@ -1,8 +1,13 @@
 const DEFAULT_SITE_URL = "https://ansyar-world.top";
 
-/** Public origin used to build links in outgoing mail, without a trailing slash. */
+/**
+ * Public origin used to build links in outgoing mail, without a trailing slash.
+ * An empty `SITE_URL` is treated as unset: `""` is not a usable origin and would
+ * otherwise produce scheme-less links.
+ */
 export function siteUrl(): string {
-  return (process.env.SITE_URL ?? DEFAULT_SITE_URL).replace(/\/+$/, "");
+  const configured = process.env.SITE_URL?.trim();
+  return (configured || DEFAULT_SITE_URL).replace(/\/+$/, "");
 }
 
 /** Opt-out link carrying the subscriber's token. */

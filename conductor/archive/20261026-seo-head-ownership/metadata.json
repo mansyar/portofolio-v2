@@ -1,0 +1,32 @@
+{
+  "id": "20261026-seo-head-ownership",
+  "title": "SEO Head Ownership",
+  "type": "bug",
+  "status": "complete",
+  "priority": "high",
+  "depends_on": [],
+  "created_at": "2026-10-26T20:18:00+11:00",
+  "updated_at": "2026-10-26T09:44:46.900Z",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "fix/20261026-seo-head-ownership",
+  "base_branch": "main",
+  "base_sha": "f05c4e02c9ac12b12252578d5adec78a9dd003f3",
+  "progress": {
+    "phases_total": 3,
+    "phases_verified": 3,
+    "tasks_total": 7,
+    "tasks_done": 7
+  },
+  "last_checkpoint": "b1a03f1",
+  "review_verdict": "PASS",
+  "review_rounds": 1,
+  "doc_sync": "updated",
+  "pr_url": "https://github.com/mansyar/portofolio-v2/pull/10",
+  "pr_state": "open",
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": "2026-10-26T09:44:46.900Z",
+  "archive_path": "conductor/archive/20261026-seo-head-ownership"
+}

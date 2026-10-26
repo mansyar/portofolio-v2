@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ConvexClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
+import { siteUrl } from "../lib/site";
 
 // biome-ignore lint/suspicious/noExplicitAny: the route path is generated at runtime, so it is not part of the typed route union
 export const Route = createFileRoute("/sitemap.xml" as any)({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/sitemap.xml" as any)({
         const client = new ConvexClient(convexUrl);
 
         const data = await client.query(api.sitemap.getSitemapData, {});
-        const siteUrl = "https://ansyar-world.top";
+        const origin = siteUrl();
 
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/sitemap.xml" as any)({
     .map(
       (route: string) => `
   <url>
-    <loc>${siteUrl}${route}</loc>
+    <loc>${origin}${route}</loc>
     <changefreq>weekly</changefreq>
     <priority>${route === "" ? "1.0" : "0.8"}</priority>
   </url>`
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/sitemap.xml" as any)({
     .map(
       (slug: string) => `
   <url>
-    <loc>${siteUrl}/projects/${slug}</loc>
+    <loc>${origin}/projects/${slug}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/sitemap.xml" as any)({
     .map(
       (slug: string) => `
   <url>
-    <loc>${siteUrl}/blog/${slug}</loc>
+    <loc>${origin}/blog/${slug}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`
