@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../convex/_generated/api";
 import { Seo } from "../components/seo";
 import { Terminal } from "lucide-react";
 import { z } from "zod";
 import { Suspense } from "react";
-import { BlogContent } from "../components/features/blog/BlogContent";
+import { BlogContent, BLOG_PAGE_SIZE } from "../components/features/blog/BlogContent";
 import { SectionSkeleton } from "../components/ui/section-skeleton";
 import { TagCloud } from "../components/features/TagCloud";
 
@@ -17,8 +19,17 @@ export const Route = createFileRoute("/blog/")({
   component: Blog,
   validateSearch: blogSearchSchema,
   loaderDeps: ({ search: { page, category, tag } }) => ({ page, category, tag }),
-  loader: async () => {
-    // Prefetching logic...
+  loader: async ({ context, deps: { page, category, tag } }) => {
+    // Seed the same query the listing reads. `useSuspenseQuery` then resolves on the
+    // first render instead of falling back to the skeleton after hydration.
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.blog.listPublished, {
+        page,
+        pageSize: BLOG_PAGE_SIZE,
+        categorySlug: category,
+        tagSlug: tag,
+      })
+    );
   },
 });
 

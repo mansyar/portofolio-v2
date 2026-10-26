@@ -4,7 +4,8 @@ import { api } from "../../../../convex/_generated/api";
 import { BlogCard } from "../../ui/blog-card";
 import { Pagination } from "../../ui/pagination";
 
-const ITEMS_PER_PAGE = 9;
+/** Listing page size. The route loader imports this so its prefetch key matches. */
+export const BLOG_PAGE_SIZE = 9;
 
 interface BlogContentProps {
   page: number;
@@ -19,7 +20,7 @@ export function BlogContent({ page, category, tag }: BlogContentProps) {
   const { data } = useSuspenseQuery(
     convexQuery(api.blog.listPublished, {
       page,
-      pageSize: ITEMS_PER_PAGE,
+      pageSize: BLOG_PAGE_SIZE,
       categorySlug: category,
       tagSlug: tag,
     })
