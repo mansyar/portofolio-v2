@@ -120,6 +120,16 @@ captures file.
   `noArrayIndexKey` / `useOptionalChain` / `noNonNullAssertion` remain `warn`.
   Open question 3 remains intentionally open for Phase 7 (P7.T2).
 
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator (not the implementing agent).
+- Worktree clean before verification; `git log 7100212..HEAD` shows exactly the three reported commits (`5cde569`, `b06bcaf`, `b9bc21e`); changed-file list matches the report.
+- Gate re-run as five separate commands on the final code state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 (22 warnings, 0 errors, 171 files) · `pnpm format:check` exit 0 · `pnpm test` exit 0 (34 files, 88 tests) · `pnpm test:coverage` exit 0 (lines 18.87%, functions 14.04% — both above the 3% ratchet floor).
+- `biome.json` diff verified: exactly the seven a11y rules promoted `warn` → `error`; no other severity touched.
+- Mutation evidence accepted: raw capture at `.conductor/evidence/20261026-accessibility-wcag-aa/phase-6-captures.md`; the scratch mutation is not in the final tree (worktree clean, no mutation committed).
+- Blocker resolved by the primary: the `conductor/tech-stack.md` Lint row was updated to reflect the promotion (seven a11y rules = `error`; `noArrayIndexKey`/`useOptionalChain`/`noNonNullAssertion` remain `warn`). Open question 3 stays open for Phase 7 (P7.T2).
+- **Primary verdict: PASS.**
+
 ## Notes for the primary
 
 - All four tasks are done and verified; the only outstanding item is the
