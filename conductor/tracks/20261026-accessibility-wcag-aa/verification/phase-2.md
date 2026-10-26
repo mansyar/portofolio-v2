@@ -119,6 +119,15 @@ All counts use polite regions; **none use `assertive`** (asserted in tests: `not
 4. **`src/components/ui/input.css`** — inspected, **no change required**: the label association is markup-level (`htmlFor`/`id`); the prompt glyph exclusion is the `aria-hidden` attribute on the span.
 5. **`src/components/features/__tests__/blog-post-form.a11y.test.tsx` mocks `RichTextEditor`** (it is `lazy`-loaded). The real editor's label association is asserted end-to-end in `rich-text-editor.a11y.test.tsx`, so the Content field (6th BlogPostForm finding) is covered without duplicating Tiptap rendering in two suites.
 
+## Primary verification
+
+- **Date:** 2026-10-26 — run independently by the Conductor orchestrator.
+- Worktree clean before the gate; diff `9cb74de..df22636` matches the reported file list exactly (Touches + recorded deviations).
+- Gate re-run as four separate commands on the final code state: `pnpm type-check` exit 0 · `pnpm lint` exit 0 · `pnpm format:check` exit 0 · `pnpm test` exit 0 (29 files, 72 tests).
+- Per-rule re-check via summary reporter: total **61**; remaining rules exactly `useButtonType` 39, `noArrayIndexKey` 16, `useOptionalChain` 3, `noNonNullAssertion` 3 — `noLabelWithoutControl` absent (0), Phase-1 a11y rules still 0, no new rules.
+- Spot-checked diffs: `login-email`/`login-password` `htmlFor`/`id` wiring, `AdminHeader` hamburger `aria-label="Toggle navigation sidebar"` — match the report.
+- **Primary verdict: PASS.**
+
 ## Notes for the primary
 
 - Expected end state reached exactly: **61 warnings** (92 − 31), `noLabelWithoutControl` = 0, all other rule counts byte-identical to Phase 1.
