@@ -102,7 +102,7 @@ function BlogAdmin() {
             <Terminal className="text-(--color-ubuntu-orange)" />
             BLOG_MANAGEMENT
           </h1>
-          <p className="text-sm text-(--color-text-secondary) font-mono mt-1">
+          <p className="text-sm text-(--color-text-secondary) font-mono mt-1" role="status">
             Status: {posts?.length || 0} posts found.
           </p>
         </div>

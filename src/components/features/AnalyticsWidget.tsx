@@ -113,6 +113,7 @@ export function AnalyticsWidget() {
             disabled={loading}
             className="p-1 text-(--color-text-secondary) hover:text-(--color-ubuntu-orange) transition-colors disabled:opacity-50"
             title="Refresh logs"
+            aria-label="Refresh analytics"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
@@ -148,7 +149,7 @@ export function AnalyticsWidget() {
             <div className="absolute top-0 right-0 p-2">
               <div className="h-2 w-2 rounded-full bg-(--color-terminal-green) animate-ping" />
             </div>
-            <div>
+            <div role="status">
               <p className="text-(--color-text-secondary) text-sm font-mono mb-1">Active Now</p>
               <h3 className="text-3xl font-bold font-mono text-(--color-terminal-green)">
                 {stats?.activeVisitors ?? 0}

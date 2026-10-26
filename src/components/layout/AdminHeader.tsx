@@ -15,6 +15,7 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
         <button
           className="md:hidden text-(--color-text-secondary) hover:text-(--color-text-primary)"
           onClick={onToggleSidebar}
+          aria-label="Toggle navigation sidebar"
         >
           <Menu />
         </button>
