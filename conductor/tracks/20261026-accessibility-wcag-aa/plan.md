@@ -135,7 +135,7 @@
   `src/components/ui/typing-effect.css`
 - **Verification:** the gate, plus grep evidence for `:focus-visible` and
   `prefers-reduced-motion`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P4.T1: Add the focus-ring tokens** - covers: FR-7
   - [ ] Define a focus-ring token pair in `variables.css` that clears 3:1 against both surfaces
