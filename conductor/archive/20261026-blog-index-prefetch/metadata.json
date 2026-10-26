@@ -1,0 +1,32 @@
+{
+  "id": "20261026-blog-index-prefetch",
+  "title": "Blog Index Server Prefetch",
+  "type": "bug",
+  "status": "complete",
+  "priority": "high",
+  "depends_on": [],
+  "created_at": "2026-10-26T19:46:00+11:00",
+  "updated_at": "2026-10-26T09:02:44.006Z",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "fix/20261026-blog-index-prefetch",
+  "base_branch": "main",
+  "base_sha": "a3ef7cd8ea149808891176db8bd19cfb5d5d089e",
+  "progress": {
+    "phases_total": 2,
+    "phases_verified": 2,
+    "tasks_total": 5,
+    "tasks_done": 5
+  },
+  "last_checkpoint": "4435244",
+  "review_verdict": "PASS",
+  "review_rounds": 1,
+  "doc_sync": "none",
+  "pr_url": "https://github.com/mansyar/portofolio-v2/pull/9",
+  "pr_state": "open",
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": "2026-10-26T09:02:44.006Z",
+  "archive_path": "conductor/archive/20261026-blog-index-prefetch"
+}
