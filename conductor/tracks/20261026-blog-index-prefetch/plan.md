@@ -17,25 +17,25 @@
   `src/components/features/blog/BlogContent.tsx`,
   `src/routes/__tests__/blog-index-prefetch.test.tsx`
 - **Verification:** `pnpm exec vitest run src/routes/__tests__/blog-index-prefetch.test.tsx`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Write the failing regression test** — covers: AC-1, AC-3
-  - [ ] Mock `createFileRoute` as identity (the existing route-test convention), read
+- [x] **P1.T1: Write the failing regression test** — covers: AC-1, AC-3
+  - [x] Mock `createFileRoute` as identity (the existing route-test convention), read
         `loader` off the route module, and run it with a real `QueryClient` whose default
         `queryFn` returns a two-post fixture.
-  - [ ] Assert the loader's `ensureQueryData` options carry the same query key as
+  - [x] Assert the loader's `ensureQueryData` options carry the same query key as
         `convexQuery(api.blog.listPublished, { page: 1, pageSize: 9 })`.
-  - [ ] Render `BlogContent` under `QueryClientProvider` and assert both titles appear with
+  - [x] Render `BlogContent` under `QueryClientProvider` and assert both titles appear with
         no suspense fallback — the assertion that fails on a key mismatch.
-  - [ ] Record the red run against the current route in `verification/phase-1.md`.
-- [ ] **P1.T2: Seed the query in the loader** — covers: FR-1, FR-2, FR-3
-  - [ ] Export the listing page size from `BlogContent.tsx` and import it in the route.
-  - [ ] Await `context.queryClient.ensureQueryData(convexQuery(api.blog.listPublished, …))`
+  - [x] Record the red run against the current route in `verification/phase-1.md`.
+- [x] **P1.T2: Seed the query in the loader** — covers: FR-1, FR-2, FR-3
+  - [x] Export the listing page size from `BlogContent.tsx` and import it in the route.
+  - [x] Await `context.queryClient.ensureQueryData(convexQuery(api.blog.listPublished, …))`
         with `page`, `pageSize`, `categorySlug: category`, and `tagSlug: tag` from `deps`.
-  - [ ] Keep `loaderDeps` as-is and leave unset filters `undefined`.
+  - [x] Keep `loaderDeps` as-is and leave unset filters `undefined`.
 
-**Result:** pending
-**Checkpoint:** pending
+**Result:** verified
+**Checkpoint:** 3923c06
 **Evidence:** conductor/tracks/20261026-blog-index-prefetch/verification/phase-1.md
 
 **Risk:** a prefetch under a slightly different argument object (for example `categorySlug:
