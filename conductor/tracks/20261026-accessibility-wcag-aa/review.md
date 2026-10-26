@@ -135,7 +135,7 @@ prevent new failures; no task was marked complete without verification.
   rest need brand-colour decisions. Recorded in the known-gaps table of
   `conductor/product-guidelines.md` and detailed in
   `conductor/tracks/20261026-accessibility-wcag-aa/verification/phase-5.md` (P5.T4).
-  Tracking issue: created after review (see history).
+  Tracking issue: [#3](https://github.com/mansyar/portofolio-v2/issues/3).
 
 ## Doc sync
 
