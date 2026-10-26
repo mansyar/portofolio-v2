@@ -105,7 +105,7 @@
   `src/routes/demo/start.server-funcs.tsx`, `src/routes/projects.$slug.tsx`
 - **Verification:** the gate, plus `useButtonType` reports zero diagnostics and the
   submit-classification table is attached to the evidence
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Classify every call site before editing** - covers: FR-1
   - [ ] Produce a table of all 39 sites: file, line, and intended `type`; flag every site inside a `<form>` where submitting is the intent
