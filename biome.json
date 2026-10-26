@@ -61,13 +61,13 @@
         "noDangerouslySetInnerHtml": "error"
       },
       "a11y": {
-        "noLabelWithoutControl": "warn",
-        "useButtonType": "warn",
-        "noStaticElementInteractions": "warn",
-        "useKeyWithClickEvents": "warn",
-        "noAutofocus": "warn",
-        "noSvgWithoutTitle": "warn",
-        "useHtmlLang": "warn"
+        "noLabelWithoutControl": "error",
+        "useButtonType": "error",
+        "noStaticElementInteractions": "error",
+        "useKeyWithClickEvents": "error",
+        "noAutofocus": "error",
+        "noSvgWithoutTitle": "error",
+        "useHtmlLang": "error"
       }
     }
   },
