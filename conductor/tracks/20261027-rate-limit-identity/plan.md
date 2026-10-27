@@ -20,7 +20,7 @@
 - **Depends on:** none
 - **Covers:** FR-1 through FR-11, FR-12, AC-1 through AC-10, NFR-4
 - **Touches:** `convex/__tests__/**`
-- **Verification:** `pnpm exec vitest run convex/__tests__/clientIdentity.test.ts convex/__tests__/contact.http.test.ts convex/__tests__/newsletter.subscribe.http.test.ts` — expected to FAIL at this stage; the failure set is the evidence.
+- **Verification:** `pnpm test convex/__tests__/clientIdentity.test.ts convex/__tests__/contact.http.test.ts convex/__tests__/newsletter.subscribe.http.test.ts` — expected to FAIL at this stage; the failure set is the evidence.
 - **Status:** in_progress
 
 - [ ] **P1.T1: Resolver unit tests** — covers: FR-12, AC-10
@@ -59,7 +59,7 @@
 - **Touches:** `convex/http.ts`, `convex/lib/clientIdentity.ts`,
   `convex/lib/http.ts`, `convex/contact.ts`, `convex/newsletter.ts`,
   `convex/_generated/**`
-- **Verification:** `pnpm type-check && pnpm exec vitest run convex/__tests__`
+- **Verification:** `pnpm test convex`
 - **Status:** pending
 
 - [ ] **P2.T1: Client identity resolver** — covers: FR-1, FR-12
@@ -93,7 +93,7 @@
 - **Touches:** `src/routes/contact.tsx`,
   `src/components/features/NewsletterForm.tsx`, `vite.config.ts`,
   `conductor/tech-stack.md`, `conductor/workflow.md`, `docs/PRD.md`
-- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test && pnpm build`
+- **Verification:** `pnpm build`
 - **Status:** pending
 
 - [ ] **P3.T1: Contact form** — covers: FR-10, AC-8
