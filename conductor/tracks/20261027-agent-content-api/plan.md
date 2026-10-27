@@ -97,7 +97,7 @@
 - **Covers:** FR-5, FR-6, AC-6, AC-7, AC-11, AC-12
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.update.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P4.T1: Partial update** — covers: FR-5, AC-6
   - [ ] **P4.T1.1:** Patch only present fields; preserve omitted body, tags, category, and cover image
