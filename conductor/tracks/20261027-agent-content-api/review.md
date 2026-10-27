@@ -144,7 +144,9 @@ duplicates merged.
 
 ## Doc sync
 
-`pending` — completed after the review fixes.
+`updated` — the `README.md` Content API section now records the slug rule the R1 fix
+introduced. No product, guideline, or stack change was needed: the fix enforces a rule
+the URL structure already implied.
 
 ## History
 

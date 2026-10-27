@@ -212,8 +212,11 @@ are authored in markdown and stored as sanitized HTML; new posts are drafts unle
 | `GET` | `/content/blog/:slug` | Read one post, drafts included |
 | `GET` | `/content/blog?status=&limit=` | List posts, newest first |
 
-Tag slugs are created when they do not exist; an unknown category slug is a `400`.
-There is no delete route — deletion stays a human action in `/admin`.
+Tag slugs are created when they do not exist; an unknown category slug is a `400`. An
+explicit `slug` must be lowercase letters, digits, dots, hyphens, or underscores and start
+with a letter or digit — anything else is a `400`, because a slug that cannot route is a
+post nobody can read. There is no delete route — deletion stays a human action in
+`/admin`.
 
 ### Setup
 
