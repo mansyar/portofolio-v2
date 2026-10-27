@@ -1,0 +1,30 @@
+/* The panel appears when the `hidden` attribute is dropped, and only a keyframe —
+   not a transition — animates across a display change. A utility cannot express this
+   rule: the built stylesheet contains no animation declaration for the
+   `animate-fade-in` utility the home route uses (its only mention is the
+   reduced-motion override in variables.css), so the motion is declared here, next to
+   the component that owns it, where it can be verified in the built CSS.
+
+   Reduced motion is guarded explicitly rather than left to the global catch-all in
+   globals.css, matching footer.css, input.css and the other co-located stylesheets. */
+@keyframes mobile-nav-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-nav-panel {
+  animation: mobile-nav-open 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-panel {
+    animation: none;
+  }
+}

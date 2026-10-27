@@ -2,20 +2,25 @@ import { Link } from "@tanstack/react-router";
 import { Terminal } from "lucide-react";
 import { useLocation } from "@tanstack/react-router";
 import { ThemeToggle } from "./ui/theme-toggle";
+import { MobileNav, isActiveDestination } from "./layout/MobileNav";
+import type { NavDestination } from "./layout/MobileNav";
+
+// One definition of the public navigation, consumed by the desktop row and, below
+// the `md` breakpoint, by the mobile panel — so the two can never disagree on order
+// or destination.
+const NAV_DESTINATIONS: NavDestination[] = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Skills", path: "/skills" },
+  { name: "Projects", path: "/projects" },
+  { name: "Blog", path: "/blog" },
+  { name: "Uses", path: "/uses" },
+  { name: "Contact", path: "/contact" },
+];
 
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname;
-
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Skills", path: "/skills" },
-    { name: "Projects", path: "/projects" },
-    { name: "Blog", path: "/blog" },
-    { name: "Uses", path: "/uses" },
-    { name: "Contact", path: "/contact" },
-  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-bg-primary)/80 backdrop-blur-md">
@@ -31,9 +36,8 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => {
-            const isActive =
-              link.path === "/" ? currentPath === "/" : currentPath.startsWith(link.path);
+          {NAV_DESTINATIONS.map((link) => {
+            const isActive = isActiveDestination(currentPath, link.path);
 
             return (
               <Link
@@ -55,10 +59,10 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* Mobile Nav Placeholder - for now just ThemeToggle */}
+        {/* Mobile Nav */}
         <div className="flex items-center gap-4 md:hidden">
           <ThemeToggle />
-          {/* Mobile menu toggle would go here */}
+          <MobileNav destinations={NAV_DESTINATIONS} />
         </div>
       </div>
     </header>

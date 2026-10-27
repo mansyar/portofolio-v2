@@ -78,8 +78,8 @@ pr:
 The threshold is a **ratcheting floor**, not a target. The original floor was 3%
 — set just below a 3.93% lines / 3.49% functions baseline when the suite had 31
 tests over ~2,000 lines — and the 40% goal was out of scope for the tooling track.
-As of the rate-limit identity track (2026-10-27) the measured baseline is
-**30.0% lines / 21.87% functions** over 167 tests, so the floor is 29 / 21.
+As of the public mobile navigation track (2026-10-27) the measured baseline is
+**32.9% lines / 24.67% functions** over 195 tests, so the floor is 32 / 24.
 
 **Raise the floor whenever a track adds tests.** Never lower it to make a phase pass.
 A phase that drops coverage below the floor has introduced untested code and must

@@ -356,6 +356,7 @@
 
 | Date        | Change                                                                          |
 | ----------- | ------------------------------------------------------------------------------- |
+| Oct 27, 2026 | Public mobile navigation: the public header gains an accessible disclosure menu below 768px (Escape, outside-click and route-change dismissal, `aria-current` active state, reduced-motion-guarded opening), 175 → 195 tests, coverage floor 29/21 → 32/24 |
 | Oct 26, 2026 | Accessibility WCAG 2.2 AA burn-down: seven a11y lint rules promoted to error, all seven target rules at zero diagnostics, warnings 99 → 22, labels/types/focus/motion/contrast fixes, 88 tests |
 | Oct 25, 2026 | Security hardening: Convex auth gaps closed, newsletter rate limited, real Convex tests |
 | Jan 12, 2026 | Phase 8 complete: Admin Settings, Bulk Actions, Scheduling, Activity Log, Image Optimization |

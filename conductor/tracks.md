@@ -12,3 +12,5 @@
 - [x] **Track: SEO Head Ownership** — [20261026-seo-head-ownership](./archive/20261026-seo-head-ownership/index.md) — bug — high
 
 - [x] **Track: Rate Limit Identity** — [20261027-rate-limit-identity](./archive/20261027-rate-limit-identity/index.md) — bug — high
+
+- [x] **Track: Public Mobile Navigation** — [20261027-public-mobile-navigation](./archive/20261027-public-mobile-navigation/index.md) — bug — high
