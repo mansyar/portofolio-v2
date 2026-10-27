@@ -180,10 +180,18 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
 
 | Finding | Reason | Issue |
 | --- | --- | --- |
-| D1 | Out of scope (pre-existing, unrelated subsystem) | proposed, not yet filed |
-| D2 | Surfaced drift; belongs to a docs-reconciliation change | proposed, not yet filed |
-| D3 | Same as D2 | proposed, not yet filed |
-| D4 | Explicitly out of scope in `spec.md` | proposed, not yet filed |
+| D1 | Out of scope (pre-existing, unrelated subsystem) | [#13](https://github.com/mansyar/portofolio-v2/issues/13) |
+| D2 | Surfaced drift; belongs to a docs-reconciliation change | [#14](https://github.com/mansyar/portofolio-v2/issues/14) (grouped with D3) |
+| D3 | Same as D2 | [#14](https://github.com/mansyar/portofolio-v2/issues/14) |
+| D4 | Explicitly out of scope in `spec.md` | [#15](https://github.com/mansyar/portofolio-v2/issues/15) |
+
+Filed under the Workflow Config's `review.issues` policy (`enabled`, `auto_create`,
+`min_severity: low`, `group_low: true`), which creates the batch without a confirmation
+gate. Existing open issues were searched first: #6 (blog listing page count) and #3
+(sub-AA contrast debt) neither cover nor overlap these. The configured labels
+`tech-debt`, `conductor` were applied; `severity:low` was not, because no such label
+exists in this repository and the rules forbid creating labels silently. No in-scope
+finding was deferred — D1–D4 were all out of scope from the start.
 
 ## Doc sync
 
