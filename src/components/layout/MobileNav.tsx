@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
+import "./MobileNav.css";
 
 export interface NavDestination {
   name: string;
@@ -9,6 +10,17 @@ export interface NavDestination {
 
 interface MobileNavProps {
   destinations: NavDestination[];
+}
+
+/**
+ * The one active-route rule, consumed by the desktop row and by this panel.
+ *
+ * `/` matches only the home route — every path starts with it, so a prefix test would
+ * mark Home as current everywhere. Every other destination owns its whole subtree, so
+ * `/projects/ansyar-world` still marks Projects.
+ */
+export function isActiveDestination(pathname: string, path: string): boolean {
+  return path === "/" ? pathname === "/" : pathname.startsWith(path);
 }
 
 /**
@@ -98,19 +110,28 @@ export function MobileNav({ destinations }: MobileNavProps) {
         id={panelId}
         hidden={!isOpen}
         aria-label="Mobile navigation"
-        className="absolute inset-x-0 top-full border-b border-(--color-border) bg-(--color-bg-primary) shadow-lg"
+        className="mobile-nav-panel absolute inset-x-0 top-full border-b border-(--color-border) bg-(--color-bg-primary) shadow-lg"
       >
         <ul className="container mx-auto flex flex-col px-4 py-2 md:px-6">
-          {destinations.map((destination) => (
-            <li key={destination.path}>
-              <Link
-                to={destination.path}
-                className={`flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-dark)/50 hover:text-(--color-text-primary) ${FOCUS_RING}`}
-              >
-                {destination.name}
-              </Link>
-            </li>
-          ))}
+          {destinations.map((destination) => {
+            const isActive = isActiveDestination(pathname, destination.path);
+
+            return (
+              <li key={destination.path}>
+                <Link
+                  to={destination.path}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex min-h-11 items-center rounded-md px-3 text-sm font-medium transition-colors ${FOCUS_RING} ${
+                    isActive
+                      ? "border-l-2 border-l-(--color-ubuntu-orange) bg-(--color-surface-dark)/60 font-semibold text-(--color-text-primary)"
+                      : "text-(--color-text-secondary) hover:bg-(--color-surface-dark)/50 hover:text-(--color-text-primary)"
+                  }`}
+                >
+                  {destination.name}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </div>

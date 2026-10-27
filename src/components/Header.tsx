@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Terminal } from "lucide-react";
 import { useLocation } from "@tanstack/react-router";
 import { ThemeToggle } from "./ui/theme-toggle";
-import { MobileNav } from "./layout/MobileNav";
+import { MobileNav, isActiveDestination } from "./layout/MobileNav";
 import type { NavDestination } from "./layout/MobileNav";
 
 // One definition of the public navigation, consumed by the desktop row and, below
@@ -37,8 +37,7 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-1 md:flex">
           {NAV_DESTINATIONS.map((link) => {
-            const isActive =
-              link.path === "/" ? currentPath === "/" : currentPath.startsWith(link.path);
+            const isActive = isActiveDestination(currentPath, link.path);
 
             return (
               <Link

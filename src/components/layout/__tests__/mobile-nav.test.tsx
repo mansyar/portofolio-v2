@@ -1,7 +1,30 @@
+import type { ReactNode } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { useLocation } from "@tanstack/react-router";
 import Header from "../../Header";
+
+interface MockLinkProps {
+  children: ReactNode;
+  to: string;
+  className?: string;
+  "aria-current"?: "page" | undefined;
+}
+
+/**
+ * The shared setup renders `Link` as `({ children, to }) => <a href={to}>`, which
+ * discards every other prop — including the `aria-current` and the class names the
+ * active-destination assertions read. This file therefore owns a forwarding mock, the
+ * same way src/routes/__tests__/blog-index-prefetch.test.tsx does.
+ */
+vi.mock("@tanstack/react-router", () => ({
+  useLocation: vi.fn(() => ({ pathname: "/" })),
+  Link: ({ children, to, ...rest }: MockLinkProps) => (
+    <a href={to} {...rest}>
+      {children}
+    </a>
+  ),
+}));
 
 /**
  * The public header's mobile navigation contract.
@@ -12,10 +35,10 @@ import Header from "../../Header";
  *    responsive class, not removed — so "a link named Projects exists" would pass with
  *    no mobile panel at all. Every panel assertion therefore resolves the panel through
  *    the trigger's `aria-controls` and reads links *inside* that element.
- * 2. The shared test setup renders `Link` as a plain anchor and replaces `useLocation`
- *    with a stub. Route-change behaviour is expressed by re-rendering with a new
- *    pathname, which means the panel must close because the location changed — not
- *    because a click handler was passed to `Link`.
+ * 2. This file replaces the router mock so `Link` forwards the props the assertions
+ *    read, and `useLocation` stays a stub. Route-change behaviour is therefore
+ *    expressed by re-rendering with a new pathname, which means the panel must close
+ *    because the location changed — not because a click handler was passed to `Link`.
  *
  * The panel must leave the accessibility tree while it is closed. Not rendering it and
  * rendering it `hidden` both satisfy that: role queries ignore hidden elements either
@@ -168,5 +191,71 @@ describe("mobile panel dismissal", () => {
     rerender(<Header />);
 
     expect(isClosed(trigger)).toBe(true);
+  });
+});
+
+describe("active destination", () => {
+  it("marks the destination for the current route and nothing else", () => {
+    render(<Header />);
+
+    const marked = exposedPanelLinks(openMenu()).filter(
+      (link) => link.getAttribute("aria-current") === "page"
+    );
+
+    expect(marked).toHaveLength(1);
+    expect(marked[0]?.textContent?.trim()).toBe("Home");
+  });
+
+  it("marks it without relying on colour alone", () => {
+    render(<Header />);
+
+    const home = exposedPanelLinks(openMenu()).find((link) => link.textContent?.trim() === "Home");
+
+    expect(home?.classList.contains("border-l-2")).toBe(true);
+  });
+
+  it("gives a destination its whole subtree rather than only its own path", () => {
+    mockedUseLocation.mockReturnValue({ pathname: "/projects/ansyar-world" });
+    render(<Header />);
+
+    const marked = exposedPanelLinks(openMenu()).filter(
+      (link) => link.getAttribute("aria-current") === "page"
+    );
+
+    expect(marked).toHaveLength(1);
+    expect(marked[0]?.textContent?.trim()).toBe("Projects");
+  });
+});
+
+describe("navigation exposure", () => {
+  it("leaves exactly one navigation landmark exposed while the panel is closed", () => {
+    render(<Header />);
+
+    expect(screen.getAllByRole("navigation")).toHaveLength(1);
+  });
+
+  it("keeps the desktop row and the mobile control mutually exclusive", () => {
+    render(<Header />);
+
+    const trigger = openTrigger();
+    const panel = panelOf(trigger);
+    const desktopNav = screen.getByRole("navigation");
+
+    // The desktop row is exposed only from `md` up; the trigger and its panel live in
+    // a wrapper removed at `md`.
+    expect(desktopNav.className).toMatch(/\bhidden\b/);
+    expect(desktopNav.className).toMatch(/\bmd:flex\b/);
+
+    const mobileRoot = trigger.parentElement;
+    expect(mobileRoot?.classList.contains("md:hidden")).toBe(true);
+    expect(mobileRoot?.contains(panel)).toBe(true);
+  });
+});
+
+describe("panel motion", () => {
+  it("declares its opening animation on the panel, where the reduced-motion guards reach it", () => {
+    render(<Header />);
+
+    expect(panelOf(openTrigger()).classList.contains("mobile-nav-panel")).toBe(true);
   });
 });
