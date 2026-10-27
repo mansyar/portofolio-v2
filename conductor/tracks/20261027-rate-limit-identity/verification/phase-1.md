@@ -105,3 +105,19 @@ All criteria are written; each is proven in Phase 2.
 - The CORS tests set `Origin` and, for preflight,
   `Access-Control-Request-Method`, so a missing `OPTIONS` handler fails here
   instead of only in a browser.
+
+## Primary verification
+
+The primary re-ran the phase verification command independently after the phase
+commit, and the static checks:
+
+| Command | Exit | Result |
+| --- | --- | --- |
+| `pnpm test convex/__tests__/clientIdentity.test.ts convex/__tests__/contact.http.test.ts convex/__tests__/newsletter.subscribe.http.test.ts` | 1 | 3 files / 14 tests failed, matching the red set above exactly |
+| `pnpm test convex/__tests__/newsletter.subscribe.identity.test.ts` | 1 | 3 tests failed, all `404` |
+| `pnpm lint` | 0 | 21 warnings, unchanged from the base commit |
+| `pnpm format:check` | 0 | clean |
+| `pnpm type-check` | 1 | only `TS2307` for the module Phase 2 creates |
+
+The red state is the deliverable of this phase: every failure is a missing
+route, a missing module, or a still-public mutation.

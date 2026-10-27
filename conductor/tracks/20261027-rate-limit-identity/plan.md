@@ -21,33 +21,37 @@
 - **Covers:** FR-1 through FR-11, FR-12, AC-1 through AC-10, NFR-4
 - **Touches:** `convex/__tests__/**`
 - **Verification:** `pnpm test convex/__tests__/clientIdentity.test.ts convex/__tests__/contact.http.test.ts convex/__tests__/newsletter.subscribe.http.test.ts` — expected to FAIL at this stage; the failure set is the evidence.
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Resolver unit tests** — covers: FR-12, AC-10
-  - [ ] **P1.T1.1: Single-hop chain** — `x-forwarded-for: 203.0.113.7` resolves to that address
-  - [ ] **P1.T1.2: Forged leading hop** — `"1.2.3.4, 203.0.113.7"` resolves to `203.0.113.7`, not the forged entry
-  - [ ] **P1.T1.3: Multi-hop with private proxy addresses** — `"203.0.113.7, 172.18.0.2, 10.0.0.5"` resolves to `203.0.113.7`
-  - [ ] **P1.T1.4: Unresolvable chains** — absent headers, only private/loopback entries, and empty string each resolve to `null`
-  - [ ] **P1.T1.5: IPv6 and mapped forms** — `::1`, `fc00::/7`, and `::ffff:203.0.113.7` are classified correctly
-- [ ] **P1.T2: Contact HTTP tests** — covers: FR-1, FR-2, FR-3, FR-4, FR-9, FR-11, AC-1, AC-2, AC-7, AC-9
-  - [ ] **P1.T2.1: Rotation is inert** — three posts with three different `x-forwarded-for` values and three different body identifiers all consume one bucket; the fourth is `429`
-  - [ ] **P1.T2.2: Missing identity is refused** — no headers yields `429`, and `contactSubmissions`, `rateLimits`, and `_scheduled_functions` are unchanged
-  - [ ] **P1.T2.3: Successful post** — `200`, one submission row, three attempt rows, one scheduled Slack action
-  - [ ] **P1.T2.4: Honeypot** — filled honeypot returns `200` with no rows and no scheduled work
-  - [ ] **P1.T2.5: Malformed input** — invalid JSON and a missing required field each return `400` with no writes
-- [ ] **P1.T3: Newsletter HTTP tests** — covers: FR-5, FR-6, AC-3, AC-4
-  - [ ] **P1.T3.1: Identity bucket** — six posts from one connection, six different addresses: first five succeed, sixth is `429`
-  - [ ] **P1.T3.2: Address bucket** — six posts against one address with six different header values: sixth is `429`
-  - [ ] **P1.T3.3: Both rows recorded** — `newsletter_subscribe` and `newsletter_subscribe_email` rows exist for each allowed attempt
-  - [ ] **P1.T3.4: Unresolved identity** — subscribe succeeds, and the sixth attempt against that address is still refused
-  - [ ] **P1.T3.5: Response shape** — a new signup returns `alreadySubscribed: false`; a repeat returns `true`
-- [ ] **P1.T4: Surface and transport tests** — covers: FR-7, FR-8, AC-5, AC-6
-  - [ ] **P1.T4.1: No public write path** — assert on the module exports that `contact.submit` and `newsletter.subscribe` are internal, not on the `api` proxy, which resolves every property
-  - [ ] **P1.T4.2: Preflight** — `OPTIONS` to both paths returns `204` with `Access-Control-Allow-Origin` for the configured origin
-  - [ ] **P1.T4.3: Response header** — a `POST` response carries the same origin header
-- [ ] **P1.T5: Record the red run** — covers: NFR-4
-  - [ ] **P1.T5.1: Run the targeted suite and capture which cases fail and why** — absent routes and unresolved modules, not assertion mismatches
-  - [ ] **P1.T5.2: Move the two mutation-level rate-limit assertions in `newsletter.subscribe.rateLimit.test.ts` and `contact.test.ts` onto the HTTP surface** — no case is deleted, and `pnpm test` is expected to be red at the end of this phase
+- [x] **P1.T1: Resolver unit tests** — covers: FR-12, AC-10
+  - [x] **P1.T1.1: Single-hop chain** — `x-forwarded-for: 203.0.113.7` resolves to that address
+  - [x] **P1.T1.2: Forged leading hop** — `"1.2.3.4, 203.0.113.7"` resolves to `203.0.113.7`, not the forged entry
+  - [x] **P1.T1.3: Multi-hop with private proxy addresses** — `"203.0.113.7, 172.18.0.2, 10.0.0.5"` resolves to `203.0.113.7`
+  - [x] **P1.T1.4: Unresolvable chains** — absent headers, only private/loopback entries, and empty string each resolve to `null`
+  - [x] **P1.T1.5: IPv6 and mapped forms** — `::1`, `fc00::/7`, and `::ffff:203.0.113.7` are classified correctly
+- [x] **P1.T2: Contact HTTP tests** — covers: FR-1, FR-2, FR-3, FR-4, FR-9, FR-11, AC-1, AC-2, AC-7, AC-9
+  - [x] **P1.T2.1: Rotation is inert** — three posts with three different `x-forwarded-for` values and three different body identifiers all consume one bucket; the fourth is `429`
+  - [x] **P1.T2.2: Missing identity is refused** — no headers yields `429`, and `contactSubmissions`, `rateLimits`, and `_scheduled_functions` are unchanged
+  - [x] **P1.T2.3: Successful post** — `200`, one submission row, three attempt rows, one scheduled Slack action
+  - [x] **P1.T2.4: Honeypot** — filled honeypot returns `200` with no rows and no scheduled work
+  - [x] **P1.T2.5: Malformed input** — invalid JSON and a missing required field each return `400` with no writes
+- [x] **P1.T3: Newsletter HTTP tests** — covers: FR-5, FR-6, AC-3, AC-4
+  - [x] **P1.T3.1: Identity bucket** — six posts from one connection, six different addresses: first five succeed, sixth is `429`
+  - [x] **P1.T3.2: Address bucket** — six posts against one address with six different header values: sixth is `429`
+  - [x] **P1.T3.3: Both rows recorded** — `newsletter_subscribe` and `newsletter_subscribe_email` rows exist for each allowed attempt
+  - [x] **P1.T3.4: Unresolved identity** — subscribe succeeds, and the sixth attempt against that address is still refused
+  - [x] **P1.T3.5: Response shape** — a new signup returns `alreadySubscribed: false`; a repeat returns `true`
+- [x] **P1.T4: Surface and transport tests** — covers: FR-7, FR-8, AC-5, AC-6
+  - [x] **P1.T4.1: No public write path** — assert on the module exports that `contact.submit` and `newsletter.subscribe` are internal, not on the `api` proxy, which resolves every property
+  - [x] **P1.T4.2: Preflight** — `OPTIONS` to both paths returns `204` with `Access-Control-Allow-Origin` for the configured origin
+  - [x] **P1.T4.3: Response header** — a `POST` response carries the same origin header
+- [x] **P1.T5: Record the red run** — covers: NFR-4
+  - [x] **P1.T5.1: Run the targeted suite and capture which cases fail and why** — absent routes and unresolved modules, not assertion mismatches
+  - [x] **P1.T5.2: Move the two mutation-level rate-limit assertions in `newsletter.subscribe.rateLimit.test.ts` and `contact.test.ts` onto the HTTP surface** — no case is deleted, and `pnpm test` is expected to be red at the end of this phase
+
+**Result:** verified (red by contract — the failing tests are the deliverable)
+**Checkpoint:** `69b847f`
+**Evidence:** conductor/tracks/20261027-rate-limit-identity/verification/phase-1.md
 
 ## Phase 2: One enforcement point inside Convex
 
