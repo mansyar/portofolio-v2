@@ -97,17 +97,21 @@
 - **Covers:** FR-5, FR-6, AC-6, AC-7, AC-11, AC-12
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.update.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P4.T1: Partial update** — covers: FR-5, AC-6
-  - [ ] **P4.T1.1:** Patch only present fields; preserve omitted body, tags, category, and cover image
-  - [ ] **P4.T1.2:** Return 404 on an unknown slug and reject an empty body update
-- [ ] **P4.T2: Recompute derived fields** — covers: FR-5, AC-7
-  - [ ] **P4.T2.1:** Re-convert and re-meter `readingTime` only when the body changes
-- [ ] **P4.T3: Publication transitions** — covers: FR-6, AC-11, AC-12
-  - [ ] **P4.T3.1:** Idempotent publish and unpublish; `publishedAt` stamped once and retained on unpublish
-  - [ ] **P4.T3.2:** Audit each transition with the matching action
-- [ ] **P4.T4: Update-path tests** — covers: AC-6, AC-7, AC-11, AC-12
+- [x] **P4.T1: Partial update** — covers: FR-5, AC-6
+  - [x] **P4.T1.1:** Patch only present fields; preserve omitted body, tags, category, and cover image
+  - [x] **P4.T1.2:** Return 404 on an unknown slug and reject an empty body update
+- [x] **P4.T2: Recompute derived fields** — covers: FR-5, AC-7
+  - [x] **P4.T2.1:** Re-convert and re-meter `readingTime` only when the body changes
+- [x] **P4.T3: Publication transitions** — covers: FR-6, AC-11, AC-12
+  - [x] **P4.T3.1:** Idempotent publish and unpublish; `publishedAt` stamped once and retained on unpublish
+  - [x] **P4.T3.2:** Audit each transition with the matching action
+- [x] **P4.T4: Update-path tests** — covers: AC-6, AC-7, AC-11, AC-12
+
+**Result:** verified
+**Checkpoint:** 4cb5d42
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-4.md
 
 ## Phase 5: Documentation and coverage ratchet
 
