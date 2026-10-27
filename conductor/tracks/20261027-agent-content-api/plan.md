@@ -40,7 +40,7 @@
 - **Covers:** FR-3, AC-5
 - **Touches:** `convex/lib/markdown.ts`, `convex/__tests__/markdown.test.ts`, `package.json`, `pnpm-lock.yaml`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Add the conversion dependency** — covers: FR-3
   - [ ] **P2.T1.1:** Add `marked` at a pinned version; confirm it bundles without Node built-ins
