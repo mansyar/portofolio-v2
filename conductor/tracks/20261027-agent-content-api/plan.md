@@ -133,3 +133,16 @@
 **Result:** verified
 **Checkpoint:** 3673973
 **Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-5.md
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review findings F1, F2, F3.
+- **Depends on:** Phase 5
+- **Covers:** F1, F2, F3
+- **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.create.test.ts`, `convex/__tests__/contentApi.update.test.ts`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
+- **Status:** pending
+
+- [ ] **R1.T1: Resolve F1** — covers: F1
+- [ ] **R1.T2: Resolve F2** — covers: F2
+- [ ] **R1.T3: Resolve F3** — covers: F3
