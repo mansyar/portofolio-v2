@@ -102,19 +102,23 @@
   `src/components/features/NewsletterForm.tsx`, `vite.config.ts`,
   `conductor/tech-stack.md`, `conductor/workflow.md`, `docs/PRD.md`
 - **Verification:** `pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Contact form** — covers: FR-10, AC-8
-  - [ ] **P3.T1.1: Replace the mutation call with a `fetch` to `/contact` built from `VITE_CONVEX_URL`**
-  - [ ] **P3.T1.2: Delete `getClientIp` and its imports; keep validation, honeypot, toast, and success state**
-  - [ ] **P3.T1.3: Surface the server's 429 message verbatim instead of a generic failure**
-- [ ] **P3.T2: Newsletter form** — covers: FR-10, AC-8
-  - [ ] **P3.T2.1: Replace the mutation call with a `fetch` to `/newsletter/subscribe`; delete the duplicated resolver**
-  - [ ] **P3.T2.2: Preserve `alreadySubscribed` and failure toasts**
-- [ ] **P3.T3: Ratchet and doc sync** — covers: AC-11
-  - [ ] **P3.T3.1: Raise `vite.config.ts` thresholds to the measured baseline and update the matching block in `conductor/workflow.md`**
-  - [ ] **P3.T3.2: Correct the PRD sentence that overstates the rate-limit guarantee and record the trusted-hop model in `conductor/tech-stack.md`**
-- [ ] **P3.T4: Full gate** — covers: NFR-4, NFR-5, NFR-6
-  - [ ] **P3.T4.1: Five-command gate plus `pnpm test:coverage`; record exit codes and the test delta**
-  - [ ] **P3.T4.2: Confirm `grep -r getClientIp src` is empty and both endpoints are referenced by exactly one form each**
-  - [ ] **P3.T4.3: Verify the built app serves both pages and that the forms are present in the rendered markup**
+- [x] **P3.T1: Contact form** — covers: FR-10, AC-8
+  - [x] **P3.T1.1: Replace the mutation call with a `fetch` to `/contact` built from `VITE_CONVEX_URL`**
+  - [x] **P3.T1.2: Delete `getClientIp` and its imports; keep validation, honeypot, toast, and success state**
+  - [x] **P3.T1.3: Surface the server's 429 message verbatim instead of a generic failure**
+- [x] **P3.T2: Newsletter form** — covers: FR-10, AC-8
+  - [x] **P3.T2.1: Replace the mutation call with a `fetch` to `/newsletter/subscribe`; delete the duplicated resolver**
+  - [x] **P3.T2.2: Preserve `alreadySubscribed` and failure toasts**
+- [x] **P3.T3: Ratchet and doc sync** — covers: AC-11
+  - [x] **P3.T3.1: Raise `vite.config.ts` thresholds to the measured baseline and update the matching block in `conductor/workflow.md`**
+  - [x] **P3.T3.2: Correct the PRD sentence that overstates the rate-limit guarantee and record the trusted-hop model in `conductor/tech-stack.md`**
+- [x] **P3.T4: Full gate** — covers: NFR-4, NFR-5, NFR-6
+  - [x] **P3.T4.1: Five-command gate plus `pnpm test:coverage`; record exit codes and the test delta**
+  - [x] **P3.T4.2: Confirm `grep -r getClientIp src` is empty and both endpoints are referenced by exactly one form each**
+  - [x] **P3.T4.3: Verify the built app serves both pages and that the forms are present in the rendered markup**
+
+**Result:** verified (both callers migrated, floor raised, full gate and build green)
+**Checkpoint:** `f20dc44`
+**Evidence:** conductor/tracks/20261027-rate-limit-identity/verification/phase-3.md

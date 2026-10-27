@@ -78,3 +78,21 @@
   exercised.
 - `pnpm build` succeeds without a live Convex deployment, as `workflow.md` says it
   must.
+
+## Primary verification
+
+Re-run independently by the primary after the phase commit:
+
+| Command | Exit | Result |
+| --- | --- | --- |
+| `pnpm type-check` | 0 | clean |
+| `pnpm lint` | 0 | 21 warnings |
+| `pnpm format:check` | 0 | clean |
+| `pnpm test` | 0 | 50 files, 167 tests |
+| `pnpm test:coverage` | 0 | 29.92% statements / 30.0% lines, above the 29/21 floor |
+| `pnpm build` | 0 | Nitro server built |
+
+The built server was started on port 3010 and served `/contact` and `/about` with
+both forms present; it was stopped afterwards. `git diff --name-only
+28c238b..HEAD` lists the seven source/doc files plus this evidence file and the
+phase's own in-progress state commit — no test was edited to make the gate pass.
