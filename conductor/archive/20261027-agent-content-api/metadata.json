@@ -1,0 +1,32 @@
+{
+  "id": "20261027-agent-content-api",
+  "title": "Blog Content API for Agent Authoring",
+  "type": "feature",
+  "status": "complete",
+  "priority": "medium",
+  "depends_on": [],
+  "created_at": "2026-10-27T18:04:11+11:00",
+  "updated_at": "2026-10-27T18:44:36+11:00",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "branch": "feat/20261027-agent-content-api",
+  "base_branch": "main",
+  "base_sha": "259d2ea4b9952ce0a8c6f7bc114e0f97f6852530",
+  "progress": {
+    "phases_total": 5,
+    "phases_verified": 5,
+    "tasks_total": 23,
+    "tasks_done": 23
+  },
+  "last_checkpoint": "3673973",
+  "review_verdict": "PASS",
+  "review_rounds": 2,
+  "doc_sync": "updated",
+  "pr_url": "https://github.com/mansyar/portofolio-v2/pull/17",
+  "pr_state": "open",
+  "reverted_at": null,
+  "revert_commit": null,
+  "revert_pr_url": null,
+  "archived_at": "2026-10-27T18:44:36+11:00",
+  "archive_path": "conductor/archive/20261027-agent-content-api"
+}

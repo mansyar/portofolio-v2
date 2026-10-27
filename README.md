@@ -196,10 +196,63 @@ The admin panel (`/admin`) includes:
 
 ---
 
+## Content API
+
+A token-authenticated HTTP surface for agent authoring: an assistant can draft, edit,
+publish, and unpublish blog posts without a browser session or a repo checkout. Bodies
+are authored in markdown and stored as sanitized HTML; new posts are drafts unless
+`publish` is true.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/content/blog` | Create a post (`title`, `bodyMarkdown`, optional `slug`, `excerpt`, `coverImageUrl`, `categorySlug`, `tags`, `publish`) |
+| `PATCH` | `/content/blog/:slug` | Change only the fields sent (`title`, `excerpt`, `bodyMarkdown`, `coverImageUrl`, `categorySlug`, `tags`) |
+| `POST` | `/content/blog/:slug/publish` | Publish; idempotent |
+| `POST` | `/content/blog/:slug/unpublish` | Return to draft; idempotent |
+| `GET` | `/content/blog/:slug` | Read one post, drafts included |
+| `GET` | `/content/blog?status=&limit=` | List posts, newest first |
+
+Tag slugs are created when they do not exist; an unknown category slug is a `400`. An
+explicit `slug` must be lowercase letters, digits, dots, hyphens, or underscores and start
+with a letter or digit — anything else is a `400`, because a slug that cannot route is a
+post nobody can read. There is no delete route — deletion stays a human action in
+`/admin`.
+
+### Setup
+
+```bash
+# 1. Generate a token and keep it in .env.local (gitignored)
+openssl rand -hex 32
+
+# 2. Set the digest on the Convex deployment, never the token itself
+printf '%s' "$CONTENT_API_TOKEN" | openssl dgst -sha256 -r | cut -d' ' -f1
+# → CONTENT_API_TOKEN_SHA256=<digest>, then redeploy the functions
+```
+
+Without a configured digest every content route answers `401`. Writes are capped at 60
+per hour per token and recorded in the activity log as `agent@content-api`.
+
+### Usage
+
+```bash
+# The deployment origin, i.e. VITE_CONVEX_URL. HTTP routes sit at its root:
+# https://api.ansyar-world.top/contact, never .../http/contact.
+BASE=https://api.ansyar-world.top
+
+curl -X POST "$BASE/content/blog" \
+  -H "Authorization: Bearer $CONTENT_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Deploying with Convex","bodyMarkdown":"## Steps\n\nRun **deploy**.","tags":["convex"]}'
+
+curl -X POST "$BASE/content/blog/deploying-with-convex/publish" \
+  -H "Authorization: Bearer $CONTENT_API_TOKEN"
+```
+
 ## Documentation
 
 - [PRD.md](./docs/PRD.md) — Product Requirements Document
 - [PROGRESS.md](./docs/PROGRESS.md) — Development progress tracking
+- [content-api.md](./docs/content-api.md) — Agent guide for posting blog content through the Content API
 
 ---
 

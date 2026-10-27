@@ -41,13 +41,13 @@ const config = defineConfig({
       provider: "v8",
       include: ["src", "convex"],
       exclude: [...coverageConfigDefaults.exclude, "convex/_generated/**", "src/routeTree.gen.ts"],
-      // Ratcheting floor, not a target. Measured baseline after the public mobile
-      // navigation track: 32.66% lines, 24.34% functions over 193 tests (30.0% and
-      // 21.87% over 167 tests before it). Raise these whenever a track adds tests;
+      // Ratcheting floor, not a target. Measured baseline after the content API
+      // track: 40.97% lines, 30.21% functions over 250 tests (32.66% and 24.34%
+      // over 193 tests before it). Raise these whenever a track adds tests;
       // never lower them to make a phase pass.
       thresholds: {
-        lines: 32,
-        functions: 24,
+        lines: 40,
+        functions: 30,
       },
     },
   },
