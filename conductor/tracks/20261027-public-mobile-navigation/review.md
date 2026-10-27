@@ -3,20 +3,30 @@
 - **Track:** `20261027-public-mobile-navigation`
 - **Type:** `bug`
 - **Branch:** `fix/20261027-public-mobile-navigation`
-- **Range:** `196693e..39cade6`
-- **Date:** `2026-10-27T04:25:00Z`
-- **Verdict:** `PASS WITH FINDINGS`
+- **Range:** `196693e..b65e346`
+- **Date:** `2026-10-27T05:12:00Z`
+- **Verdict:** `PASS`
 
 ## Summary
 
 The track does what it was created to do: the public header now offers an accessible
 disclosure menu below 768 px, the failing contract written in Phase 1 passes, all six
-configured checks are green, and the coverage floor was raised rather than lowered. No
-Critical or High finding was identified. Two Medium findings remain, both against edge
-cases the spec itself lists and neither reachable in the common case: the panel is not
-closed when the viewport crosses into the desktop layout, and it has no internal scroll
-on a short viewport. `review.strict` is `true`, so both are fixed in Phase R1 rather than
+configured checks are green, and the coverage floor was raised rather than lowered.
+
+**Round 1** found no Critical or High issue and two Medium findings, both against edge
+cases the spec itself lists and neither reachable in the common case: the panel was not
+closed when the viewport crossed into the desktop layout, and it had no internal scroll on
+a short viewport. `review.strict` is `true`, so both were fixed in Phase R1 rather than
 deferred.
+
+**Round 2** confirms both fixes in `b65e346` against the delta `5e2f9ab..b65e346` and the
+original findings. F1's media-query subscription fires only on a matching change and
+unsubscribes on unmount; F2's cap and scroll are present in the component and resolve in
+the emitted stylesheet (`max-height:calc(100vh - 4rem)`, `overflow-y:auto`), with the
+panel's animation and its reduced-motion override intact. Neither fix introduced a new
+finding, no assertion was weakened, and the check set re-ran green at 195 tests with
+coverage up rather than down. No Critical, High, Medium, or Low finding remains: the
+verdict is `PASS`.
 
 **This review was performed by the implementing agent.** The skill calls for a read-only
 reviewer subagent; this host exposes none, so the separation that makes a review
@@ -34,8 +44,8 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
 | typecheck | `pnpm type-check` | pass | review-time run, exit 0 |
 | lint | `pnpm lint` | pass | exit 0, 0 errors, 21 warnings — identical to the pre-track baseline |
 | format | `pnpm format:check` | pass | exit 0 |
-| test | `pnpm test` | pass | 53 files, 193 tests |
-| coverage | `pnpm test:coverage` | pass | 32.56% stmts / 24.34% funcs / 32.66% lines, floor 32 / 24 |
+| test | `pnpm test` | pass | 53 files, 195 tests (round 2) |
+| coverage | `pnpm test:coverage` | pass | 32.84% stmts / 24.67% funcs / 32.9% lines (round 2), floor 32 / 24 |
 | build | `pnpm build` | pass | exit 0; built server serves `/` with the trigger and a `hidden` panel in its HTML |
 | runtime | built server + `curl /` | pass | HTTP 200, `verification/phase-4.md` |
 
@@ -94,6 +104,11 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
     registered `change` handler.
   - **Requirement:** spec Edge Cases (no AC maps to it)
   - **Test gap:** no case covers a viewport crossing the breakpoint; add one.
+  - **Status:** **fixed** in `b65e346` — `useEffect` subscribes to `(min-width: 768px)`
+    and closes on a matching `change`, removing the listener on unmount. Test:
+    `mobile-nav.test.tsx` → "closes the panel when the viewport crosses into the desktop
+    layout", which asserts the component actually subscribed before firing the handler,
+    so it cannot pass vacuously.
 
 - **F2 — The panel has no internal scroll on a short viewport**
   - **File:** `src/components/layout/MobileNav.tsx:118`
@@ -110,6 +125,11 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
   - **Requirement:** spec Edge Cases (no AC maps to it)
   - **Test gap:** not unit-testable in jsdom; verify the declared contract plus the
     emitted CSS, and record it as such.
+  - **Status:** **fixed** in `b65e346` — the panel carries
+    `max-h-[calc(100vh_-_4rem)] overflow-y-auto`. Test: `mobile-nav.test.tsx` → "caps the
+    panel so a short viewport scrolls it instead of cutting destinations off"; the
+    resolved `max-height:calc(100vh - 4rem)` and `overflow-y:auto` were then confirmed in
+    the built stylesheet, which is where a declared class becomes a real rule.
 
 ### Low
 
@@ -125,12 +145,17 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
 
 - All four phases are `verified` with a `Result`, `Checkpoint`, and `Evidence` file.
 - All 15 tasks are `[x]`, and every one is accounted for in a phase report; none was
-  dropped.
-- The code diff stays inside the phases' `Touches` with two reported deviations: the new
+  dropped.  - The code diff stays inside the phases' `Touches` with two reported deviations: the new
   `MobileNav.css` (Phase 3, justified by the absent `animate-fade-in` animation
   declaration) and the test file's own router mock (Phase 3 and Phase 4, justified by the
   shared mock discarding props).
-- No review-fix phase existed before this review.
+- **Phase R1 is `verified`** with a `Result`, `Checkpoint` (`b65e346`), and
+  `verification/phase-R1.md`. Its two tasks are `[x]`, and the review-fix work stayed
+  inside the findings: no opportunistic refactor, no scope expansion, and
+  `MobileNav.css` turned out not to need the second rule the plan had anticipated.
+- `metadata.json` counts implementation phases only, as the fix phase requires:
+  `phases_total` 4, `phases_verified` 4, `tasks_total` 15, `tasks_done` 15, with R1
+  excluded from the verified and done counts.
 - Phase evidence records the red-by-contract Phase 1 honestly rather than presenting a
   failing command as a pass.
 
@@ -170,3 +195,4 @@ checkpoint diff first, then a cross-phase integration pass over the assembled br
 | Round | Verdict | Critical | High | Medium | Low | Fixed |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | PASS WITH FINDINGS | 0 | 0 | 2 | 0 | 0 |
+| 2 | PASS | 0 | 0 | 0 | 0 | 2 |
