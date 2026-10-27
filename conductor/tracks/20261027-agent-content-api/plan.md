@@ -65,26 +65,30 @@
 - **Covers:** FR-2, FR-4, FR-7, FR-8, FR-9, NFR-3, NFR-1, AC-1, AC-3, AC-4, AC-8, AC-9, AC-10, AC-13, AC-15
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.create.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P3.T1: Internal create mutation** — covers: FR-2, FR-4
-  - [ ] **P3.T1.1:** Insert with `draft` status unless `publish: true`; stamp `publishedAt` on first publish
-  - [ ] **P3.T1.2:** Persist `readingTime` computed from the stored HTML
-- [ ] **P3.T2: Slug handling** — covers: FR-2, AC-8
-  - [ ] **P3.T2.1:** Derive from the title, honour an explicit slug, return 409 on collision
-  - [ ] **P3.T2.2:** Return 400 when a title yields no usable slug and none was supplied
-- [ ] **P3.T3: Taxonomy resolution** — covers: FR-8, AC-9, AC-10
-  - [ ] **P3.T3.1:** Resolve tag slugs through `by_slug` and create missing tags
-  - [ ] **P3.T3.2:** Reject an unknown category slug with 400 before any write
-- [ ] **P3.T4: Rate limit and audit** — covers: FR-9, NFR-3, AC-13, AC-15
-  - [ ] **P3.T4.1:** Per-fingerprint write budget through the existing `rateLimits` table
-  - [ ] **P3.T4.2:** One `activityLogs` row per successful write attributed to `agent@content-api`
-- [ ] **P3.T5: Read-back endpoints** — covers: FR-7
-  - [ ] **P3.T5.1:** `GET /content/blog/:slug` returns drafts and published posts alike
-  - [ ] **P3.T5.2:** `GET /content/blog` supports `status` and a bounded `limit`
-- [ ] **P3.T6: Draft-leak regression** — covers: NFR-1, AC-3, AC-4
-  - [ ] **P3.T6.1:** Assert a draft is absent from `listPublished`, `bySlug`, `listRecent`, and `listForRss`, and that a published post is present
-- [ ] **P3.T7: Create-path tests** — covers: AC-1, AC-9, AC-10, AC-13, AC-15
+- [x] **P3.T1: Internal create mutation** — covers: FR-2, FR-4
+  - [x] **P3.T1.1:** Insert with `draft` status unless `publish: true`; stamp `publishedAt` on first publish
+  - [x] **P3.T1.2:** Persist `readingTime` computed from the stored HTML
+- [x] **P3.T2: Slug handling** — covers: FR-2, AC-8
+  - [x] **P3.T2.1:** Derive from the title, honour an explicit slug, return 409 on collision
+  - [x] **P3.T2.2:** Return 400 when a title yields no usable slug and none was supplied
+- [x] **P3.T3: Taxonomy resolution** — covers: FR-8, AC-9, AC-10
+  - [x] **P3.T3.1:** Resolve tag slugs through `by_slug` and create missing tags
+  - [x] **P3.T3.2:** Reject an unknown category slug with 400 before any write
+- [x] **P3.T4: Rate limit and audit** — covers: FR-9, NFR-3, AC-13, AC-15
+  - [x] **P3.T4.1:** Per-fingerprint write budget through the existing `rateLimits` table
+  - [x] **P3.T4.2:** One `activityLogs` row per successful write attributed to `agent@content-api`
+- [x] **P3.T5: Read-back endpoints** — covers: FR-7
+  - [x] **P3.T5.1:** `GET /content/blog/:slug` returns drafts and published posts alike
+  - [x] **P3.T5.2:** `GET /content/blog` supports `status` and a bounded `limit`
+- [x] **P3.T6: Draft-leak regression** — covers: NFR-1, AC-3, AC-4
+  - [x] **P3.T6.1:** Assert a draft is absent from `listPublished`, `bySlug`, `listRecent`, and `listForRss`, and that a published post is present
+- [x] **P3.T7: Create-path tests** — covers: AC-1, AC-9, AC-10, AC-13, AC-15
+
+**Result:** verified
+**Checkpoint:** 965ee30
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-3.md
 
 ## Phase 4: Partial update, publish, unpublish
 
