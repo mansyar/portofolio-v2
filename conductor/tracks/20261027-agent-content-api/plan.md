@@ -40,19 +40,23 @@
 - **Covers:** FR-3, AC-5
 - **Touches:** `convex/lib/markdown.ts`, `convex/__tests__/markdown.test.ts`, `package.json`, `pnpm-lock.yaml`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: Add the conversion dependency** — covers: FR-3
-  - [ ] **P2.T1.1:** Add `marked` at a pinned version; confirm it bundles without Node built-ins
-- [ ] **P2.T2: Restricted renderer** — covers: FR-3
-  - [ ] **P2.T2.1:** Escape raw HTML tokens instead of passing them through
-  - [ ] **P2.T2.2:** Emit only allowlisted tags; render strikethrough as `<s>` rather than `<del>`
-  - [ ] **P2.T2.3:** Allow only `http`, `https`, `mailto`, and relative URLs on links and images
-- [ ] **P2.T3: Converter entry point** — covers: FR-3
-  - [ ] **P2.T3.1:** One function returning `{ html, readingTime }` from markdown, rejecting an empty body
-- [ ] **P2.T4: Pipeline tests** — covers: AC-5
-  - [ ] **P2.T4.1:** Headings, bold, lists, links, and fenced code produce allowlisted tags with language classes
-  - [ ] **P2.T4.2:** Raw `<script>`, `javascript:` links, and event attributes do not survive conversion
+- [x] **P2.T1: Add the conversion dependency** — covers: FR-3
+  - [x] **P2.T1.1:** Add `marked` at a pinned version; confirm it bundles without Node built-ins
+- [x] **P2.T2: Restricted renderer** — covers: FR-3
+  - [x] **P2.T2.1:** Escape raw HTML tokens instead of passing them through
+  - [x] **P2.T2.2:** Emit only allowlisted tags; render strikethrough as `<s>` rather than `<del>`
+  - [x] **P2.T2.3:** Allow only `http`, `https`, `mailto`, and relative URLs on links and images
+- [x] **P2.T3: Converter entry point** — covers: FR-3
+  - [x] **P2.T3.1:** One function returning `{ html, readingTime }` from markdown, rejecting an empty body
+- [x] **P2.T4: Pipeline tests** — covers: AC-5
+  - [x] **P2.T4.1:** Headings, bold, lists, links, and fenced code produce allowlisted tags with language classes
+  - [x] **P2.T4.2:** Raw `<script>`, `javascript:` links, and event attributes do not survive conversion
+
+**Result:** verified
+**Checkpoint:** c188bd7
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-2.md
 
 ## Phase 3: Create, read back, taxonomy, audit, metering
 

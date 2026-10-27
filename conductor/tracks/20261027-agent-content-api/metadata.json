@@ -6,7 +6,7 @@
   "priority": "medium",
   "depends_on": [],
   "created_at": "2026-10-27T18:04:11+11:00",
-  "updated_at": "2026-10-27T18:12:00+11:00",
+  "updated_at": "2026-10-27T18:16:00+11:00",
   "spec": "spec.md",
   "plan": "plan.md",
   "branch": "feat/20261027-agent-content-api",
@@ -14,11 +14,11 @@
   "base_sha": "259d2ea4b9952ce0a8c6f7bc114e0f97f6852530",
   "progress": {
     "phases_total": 5,
-    "phases_verified": 1,
+    "phases_verified": 2,
     "tasks_total": 23,
-    "tasks_done": 5
+    "tasks_done": 9
   },
-  "last_checkpoint": "5ee6877",
+  "last_checkpoint": "c188bd7",
   "review_verdict": null,
   "review_rounds": 0,
   "doc_sync": "pending",
