@@ -123,17 +123,19 @@
 **Checkpoint:** `a84b34f`
 **Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-4.md
 
-<!--
-Review fixes are appended by `conductor-review` as:
-
 ## Phase R1: Review Fixes
 
-- **Goal:** Resolve review findings ...
+- **Goal:** Resolve review findings F1 and F2 — the panel closes when the viewport crosses
+  into the desktop layout, and it scrolls internally when the viewport is short.
 - **Depends on:** Phase 4
-- **Covers:** review findings
-- **Touches:** ...
-- **Verification:** ...
+- **Covers:** F1, F2
+- **Touches:** `src/components/layout/MobileNav.tsx`, `src/components/layout/__tests__/mobile-nav.test.tsx`, `src/components/layout/MobileNav.css`
+- **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
 - **Status:** pending
 
-- [ ] **R1.T1: Resolve <finding ID>** — covers: <finding ID>
--->
+- [ ] **R1.T1: Close the panel when the viewport crosses the breakpoint** — covers: F1
+  - [ ] **R1.T1.1: Subscribe to the desktop media query while mounted and close the panel when it starts matching**
+  - [ ] **R1.T1.2: Cover it with a test that fires the registered change handler and asserts `aria-expanded` returns to false**
+- [ ] **R1.T2: Let the panel scroll internally when the viewport is short** — covers: F2
+  - [ ] **R1.T2.1: Cap the panel at the space below the header and give it an internal scroll**
+  - [ ] **R1.T2.2: Assert the declared contract in the test and confirm it in the emitted CSS**
