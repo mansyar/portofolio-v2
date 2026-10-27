@@ -50,7 +50,7 @@
 - **Covers:** FR-1 through FR-6, AC-1 through AC-6, NFR-3
 - **Touches:** `src/components/layout/MobileNav.tsx`, `src/components/Header.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: One destination list** — covers: FR-3
   - [ ] **P2.T1.1: The seven destinations gain a single definition, consumed by both the desktop row and the mobile panel** — no second hardcoded array, so order can never drift
