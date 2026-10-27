@@ -21,7 +21,7 @@
 - **Covers:** FR-1 through FR-11, FR-12, AC-1 through AC-10, NFR-4
 - **Touches:** `convex/__tests__/**`
 - **Verification:** `pnpm exec vitest run convex/__tests__/clientIdentity.test.ts convex/__tests__/contact.http.test.ts convex/__tests__/newsletter.subscribe.http.test.ts` — expected to FAIL at this stage; the failure set is the evidence.
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Resolver unit tests** — covers: FR-12, AC-10
   - [ ] **P1.T1.1: Single-hop chain** — `x-forwarded-for: 203.0.113.7` resolves to that address
