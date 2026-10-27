@@ -132,12 +132,16 @@
   `convex/lib/clientIdentity.ts`, `convex/__tests__/clientIdentity.test.ts`,
   `convex/lib/http.ts`
 - **Verification:** `pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **R1.T1: Cover the client transport with tests** — covers: F1
+- [x] **R1.T1: Cover the client transport with tests** — covers: F1
   - [ ] Exercise the endpoint URL (including a trailing slash), the method and body
   - [ ] Cover a non-JSON error response, a server message, the fallback, and a missing `VITE_CONVEX_URL`
-- [ ] **R1.T2: Canonicalize IPv4 octets** — covers: F2
+- [x] **R1.T2: Canonicalize IPv4 octets** — covers: F2
   - [ ] Return the joined octets from `classifyEntry` and pin zero-padded input with a resolver case
-- [ ] **R1.T3: Deduplicate the CORS allowlist** — covers: F3
+- [x] **R1.T3: Deduplicate the CORS allowlist** — covers: F3
   - [ ] Append each loopback origin that is not already present instead of branching on the site origin
+
+**Result:** verified (F1, F2, F3 fixed; gate green)
+**Checkpoint:** `75494f7`
+**Evidence:** conductor/tracks/20261027-rate-limit-identity/verification/phase-R1.md
