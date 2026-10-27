@@ -1,6 +1,6 @@
-import { query, mutation, internalAction } from "./_generated/server";
+import { query, mutation, internalAction, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 
 // =============================================================================
@@ -75,14 +75,19 @@ export const sendSlackNotification = internalAction({
 // Public Mutations
 // =============================================================================
 
-export const submit = mutation({
+export const submit = internalMutation({
   args: {
     name: v.string(),
     email: v.string(),
     subject: v.string(),
     message: v.string(),
     honeypot: v.optional(v.string()),
-    clientIp: v.string(),
+    /**
+     * Derived by the HTTP endpoint from the request connection. It is an
+     * argument here only because the endpoint and the write are separate
+     * functions; no browser-facing function accepts it.
+     */
+    identifier: v.string(),
   },
   handler: async (ctx, args) => {
     // 1. Honeypot check (Bot detection)
@@ -92,23 +97,28 @@ export const submit = mutation({
       return { success: true };
     }
 
-    // 2. Rate limiting check (max 3 submissions per hour per IP)
+    // 2. Rate limiting check (max 3 submissions per hour per connection)
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
     const recentAttempts = await ctx.db
       .query("rateLimits")
       .withIndex("by_identifier_action", (q) =>
-        q.eq("identifier", args.clientIp).eq("action", "contact_submit")
+        q.eq("identifier", args.identifier).eq("action", "contact_submit")
       )
       .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
       .collect();
 
     if (recentAttempts.length >= 3) {
-      throw new Error("Too many submissions. Please try again later.");
+      // `ConvexError` keeps the message and the code intact across the action
+      // boundary, so the endpoint can answer 429 instead of a generic failure.
+      throw new ConvexError({
+        code: "rate_limited",
+        message: "Too many submissions. Please try again later.",
+      });
     }
 
     // 3. Log this attempt
     await ctx.db.insert("rateLimits", {
-      identifier: args.clientIp,
+      identifier: args.identifier,
       action: "contact_submit",
       timestamp: Date.now(),
     });

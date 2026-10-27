@@ -3,6 +3,7 @@ import { query, mutation, internalMutation, internalAction } from "./_generated/
 import { internal } from "./_generated/api";
 import { requireAdmin } from "./lib/auth";
 import { Resend } from "resend";
+import { ConvexError } from "convex/values";
 import { buildWelcomeEmailHtml } from "./lib/welcomeEmail";
 
 /**
@@ -17,9 +18,9 @@ const normalizeEmail = (email: string): string => email.trim().toLowerCase();
  */
 const createUnsubscribeToken = (): string => crypto.randomUUID();
 
-export const subscribe = mutation({
-  args: { email: v.string(), clientIp: v.string() },
-  handler: async (ctx, { email, clientIp }) => {
+export const subscribe = internalMutation({
+  args: { email: v.string(), identifier: v.union(v.string(), v.null()) },
+  handler: async (ctx, { email, identifier }) => {
     const normalized = normalizeEmail(email);
 
     // Basic validation
@@ -27,28 +28,29 @@ export const subscribe = mutation({
       throw new Error("Invalid email address");
     }
 
-    // Rate limiting. `subscribe` is public by design, so the limit - not auth -
-    // is what stops enumeration and mail-bombing. It is enforced on two
-    // independent keys, because either one alone is escapable:
+    // Rate limiting. The endpoint in `convex/http.ts` enforces the limit - not
+    // auth - because this path is public by design. Two independent keys are
+    // checked, and only the first is optional:
     //
-    //   - the caller's IP bounds total volume from one source, but the address
-    //     is resolved from request headers and then supplied by the client, so
-    //     a caller who varies it gets unlimited attempts;
-    //   - the address bounds attempts against one inbox, and cannot be varied
-    //     without targeting a different inbox.
-    //
-    // Together they mean neither rotating the IP nor replaying one address
-    // defeats the limit.
+    //   - the connection identity, derived from request headers by the HTTP
+    //     endpoint, bounds total volume from one source and cannot be chosen by
+    //     the caller. It is `null` when the request carries no address the proxy
+    //     vouched for, in which case this bucket is skipped rather than shared;
+    //   - the normalized address bounds attempts against one inbox, and cannot
+    //     be varied without targeting a different inbox.
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
     const normalizedEmail = normalized;
 
-    const recentFromIp = await ctx.db
-      .query("rateLimits")
-      .withIndex("by_identifier_action", (q) =>
-        q.eq("identifier", clientIp).eq("action", "newsletter_subscribe")
-      )
-      .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
-      .collect();
+    const recentFromIdentity =
+      identifier === null
+        ? []
+        : await ctx.db
+            .query("rateLimits")
+            .withIndex("by_identifier_action", (q) =>
+              q.eq("identifier", identifier).eq("action", "newsletter_subscribe")
+            )
+            .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
+            .collect();
 
     const recentForEmail = await ctx.db
       .query("rateLimits")
@@ -58,17 +60,23 @@ export const subscribe = mutation({
       .filter((q) => q.gt(q.field("timestamp"), oneHourAgo))
       .collect();
 
-    if (recentFromIp.length >= 5 || recentForEmail.length >= 5) {
-      throw new Error("Too many attempts. Please try again later.");
+    if (recentFromIdentity.length >= 5 || recentForEmail.length >= 5) {
+      throw new ConvexError({
+        code: "rate_limited",
+        message: "Too many attempts. Please try again later.",
+      });
     }
 
     // Logged before the subscriber write so that a repeat subscribe to an
-    // already-active address still counts against both limits.
-    await ctx.db.insert("rateLimits", {
-      identifier: clientIp,
-      action: "newsletter_subscribe",
-      timestamp: Date.now(),
-    });
+    // already-active address still counts against both limits. An unresolved
+    // identity writes no row at all, so no placeholder bucket can fill up.
+    if (identifier !== null) {
+      await ctx.db.insert("rateLimits", {
+        identifier,
+        action: "newsletter_subscribe",
+        timestamp: Date.now(),
+      });
+    }
     await ctx.db.insert("rateLimits", {
       identifier: normalizedEmail,
       action: "newsletter_subscribe_email",
