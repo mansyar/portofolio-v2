@@ -120,7 +120,7 @@
 - **Covers:** NFR-5, NFR-6
 - **Touches:** `conductor/tech-stack.md`, `README.md`, `vite.config.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P5.T1: Record the architecture exception** — covers: NFR-5
   - [ ] **P5.T1.1:** Document the token-authenticated internal mutation beside the existing public-write exception
