@@ -18,8 +18,11 @@ const siteOrigin = (): string => {
 };
 
 export const allowedOrigins = (): string[] => {
-  const origin = siteOrigin();
-  return origin === LOOPBACK_ORIGINS[0] ? [origin] : [origin, ...LOOPBACK_ORIGINS];
+  const origins = [siteOrigin()];
+  for (const loopback of LOOPBACK_ORIGINS) {
+    if (!origins.includes(loopback)) origins.push(loopback);
+  }
+  return origins;
 };
 
 const corsHeaders = (request: Request): Record<string, string> => {

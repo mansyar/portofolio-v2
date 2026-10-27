@@ -84,7 +84,9 @@ const classifyEntry = (entry: string): string | null => {
   const value = mapped ? mapped[1] : candidate;
 
   const octets = parseIpv4(value);
-  if (octets) return isPublicIpv4(octets) ? value : null;
+  // Joined back from the parsed octets so `203.000.113.7` cannot become a second
+  // bucket for `203.0.113.7`.
+  if (octets) return isPublicIpv4(octets) ? octets.join(".") : null;
 
   return isPublicIpv6(value) ? value : null;
 };

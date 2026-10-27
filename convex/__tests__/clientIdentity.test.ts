@@ -71,6 +71,12 @@ describe("resolveClientIdentity", () => {
     expect(resolveClientIdentity(headers({ "x-forwarded-for": "::ffff:127.0.0.1" }))).toBeNull();
   });
 
+  it("canonicalizes zero-padded octets so one address cannot hold two buckets", () => {
+    expect(resolveClientIdentity(headers({ "x-forwarded-for": "203.000.113.007" }))).toBe(
+      "203.0.113.7"
+    );
+  });
+
   it("ignores trailing whitespace and empty segments", () => {
     expect(resolveClientIdentity(headers({ "x-forwarded-for": " 203.0.113.7 , ," }))).toBe(
       "203.0.113.7"
