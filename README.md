@@ -235,7 +235,9 @@ per hour per token and recorded in the activity log as `agent@content-api`.
 ### Usage
 
 ```bash
-BASE=https://api.ansyar-world.top/http
+# The deployment origin, i.e. VITE_CONVEX_URL. HTTP routes sit at its root:
+# https://api.ansyar-world.top/contact, never .../http/contact.
+BASE=https://api.ansyar-world.top
 
 curl -X POST "$BASE/content/blog" \
   -H "Authorization: Bearer $CONTENT_API_TOKEN" \
