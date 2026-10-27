@@ -102,7 +102,7 @@
   `src/components/features/NewsletterForm.tsx`, `vite.config.ts`,
   `conductor/tech-stack.md`, `conductor/workflow.md`, `docs/PRD.md`
 - **Verification:** `pnpm build`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Contact form** — covers: FR-10, AC-8
   - [ ] **P3.T1.1: Replace the mutation call with a `fetch` to `/contact` built from `VITE_CONVEX_URL`**
