@@ -65,7 +65,7 @@
 - **Covers:** FR-2, FR-4, FR-7, FR-8, FR-9, NFR-3, NFR-1, AC-1, AC-3, AC-4, AC-8, AC-9, AC-10, AC-13, AC-15
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.create.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P3.T1: Internal create mutation** — covers: FR-2, FR-4
   - [ ] **P3.T1.1:** Insert with `draft` status unless `publish: true`; stamp `publishedAt` on first publish
