@@ -81,25 +81,22 @@
 - **Covers:** FR-7 through FR-10, AC-7, AC-8, AC-9
 - **Touches:** `src/components/layout/MobileNav.tsx`, `src/components/Header.tsx`, `src/components/layout/__tests__/mobile-nav.test.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** verified
 
-- [ ] **P3.T1: One active-route rule** — covers: FR-7, AC-7
-  - [ ] **P3.T1.1: Derive the desktop rule once — exact match for `/`, prefix match otherwise — and let both rows consume it**
-  - [ ] **P3.T1.2: Add a non-colour indicator (weight, border or marker) for the active destination**
-  - [ ] **P3.T1.3: Cover both an active and an inactive route, and assert no second link claims the active state**
-- [ ] **P3.T2: Exposure rules** — covers: FR-8, FR-9, AC-8
-  - [ ] **P3.T2.1: At ≥768 px the trigger and panel are removed from the user and assistive-technology surface**
-  - [ ] **P3.T2.2: Exactly one navigation landmark is exposed at any width, including before hydration**
-- [ ] **P3.T3: Motion preference** — covers: FR-10, AC-9
-  - [ ] **P3.T3.1: Declare the open/close transition and suppress it under `prefers-reduced-motion: reduce`**
-  - [ ] **P3.T3.2: Cover both paths — with and without the motion preference**
+- [x] **P3.T1: One active-route rule** — covers: FR-7, AC-7
+  - [x] **P3.T1.1: Derive the desktop rule once — exact match for `/`, prefix match otherwise — and let both rows consume it**
+  - [x] **P3.T1.2: Add a non-colour indicator (weight, border or marker) for the active destination**
+  - [x] **P3.T1.3: Cover both an active and an inactive route, and assert no second link claims the active state**
+- [x] **P3.T2: Exposure rules** — covers: FR-8, FR-9, AC-8
+  - [x] **P3.T2.1: At ≥768 px the trigger and panel are removed from the user and assistive-technology surface**
+  - [x] **P3.T2.2: Exactly one navigation landmark is exposed at any width, including before hydration**
+- [x] **P3.T3: Motion preference** — covers: FR-10, AC-9
+  - [x] **P3.T3.1: Declare the open/close transition and suppress it under `prefers-reduced-motion: reduce`**
+  - [x] **P3.T3.2: Cover both paths — with and without the motion preference**
 
-<!--
-The primary appends after acceptance:
-**Result:** verified
-**Checkpoint:** <short-sha>
+**Result:** verified (active rule shared, exposure pinned, motion proven in the emitted CSS)
+**Checkpoint:** `7aa5dee`
 **Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-3.md
--->
 
 ## Phase 4: Accessibility pass, ratchet, and the build gate
 
