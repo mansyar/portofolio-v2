@@ -195,8 +195,14 @@ finding was deferred — D1–D4 were all out of scope from the start.
 
 ## Doc sync
 
-`pending` — the pre-review sync updated `conductor/workflow.md` (coverage floor) and
-`docs/PROGRESS.md` (changelog); the post-review sync is recorded after Phase R1.
+`updated` — the pre-review sync recorded the coverage floor in `conductor/workflow.md`
+and the track's changelog line in `docs/PROGRESS.md`. After Phase R1 the measurement moved
+(193 → 195 tests, 32.66 / 24.34 → 32.9 / 24.67), so the post-review sync refreshed those
+figures. No other document named the changed behaviour: the delivered navigation, its
+dismissal paths, and the raised floor were all already recorded, and the R1 fixes close
+two edge cases rather than adding a surface to document. The two remaining documentation
+drift items (`tech-stack.md`, the `PROGRESS.md` header) stay deferred to issue #14,
+because they are not this track's statements to correct.
 
 ## History
 
