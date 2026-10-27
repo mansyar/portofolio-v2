@@ -14,7 +14,7 @@
 - **Covers:** FR-1, FR-10, NFR-2, NFR-4, AC-2, AC-14, AC-16
 - **Touches:** `convex/lib/contentAuth.ts`, `convex/http.ts`, `convex/__tests__/contentAuth.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Constant-time token verification helper** — covers: FR-1
   - [ ] **P1.T1.1:** SHA-256 hash of the presented token, compared against `CONTENT_API_TOKEN_SHA256`
