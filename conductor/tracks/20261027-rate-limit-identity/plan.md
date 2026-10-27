@@ -132,7 +132,7 @@
   `convex/lib/clientIdentity.ts`, `convex/__tests__/clientIdentity.test.ts`,
   `convex/lib/http.ts`
 - **Verification:** `pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **R1.T1: Cover the client transport with tests** — covers: F1
   - [ ] Exercise the endpoint URL (including a trailing slash), the method and body
