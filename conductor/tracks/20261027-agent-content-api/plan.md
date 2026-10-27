@@ -141,7 +141,7 @@
 - **Covers:** F1, F2, F3
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.create.test.ts`, `convex/__tests__/contentApi.update.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **R1.T1: Resolve F1** — covers: F1
 - [ ] **R1.T2: Resolve F2** — covers: F2
