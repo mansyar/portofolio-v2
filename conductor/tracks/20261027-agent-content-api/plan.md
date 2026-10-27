@@ -14,20 +14,24 @@
 - **Covers:** FR-1, FR-10, NFR-2, NFR-4, AC-2, AC-14, AC-16
 - **Touches:** `convex/lib/contentAuth.ts`, `convex/http.ts`, `convex/__tests__/contentAuth.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Constant-time token verification helper** — covers: FR-1
-  - [ ] **P1.T1.1:** SHA-256 hash of the presented token, compared against `CONTENT_API_TOKEN_SHA256`
-  - [ ] **P1.T1.2:** Constant-time comparison; a missing or malformed env value denies every request
-- [ ] **P1.T2: Authorization extraction and 401 contract** — covers: FR-1, FR-10, AC-2, AC-16
-  - [ ] **P1.T2.1:** Parse `Authorization: Bearer`, rejecting a malformed scheme exactly as a wrong token
-  - [ ] **P1.T2.2:** Unified `{ error }` body with lowercase, cause-first wording
-- [ ] **P1.T3: Payload cap enforced before parsing** — covers: NFR-2, AC-14
-  - [ ] **P1.T3.1:** 256 KB ceiling on a declared length and on the read body, answering 413
-- [ ] **P1.T4: Register the route group without CORS** — covers: NFR-4
-  - [ ] **P1.T4.1:** Routes wired into `convex/http.ts`; no `Access-Control-*` headers emitted
-- [ ] **P1.T5: Transport tests** — covers: AC-2, AC-14, AC-16
-  - [ ] **P1.T5.1:** Table-driven cases for missing, malformed, wrong, and valid tokens; 413; identical wrong-token shapes
+- [x] **P1.T1: Constant-time token verification helper** — covers: FR-1
+  - [x] **P1.T1.1:** SHA-256 hash of the presented token, compared against `CONTENT_API_TOKEN_SHA256`
+  - [x] **P1.T1.2:** Constant-time comparison; a missing or malformed env value denies every request
+- [x] **P1.T2: Authorization extraction and 401 contract** — covers: FR-1, FR-10, AC-2, AC-16
+  - [x] **P1.T2.1:** Parse `Authorization: Bearer`, rejecting a malformed scheme exactly as a wrong token
+  - [x] **P1.T2.2:** Unified `{ error }` body with lowercase, cause-first wording
+- [x] **P1.T3: Payload cap enforced before parsing** — covers: NFR-2, AC-14
+  - [x] **P1.T3.1:** 256 KB ceiling on a declared length and on the read body, answering 413
+- [x] **P1.T4: Register the route group without CORS** — covers: NFR-4
+  - [x] **P1.T4.1:** Routes wired into `convex/http.ts`; no `Access-Control-*` headers emitted
+- [x] **P1.T5: Transport tests** — covers: AC-2, AC-14, AC-16
+  - [x] **P1.T5.1:** Table-driven cases for missing, malformed, wrong, and valid tokens; 413; identical wrong-token shapes
+
+**Result:** verified
+**Checkpoint:** 5ee6877
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-1.md
 
 ## Phase 2: Markdown pipeline
 
