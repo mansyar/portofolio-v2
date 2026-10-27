@@ -27,8 +27,15 @@ Both findings were real and are fixed in the code, not waived.
 ## F1 — The panel stayed open across the breakpoint
 
 **Fix.** `MobileNav` now subscribes to `(min-width: 768px)` while mounted and closes the
-panel when the query starts matching. The breakpoint is kept in one constant shared with
-the existing exposure rule, so the two cannot drift.
+panel when the query starts matching, removing the listener on unmount.
+
+On the breakpoint's single source of truth, stated precisely: the exposure rule is the
+`md:hidden` class, so the JS constant cannot read it. The constant mirrors the `md`
+breakpoint, and `src/styles/globals.css` declares no `@theme` override for it — Tailwind's
+default 768 px is what both the class and the constant resolve to, and the constant's
+doc comment names that relationship. A future customised `--breakpoint-md` would have to
+update the constant too; recording it is the right treatment for a maintainability note,
+not a finding against this fix.
 
 **Test.** The new case fires the registered change handler on the mocked media query and
 asserts `aria-expanded` is back to `"false"` and the panel is `hidden`. The setup's
@@ -63,6 +70,9 @@ None. Both files changed are inside this phase's `Touches`.
 - **No shared test infrastructure was altered.** The `matchMedia` mock in
   `vitest.setup.tsx` already exposed `addEventListener`; the new assertions target the
   handler the component registers, and no assertion in the existing cases was relaxed.
+- **`pnpm format:check` is configured as the same `biome check .` invocation as
+  `pnpm lint`** in `package.json`, so the two layers report identical output; both exit 0
+  with the 21 pre-existing warnings. Pre-existing configuration, untouched here.
 - **`MobileNav.css` did not need to change** for F2 even though the plan listed it: the
   height cap and scroll are plain single-declaration rules Tailwind already expresses, so
   the co-located sheet still holds only the keyframe that forced its existence.
