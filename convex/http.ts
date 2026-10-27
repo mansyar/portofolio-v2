@@ -4,6 +4,12 @@ import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { auth } from "./auth";
 import { resolveClientIdentity } from "./lib/clientIdentity";
+import {
+  contentJsonResponse,
+  isAuthorized,
+  MAX_CONTENT_BODY_BYTES,
+  readCappedBody,
+} from "./lib/contentAuth";
 import { jsonResponse, preflightResponse } from "./lib/http";
 
 const http = httpRouter();
@@ -169,6 +175,66 @@ http.route({
       console.error("Newsletter subscription failed:", error);
       return jsonResponse(request, { error: "Subscription failed. Please try again later." }, 500);
     }
+  }),
+});
+
+// =============================================================================
+// Content API
+// =============================================================================
+//
+// Server-to-server writes for the CMS. Unlike the two public forms above, these
+// routes publish no CORS headers: a browser is never a legitimate caller, and an
+// allowlist would only widen the surface.
+
+/**
+ * Applies the transport rules shared by every content route and returns the body
+ * so a handler does not read it twice.
+ *
+ * The size check runs before authentication so an oversized request is refused
+ * without the body being buffered, and both rejections carry the same shape the
+ * callers parse.
+ */
+const requireContentAccess = async (
+  request: Request
+): Promise<{ ok: true; body: string } | { ok: false; response: Response }> => {
+  const read = await readCappedBody(request);
+  if (!read.ok) {
+    return {
+      ok: false,
+      response: contentJsonResponse(
+        { error: `request body exceeds ${MAX_CONTENT_BODY_BYTES} bytes` },
+        413
+      ),
+    };
+  }
+
+  const authorized = await isAuthorized(
+    request.headers.get("authorization"),
+    process.env.CONTENT_API_TOKEN_SHA256
+  );
+  if (!authorized) {
+    return {
+      ok: false,
+      response: contentJsonResponse(
+        { error: "unauthorized: a valid bearer token is required" },
+        401
+      ),
+    };
+  }
+
+  return { ok: true, body: read.text };
+};
+
+http.route({
+  path: "/content/blog",
+  method: "POST",
+  handler: httpAction(async (_ctx, request) => {
+    const access = await requireContentAccess(request);
+    if (!access.ok) return access.response;
+
+    // The transport contract is all this phase owns; the create mutation that
+    // consumes `access.body` lands in the next phase of the track.
+    return contentJsonResponse({ error: "not implemented yet" }, 501);
   }),
 });
 
