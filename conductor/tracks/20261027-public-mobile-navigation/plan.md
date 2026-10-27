@@ -131,11 +131,15 @@
 - **Covers:** F1, F2
 - **Touches:** `src/components/layout/MobileNav.tsx`, `src/components/layout/__tests__/mobile-nav.test.tsx`, `src/components/layout/MobileNav.css`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** pending
+- **Status:** verified
 
-- [ ] **R1.T1: Close the panel when the viewport crosses the breakpoint** — covers: F1
-  - [ ] **R1.T1.1: Subscribe to the desktop media query while mounted and close the panel when it starts matching**
-  - [ ] **R1.T1.2: Cover it with a test that fires the registered change handler and asserts `aria-expanded` returns to false**
-- [ ] **R1.T2: Let the panel scroll internally when the viewport is short** — covers: F2
-  - [ ] **R1.T2.1: Cap the panel at the space below the header and give it an internal scroll**
-  - [ ] **R1.T2.2: Assert the declared contract in the test and confirm it in the emitted CSS**
+- [x] **R1.T1: Close the panel when the viewport crosses the breakpoint** — covers: F1
+  - [x] **R1.T1.1: Subscribe to the desktop media query while mounted and close the panel when it starts matching**
+  - [x] **R1.T1.2: Cover it with a test that fires the registered change handler and asserts `aria-expanded` returns to false**
+- [x] **R1.T2: Let the panel scroll internally when the viewport is short** — covers: F2
+  - [x] **R1.T2.1: Cap the panel at the space below the header and give it an internal scroll**
+  - [x] **R1.T2.2: Assert the declared contract in the test and confirm it in the emitted CSS**
+
+**Result:** verified (both Medium findings fixed in the code; `MobileNav.css` proved unnecessary for F2)
+**Checkpoint:** `b65e346`
+**Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-R1.md
