@@ -34,6 +34,7 @@ and the container is closed.
 | Styling | **Tailwind CSS 4 is authoritative**; CSS custom properties in `variables.css` supply the design tokens Tailwind consumes, and co-located `*.css` files remain for what Tailwind cannot express (keyframes, terminal chrome) |
 | Component primitives | Local, hand-built (`src/components/ui/`); `clsx` + `tailwind-merge`; `lucide-react` and `react-icons` icons |
 | Rich text | Tiptap 3 (StarterKit, Link, Image, CodeBlockLowlight) for authoring; `react-markdown` + `remark-gfm` for rendering |
+| Markdown → HTML (server) | `marked` 16 through a restricted renderer in `convex/lib/markdown.ts`, for content-API bodies only |
 | PDF | `@react-pdf/renderer` 4.3 — resume generated from CMS data |
 | Validation | Convex validators server-side, Zod 4 client-side |
 | Sanitization | `isomorphic-dompurify` |
@@ -182,6 +183,9 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 `CONVEX_SELF_HOSTED_ADMIN_KEY`, `CONVEX_SITE_URL`, `JWT_PRIVATE_KEY`, `JWKS`,
 `ADMIN_EMAIL`, `VITE_UMAMI_URL`, `VITE_UMAMI_WEBSITE_ID`. Optional:
 `SLACK_WEBHOOK_URL`, `RESEND_API_KEY`, plus Convex-side `UMAMI_*`.
+For agent authoring, `CONTENT_API_TOKEN` goes in `.env.local` and its SHA-256 digest in
+`CONTENT_API_TOKEN_SHA256` on the deployment; both are optional, and without them the
+content routes answer 401.
 
 ### Site head and origin (2026-10-26)
 
@@ -228,6 +232,37 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
   canonical origin was allowed unconditionally. Responses carry `Vary: Origin` and
   preflight answers 204. A JSON `POST` preflights, so a missing handler fails in the
   browser while tests pass.
+
+### Content API and agent writes (2026-10-27)
+
+- **A third write path, server-to-server.** `/content/*` routes in `convex/http.ts` let an
+  agent create, edit, publish, and unpublish blog posts without an admin session. They
+  are the second deliberate exception to "mutations go through `use-toast-mutation`",
+  and unlike the two browser forms they publish **no CORS headers**: a page is never a
+  legitimate caller.
+- **Credential.** `Authorization: Bearer <token>`. Only the SHA-256 digest is configured
+  on the deployment as `CONTENT_API_TOKEN_SHA256`; the raw value stays in gitignored
+  `.env.local` as `CONTENT_API_TOKEN`. A missing, empty, or malformed digest denies every
+  request, and the comparison is constant-time. The token is never logged or echoed.
+- **The admin rule is replaced by a reachability argument, not waived.** `create`,
+  `update`, and `setPublished` live in `convex/contentApi.ts` as `internalMutation`s, so
+  the Convex client API cannot call them; the only caller is the HTTP action that has
+  already verified the token. `requireAdmin` is absent because there is no session, and
+  a test asserts these functions are not public.
+- **Markdown in, HTML out, safe by construction.** Bodies arrive as markdown and are
+  rendered by a restricted `marked` renderer (`convex/lib/markdown.ts`): raw HTML is
+  escaped, only allowlisted tags are emitted, and link/image destinations must be
+  `http`, `https`, `mailto`, or relative. DOMPurify cannot be used here because Convex
+  HTTP routes have no Node APIs and it needs `jsdom`; `sanitizeHtml` still runs at
+  render as the final boundary.
+- **Metering and attribution.** Writes are capped at 60 per hour per credential through
+  the existing `rateLimits` table, keyed on the first 16 hex characters of the digest and
+  never on the token itself. Every write appends an `activityLogs` row with
+  `actorEmail: "agent@content-api"`, so automated edits stay distinguishable from the
+  owner's.
+- **Transport contract.** 256 KB body cap, `{ error }` JSON with 400 / 401 / 404 / 409 /
+  413 / 429 / 500, and no delete route: deletion stays a human action in the admin UI.
+  Drafts remain invisible to every public query, feed, and the sitemap.
 
 ## Constraints
 
