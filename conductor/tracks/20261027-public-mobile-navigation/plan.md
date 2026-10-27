@@ -106,25 +106,22 @@
 - **Covers:** FR-11, AC-10, AC-11, NFR-1, NFR-2, NFR-4, NFR-6
 - **Touches:** `src/components/layout/__tests__/mobile-nav.a11y.test.tsx`, `src/components/layout/MobileNav.tsx`, `vite.config.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm build`
-- **Status:** pending
+- **Status:** verified
 
-- [ ] **P4.T1: Accessibility test file** — covers: FR-11, AC-10
-  - [ ] **P4.T1.1: Assert role, accessible name, state and ≥44×44 px target for every control the track adds**
-  - [ ] **P4.T1.2: Assert a `focus-visible` style exists on the trigger in both themes**
-- [ ] **P4.T2: Guards** — covers: NFR-1, NFR-2, NFR-4
-  - [ ] **P4.T2.1: No new Biome diagnostics; the seven a11y rules stay at `error`**
-  - [ ] **P4.T2.2: No admin module, layout or import reaches the public header**
-  - [ ] **P4.T2.3: No new runtime dependency; Tailwind over existing tokens first, a co-located `.css` file only where a utility cannot express the rule**
-- [ ] **P4.T3: Ratchet and build** — covers: NFR-6, AC-11
-  - [ ] **P4.T3.1: Raise the `vite.config.ts` thresholds to the measured baseline if this track lifted coverage; never lower the floor**
-  - [ ] **P4.T3.2: The production build compiles and the header renders in the built output**
+- [x] **P4.T1: Accessibility test file** — covers: FR-11, AC-10
+  - [x] **P4.T1.1: Assert role, accessible name, state and ≥44×44 px target for every control the track adds**
+  - [x] **P4.T1.2: Assert a `focus-visible` style exists on the trigger in both themes**
+- [x] **P4.T2: Guards** — covers: NFR-1, NFR-2, NFR-4
+  - [x] **P4.T2.1: No new Biome diagnostics; the seven a11y rules stay at `error`**
+  - [x] **P4.T2.2: No admin module, layout or import reaches the public header**
+  - [x] **P4.T2.3: No new runtime dependency; Tailwind over existing tokens first, a co-located `.css` file only where a utility cannot express the rule**
+- [x] **P4.T3: Ratchet and build** — covers: NFR-6, AC-11
+  - [x] **P4.T3.1: Raise the `vite.config.ts` thresholds to the measured baseline if this track lifted coverage; never lower the floor**
+  - [x] **P4.T3.2: The production build compiles and the header renders in the built output**
 
-<!--
-The primary appends after acceptance:
-**Result:** verified
-**Checkpoint:** <short-sha>
+**Result:** verified (a11y contract covered, floor raised to the measured baseline, build and SSR checked)
+**Checkpoint:** `a84b34f`
 **Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-4.md
--->
 
 <!--
 Review fixes are appended by `conductor-review` as:
