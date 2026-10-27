@@ -49,6 +49,19 @@ Workflows are invoked using slash commands:
 | `/check`      | `check.md`      | Run TypeScript, lint, and build checks                  |
 | `/types`      | `types.md`      | Regenerate Convex TypeScript types                      |
 
+## Posting Content
+
+Publishing a blog post does **not** go through this repo. The deployment exposes a
+token-authenticated HTTP API for it, so an agent can draft, edit, publish, and
+unpublish posts without a browser session or a code change:
+
+| Reference | Path | Description |
+| --------- | ---- | ----------- |
+| Content API | [../docs/content-api.md](../docs/content-api.md) | Routes, request and response shapes, error contract, limits |
+
+Blog posts only — projects, skills, uses, resume, and settings stay in `/admin`. The token
+lives in `.env.local`; only its digest is configured on the deployment. Never print it.
+
 ## Usage
 
 1. **Following Rules**: The AI agent automatically reads and follows `project-rules.md` when working on this project.

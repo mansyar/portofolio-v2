@@ -252,6 +252,7 @@ curl -X POST "$BASE/content/blog/deploying-with-convex/publish" \
 
 - [PRD.md](./docs/PRD.md) — Product Requirements Document
 - [PROGRESS.md](./docs/PROGRESS.md) — Development progress tracking
+- [content-api.md](./docs/content-api.md) — Agent guide for posting blog content through the Content API
 
 ---
 
