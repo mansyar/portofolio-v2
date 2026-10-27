@@ -259,9 +259,16 @@ const readOptionalBoolean = (
   return typeof value === "boolean" ? { ok: true, value } : { ok: false };
 };
 
-const readStringList = (body: Record<string, unknown>, key: string): Field<string[]> => {
+/**
+ * Reads a tag list. An absent key is `undefined`, never an empty list: a PATCH
+ * that does not mention tags must not clear them.
+ */
+const readStringList = (
+  body: Record<string, unknown>,
+  key: string
+): Field<string[] | undefined> => {
   const value = body[key];
-  if (value === undefined || value === null) return { ok: true, value: [] };
+  if (value === undefined || value === null) return { ok: true, value: undefined };
   if (!Array.isArray(value)) return { ok: false };
 
   const items: string[] = [];
@@ -291,18 +298,31 @@ const contentFailureResponse = (error: unknown): Response | null => {
   return contentJsonResponse({ error: message }, status);
 };
 
-/** Reads the slug off a prefixed route, forgiving a base path in front of it. */
-const slugFromRequest = (request: Request): string => {
+type ContentPath = { slug: string; action: "publish" | "unpublish" | null };
+
+/**
+ * Reads the slug and trailing action off a prefixed route, forgiving a base path
+ * in front of it. Convex routes match by prefix, not by parameter, so the shape
+ * is parsed here rather than declared.
+ */
+const parseContentPath = (request: Request): ContentPath => {
   const path = new URL(request.url).pathname;
   const index = path.lastIndexOf(CONTENT_BLOG_PREFIX);
-  if (index === -1) return "";
+  if (index === -1) return { slug: "", action: null };
 
   const remainder = path.slice(index + CONTENT_BLOG_PREFIX.length).replace(/\/+$/, "");
 
   try {
-    return decodeURIComponent(remainder);
+    for (const action of ["publish", "unpublish"] as const) {
+      const suffix = `/${action}`;
+      if (remainder.endsWith(suffix)) {
+        return { slug: decodeURIComponent(remainder.slice(0, -suffix.length)), action };
+      }
+    }
+
+    return { slug: decodeURIComponent(remainder), action: null };
   } catch {
-    return "";
+    return { slug: "", action: null };
   }
 };
 
@@ -358,7 +378,7 @@ http.route({
         readingTime: converted.readingTime,
         coverImageUrl: coverImageUrl.value,
         categorySlug: categorySlug.value,
-        tagSlugs: tags.value,
+        tagSlugs: tags.value ?? [],
         publish: publish.value ?? false,
         fingerprint: access.fingerprint,
       });
@@ -409,13 +429,114 @@ http.route({
     const access = await requireContentAccess(request);
     if (!access.ok) return access.response;
 
-    const slug = slugFromRequest(request);
+    const { slug, action } = parseContentPath(request);
+    if (action !== null) return contentJsonResponse({ error: "no such route" }, 404);
     if (slug === "") return contentJsonResponse({ error: "slug is required" }, 400);
 
     const post = await ctx.runQuery(internal.contentApi.getBySlug, { slug });
     if (!post) return contentJsonResponse({ error: `post not found: ${slug}` }, 404);
 
     return contentJsonResponse({ post }, 200);
+  }),
+});
+
+http.route({
+  pathPrefix: CONTENT_BLOG_PREFIX,
+  method: "PATCH",
+  handler: httpAction(async (ctx, request) => {
+    const access = await requireContentAccess(request);
+    if (!access.ok) return access.response;
+
+    const { slug, action } = parseContentPath(request);
+    if (action !== null) return contentJsonResponse({ error: "no such route" }, 404);
+    if (slug === "") return contentJsonResponse({ error: "slug is required" }, 400);
+
+    const payload = parseJson(access.body);
+    if (!isRecord(payload)) {
+      return contentJsonResponse({ error: "invalid request body: expected a JSON object" }, 400);
+    }
+
+    const title = readOptionalString(payload, "title");
+    const excerpt = readOptionalString(payload, "excerpt");
+    const coverImageUrl = readOptionalString(payload, "coverImageUrl");
+    const categorySlug = readOptionalString(payload, "categorySlug");
+    const markdown = readOptionalString(payload, "bodyMarkdown");
+    const tags = readStringList(payload, "tags");
+
+    if (!title.ok) return contentJsonResponse({ error: "title must be a string" }, 400);
+    if (!excerpt.ok) return contentJsonResponse({ error: "excerpt must be a string" }, 400);
+    if (!coverImageUrl.ok) {
+      return contentJsonResponse({ error: "coverImageUrl must be a string" }, 400);
+    }
+    if (!categorySlug.ok) {
+      return contentJsonResponse({ error: "categorySlug must be a string" }, 400);
+    }
+    if (!markdown.ok) {
+      return contentJsonResponse({ error: "bodyMarkdown must be a string" }, 400);
+    }
+    if (!tags.ok) return contentJsonResponse({ error: "tags must be an array of slugs" }, 400);
+
+    let body: { html: string; readingTime: number } | undefined;
+    if (markdown.value !== undefined) {
+      const converted = convertMarkdown(markdown.value);
+      if (!converted.ok) return contentJsonResponse({ error: converted.error }, 400);
+      body = { html: converted.html, readingTime: converted.readingTime };
+    }
+
+    try {
+      const updated = await ctx.runMutation(internal.contentApi.update, {
+        slug,
+        title: title.value,
+        excerpt: excerpt.value,
+        body,
+        coverImageUrl: coverImageUrl.value,
+        categorySlug: categorySlug.value,
+        tagSlugs: tags.value,
+        fingerprint: access.fingerprint,
+      });
+
+      return contentJsonResponse(updated, 200);
+    } catch (error) {
+      const failure = contentFailureResponse(error);
+      if (failure) return failure;
+
+      console.error("Content API update failed:", error);
+      return contentJsonResponse({ error: "unable to save the post" }, 500);
+    }
+  }),
+});
+
+http.route({
+  pathPrefix: CONTENT_BLOG_PREFIX,
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const access = await requireContentAccess(request);
+    if (!access.ok) return access.response;
+
+    const { slug, action } = parseContentPath(request);
+    if (action === null) {
+      return contentJsonResponse(
+        { error: `no such route: use ${CONTENT_BLOG_PATH} to create a post` },
+        404
+      );
+    }
+    if (slug === "") return contentJsonResponse({ error: "slug is required" }, 400);
+
+    try {
+      const result = await ctx.runMutation(internal.contentApi.setPublished, {
+        slug,
+        publish: action === "publish",
+        fingerprint: access.fingerprint,
+      });
+
+      return contentJsonResponse(result, 200);
+    } catch (error) {
+      const failure = contentFailureResponse(error);
+      if (failure) return failure;
+
+      console.error(`Content API ${action} failed:`, error);
+      return contentJsonResponse({ error: `unable to ${action} the post` }, 500);
+    }
   }),
 });
 
