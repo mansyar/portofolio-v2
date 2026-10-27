@@ -14,3 +14,5 @@
 - [x] **Track: Rate Limit Identity** — [20261027-rate-limit-identity](./archive/20261027-rate-limit-identity/index.md) — bug — high
 
 - [x] **Track: Public Mobile Navigation** — [20261027-public-mobile-navigation](./archive/20261027-public-mobile-navigation/index.md) — bug — high
+
+- [ ] **Track: Blog Content API for Agent Authoring** — [20261027-agent-content-api](./tracks/20261027-agent-content-api/index.md) — feature — medium
