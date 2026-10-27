@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useLocation } from "@tanstack/react-router";
 import Header from "../../Header";
 
@@ -64,8 +64,30 @@ const mockedUseLocation = useLocation as unknown as {
   mockReturnValue: (value: { pathname: string }) => void;
 };
 
+type MediaChangeListener = (event: { matches: boolean }) => void;
+
+const mediaChangeListeners: MediaChangeListener[] = [];
+
+beforeEach(() => {
+  mediaChangeListeners.length = 0;
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: (_type: string, listener: MediaChangeListener) => {
+        mediaChangeListeners.push(listener);
+      },
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  );
+});
+
 afterEach(() => {
   mockedUseLocation.mockReturnValue({ pathname: "/" });
+  vi.unstubAllGlobals();
 });
 
 function openTrigger(): HTMLElement {
@@ -257,5 +279,32 @@ describe("panel motion", () => {
     render(<Header />);
 
     expect(panelOf(openTrigger()).classList.contains("mobile-nav-panel")).toBe(true);
+  });
+});
+
+describe("viewport changes", () => {
+  it("closes the panel when the viewport crosses into the desktop layout", () => {
+    render(<Header />);
+
+    const trigger = openMenu();
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    // The component must have subscribed, or the assertion below would pass vacuously.
+    expect(mediaChangeListeners.length).toBeGreaterThan(0);
+
+    act(() => {
+      for (const listener of mediaChangeListeners) listener({ matches: true });
+    });
+
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(exposedPanelLinks(trigger)).toHaveLength(0);
+  });
+
+  it("caps the panel so a short viewport scrolls it instead of cutting destinations off", () => {
+    render(<Header />);
+
+    const classes = panelOf(openTrigger()).className;
+    expect(classes).toMatch(/max-h-\[calc\(100vh_-_4rem\)\]/);
+    expect(classes).toMatch(/\boverflow-y-auto\b/);
   });
 });

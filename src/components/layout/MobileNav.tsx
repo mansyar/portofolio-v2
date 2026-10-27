@@ -32,6 +32,12 @@ export function isActiveDestination(pathname: string, path: string): boolean {
 const FOCUS_RING =
   "focus-visible:outline-2 focus-visible:outline-[color:var(--focus-ring-color)] focus-visible:outline-offset-[length:var(--focus-ring-offset)]";
 
+/** The breakpoint at which the header's own row takes the navigation over. */
+const DESKTOP_QUERY = "(min-width: 768px)";
+
+/** Space the header occupies, and therefore the most the panel may use. */
+const PANEL_HEIGHT = "max-h-[calc(100vh_-_4rem)]";
+
 /**
  * The public header's navigation below the `md` breakpoint.
  *
@@ -88,6 +94,21 @@ export function MobileNav({ destinations }: MobileNavProps) {
     };
   }, [isOpen]);
 
+  // A viewport that grows into the desktop layout takes the navigation over entirely, so
+  // the panel is closed rather than left open behind a wrapper that hides it — otherwise
+  // it reappears, already expanded, on the way back down.
+  useEffect(() => {
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsOpen(false);
+    };
+
+    desktop.addEventListener("change", closeOnDesktop);
+
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
   return (
     <div className="md:hidden">
       <button
@@ -110,7 +131,7 @@ export function MobileNav({ destinations }: MobileNavProps) {
         id={panelId}
         hidden={!isOpen}
         aria-label="Mobile navigation"
-        className="mobile-nav-panel absolute inset-x-0 top-full border-b border-(--color-border) bg-(--color-bg-primary) shadow-lg"
+        className={`mobile-nav-panel absolute inset-x-0 top-full border-b border-(--color-border) bg-(--color-bg-primary) shadow-lg ${PANEL_HEIGHT} overflow-y-auto`}
       >
         <ul className="container mx-auto flex flex-col px-4 py-2 md:px-6">
           {destinations.map((destination) => {
