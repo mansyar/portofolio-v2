@@ -122,3 +122,22 @@
 **Result:** verified (both callers migrated, floor raised, full gate and build green)
 **Checkpoint:** `f20dc44`
 **Evidence:** conductor/tracks/20261027-rate-limit-identity/verification/phase-3.md
+
+## Phase R1: Review Fixes
+
+- **Goal:** Resolve review findings F1, F2, and F3 without changing product behaviour.
+- **Depends on:** Phase 3
+- **Covers:** F1, F2, F3
+- **Touches:** `src/lib/__tests__/convex-http.test.ts`, `src/lib/convex/http.ts`,
+  `convex/lib/clientIdentity.ts`, `convex/__tests__/clientIdentity.test.ts`,
+  `convex/lib/http.ts`
+- **Verification:** `pnpm test`
+- **Status:** pending
+
+- [ ] **R1.T1: Cover the client transport with tests** — covers: F1
+  - [ ] Exercise the endpoint URL (including a trailing slash), the method and body
+  - [ ] Cover a non-JSON error response, a server message, the fallback, and a missing `VITE_CONVEX_URL`
+- [ ] **R1.T2: Canonicalize IPv4 octets** — covers: F2
+  - [ ] Return the joined octets from `classifyEntry` and pin zero-padded input with a resolver case
+- [ ] **R1.T3: Deduplicate the CORS allowlist** — covers: F3
+  - [ ] Append each loopback origin that is not already present instead of branching on the site origin
