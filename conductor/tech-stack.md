@@ -220,9 +220,14 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
 - **Transport assumption.** One reverse proxy and no CDN. An edge that terminates the
   client connection would make every request arrive from its own address; that is a
   new design change, not a configuration tweak.
-- **CORS.** `convex/lib/http.ts` allows the `SITE_URL` origin plus loopback
-  development, sends `Vary: Origin`, and answers preflight with 204. A JSON `POST`
-  preflights, so a missing handler fails in the browser while tests pass.
+- **CORS.** `convex/lib/http.ts` always allows the canonical
+  `https://ansyar-world.top`, adds the origin of `SITE_URL` when that value parses as a
+  URL, and adds loopback development. The allowlist is never derived from `SITE_URL`
+  alone: production sets it to the HTTP base `https://api.ansyar-world.top/http`, and a
+  base URL is not an origin — deriving from it blocked both live forms until the
+  canonical origin was allowed unconditionally. Responses carry `Vary: Origin` and
+  preflight answers 204. A JSON `POST` preflights, so a missing handler fails in the
+  browser while tests pass.
 
 ## Constraints
 
