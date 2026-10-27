@@ -200,6 +200,30 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
   the 404 boundary set it. `public/robots.txt` keeps only `Disallow: /admin/` — token pages
   are excluded with the meta tag, not `Disallow`, so crawlers can see the signal.
 
+### Public writes and rate-limit identity (2026-10-27)
+
+- **Two writes go over HTTP, not the hook path.** `POST /contact` and
+  `POST /newsletter/subscribe` in `convex/http.ts` are the only client-reachable
+  entry points for contact submissions and newsletter signup; the corresponding
+  mutations are internal. This is the deliberate exception to "mutations go through
+  `use-toast-mutation`": the limit has to be keyed on an identity the server derives
+  from the connection, which a browser-facing mutation cannot do. Both forms call
+  `postToConvex` in `src/lib/convex/http.ts`.
+- **Identity rule.** `convex/lib/clientIdentity.ts` returns the rightmost public
+  `x-forwarded-for` entry, falling back to `x-real-ip`. A proxy appends the address it
+  saw, so anything the caller sent sits to the left of the truthful entry and is never
+  reached. No usable header means `null`, never a placeholder.
+- **Failure policy.** Contact refuses an unattributable request (429, no writes);
+  newsletter proceeds on its address-keyed limit. Neither path writes a row against a
+  shared placeholder, which is what made the previous `"unknown"` bucket a lockout
+  vector for every unresolved caller.
+- **Transport assumption.** One reverse proxy and no CDN. An edge that terminates the
+  client connection would make every request arrive from its own address; that is a
+  new design change, not a configuration tweak.
+- **CORS.** `convex/lib/http.ts` allows the `SITE_URL` origin plus loopback
+  development, sends `Vary: Origin`, and answers preflight with 204. A JSON `POST`
+  preflights, so a missing handler fails in the browser while tests pass.
+
 ## Constraints
 
 - **Self-hosting is load-bearing.** Convex, R2, Umami, and Coolify are all
@@ -217,7 +241,9 @@ Required variables: `VITE_APP_URL`, `VITE_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`,
   hand.
 - **Tight coupling to framework idioms.** Server state goes through `convexQuery` and
   `useSuspenseQuery`; mutations go through Convex React hooks wrapped by
-  `use-toast-mutation`. Deviating breaks the SSR + reactivity model.
+  `use-toast-mutation`, except the two public writes above, which must reach Convex
+  over HTTP so their limit can be keyed on the connection. Deviating elsewhere breaks
+  the SSR + reactivity model.
 - **Single package, no workspace.** `pnpm-workspace.yaml` exists solely to carry
   `allowBuilds` (esbuild, sharp) and declares no `packages:`. Do not add a `packages:` key
   or introduce a monorepo without a product-level decision.

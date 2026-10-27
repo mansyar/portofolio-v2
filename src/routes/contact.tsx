@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
-import { api } from "../../convex/_generated/api";
-import { useToastMutation } from "../hooks/use-toast-mutation";
+import { postToConvex, responseError } from "../lib/convex/http";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -11,19 +8,6 @@ import { Terminal, Send, CheckCircle, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-
-// Server function to get client IP from Traefik headers
-const getClientIp = createServerFn({ method: "GET" }).handler(async () => {
-  const request = getRequest();
-  if (!request) return "unknown";
-
-  // Traefik adds X-Forwarded-For with the client IP first
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
-  }
-  return request.headers.get("x-real-ip") || "unknown";
-});
 
 export const Route = createFileRoute("/contact")({
   component: Contact,
@@ -38,10 +22,7 @@ const contactSchema = z.object({
 });
 
 function Contact() {
-  const { mutate: submitMessage, isPending } = useToastMutation(api.contact.submit, {
-    successMessage: "message sent successfully",
-    errorMessage: "failed to send message",
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -57,29 +38,37 @@ function Contact() {
     e.preventDefault();
 
     // Validate
-    const result = contactSchema.safeParse(formData);
-    if (!result.success) {
-      toast.error("$ Validation failed", { description: result.error.issues[0].message });
+    const parsed = contactSchema.safeParse(formData);
+    if (!parsed.success) {
+      toast.error("$ Validation failed", { description: parsed.error.issues[0].message });
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      // Get client IP server-side
-      const clientIp = await getClientIp();
-
-      await submitMessage({
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
+      // The endpoint derives the rate-limit identity from this request, so the
+      // form never names the caller.
+      const submission = await postToConvex("/contact", {
+        ...parsed.data,
         honeypot: formData.website,
-        clientIp,
       });
 
+      if (!submission.ok) {
+        toast.error("$ failed to send message", {
+          description: responseError(submission.data, "Please try again later."),
+        });
+        return;
+      }
+
+      toast.success("$ message sent successfully");
       setIsSuccess(true);
       setFormData({ name: "", email: "", subject: "", message: "", website: "" });
     } catch {
-      // Handled by toast
+      toast.error("$ failed to send message", {
+        description: "Network error. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -227,10 +216,10 @@ function Contact() {
               <Button
                 type="submit"
                 className="mt-2 w-full"
-                disabled={isPending}
+                disabled={isSubmitting}
                 data-umami-event="contact-submit"
               >
-                {isPending ? (
+                {isSubmitting ? (
                   <>Sending...</>
                 ) : (
                   <>

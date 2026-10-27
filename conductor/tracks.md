@@ -10,3 +10,5 @@
 - [x] **Track: Blog Index Server Prefetch** — [20261026-blog-index-prefetch](./archive/20261026-blog-index-prefetch/index.md) — bug — high
 
 - [x] **Track: SEO Head Ownership** — [20261026-seo-head-ownership](./archive/20261026-seo-head-ownership/index.md) — bug — high
+
+- [x] **Track: Rate Limit Identity** — [20261027-rate-limit-identity](./archive/20261027-rate-limit-identity/index.md) — bug — high

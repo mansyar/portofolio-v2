@@ -1,31 +1,18 @@
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
-import { api } from "../../../convex/_generated/api";
+import { postToConvex, responseError } from "../../lib/convex/http";
 import { toast } from "sonner";
 import { Send, Loader2 } from "lucide-react";
 import "./NewsletterForm.css";
 
-// Server function to get client IP from Traefik headers. Duplicated from
-// src/routes/contact.tsx: a shared module is the right refactor, but it would
-// have to be extracted from that route first.
-const getClientIp = createServerFn({ method: "GET" }).handler(async () => {
-  const request = getRequest();
-  if (!request) return "unknown";
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
 
-  // Traefik adds X-Forwarded-For with the client IP first
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
-  }
-  return request.headers.get("x-real-ip") || "unknown";
-});
+const alreadySubscribed = (value: unknown): boolean =>
+  isRecord(value) && value.alreadySubscribed === true;
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const subscribe = useMutation(api.newsletter.subscribe);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,25 +20,27 @@ export function NewsletterForm() {
 
     setLoading(true);
     try {
-      // A missing IP header must not break signup: every unresolved caller then
-      // shares the "unknown" bucket, which is the trade-off contact.submit makes.
-      let clientIp = "unknown";
-      try {
-        clientIp = await getClientIp();
-      } catch {
-        clientIp = "unknown";
+      // The endpoint derives the rate-limit identity from this request. An
+      // unattributable connection still subscribes: the address-keyed limit
+      // covers it, and no shared placeholder bucket exists to fill up.
+      const result = await postToConvex("/newsletter/subscribe", { email });
+
+      if (!result.ok) {
+        toast.error("SUBSCRIPTION_FAILED", {
+          description: responseError(result.data, "Please try again later."),
+        });
+        return;
       }
 
-      const result = await subscribe({ email, clientIp });
-      if (result.alreadySubscribed) {
+      if (alreadySubscribed(result.data)) {
         toast.info("YOU_ARE_ALREADY_SUBSCRIBED");
       } else {
         toast.success("SUBSCRIPTION_SUCCESSFUL");
       }
       setEmail("");
-    } catch (error) {
+    } catch {
       toast.error("SUBSCRIPTION_FAILED", {
-        description: error instanceof Error ? error.message : "Unknown error",
+        description: "Network error. Please try again.",
       });
     } finally {
       setLoading(false);

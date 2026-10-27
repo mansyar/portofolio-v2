@@ -39,8 +39,8 @@ commands:
 coverage:
   gate: true
   thresholds:
-    lines: 3                          # ratcheting floor, not a target - raise as tests land
-    functions: 3
+    lines: 29                         # ratcheting floor, not a target - raise as tests land
+    functions: 21
   scope: "project"
 verification:
   layers: ["static", "unit", "build"]
@@ -75,10 +75,11 @@ pr:
 `pnpm test:coverage` runs Vitest 5 with `@vitest/coverage-v8`, scoped to `src/` and
 `convex/` and excluding `convex/_generated/**` and `src/routeTree.gen.ts`.
 
-The threshold is a **ratcheting floor**, not a target. It was set just below the
-measured baseline — 3.93% lines, 3.49% functions — because this codebase has
-31 tests over ~2,000 lines, and the original 40% goal would have required a large
-test expansion that is out of scope for the tooling track.
+The threshold is a **ratcheting floor**, not a target. The original floor was 3%
+— set just below a 3.93% lines / 3.49% functions baseline when the suite had 31
+tests over ~2,000 lines — and the 40% goal was out of scope for the tooling track.
+As of the rate-limit identity track (2026-10-27) the measured baseline is
+**30.0% lines / 21.87% functions** over 167 tests, so the floor is 29 / 21.
 
 **Raise the floor whenever a track adds tests.** Never lower it to make a phase pass.
 A phase that drops coverage below the floor has introduced untested code and must
