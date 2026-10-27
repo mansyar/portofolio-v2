@@ -52,6 +52,9 @@ describe("POST /contact", () => {
   });
 
   afterEach(() => {
+    // A scheduled notification left queued by a test must not fire against a
+    // torn-down database, which surfaces as a "write outside of transaction".
+    vi.clearAllTimers();
     vi.useRealTimers();
     vi.unstubAllEnvs();
   });
@@ -159,10 +162,15 @@ describe("POST /contact", () => {
 
 describe("HTTP surface", () => {
   beforeEach(() => {
+    // No writes happen here, but earlier tests leave scheduled work queued; fake
+    // timers keep it from running during this block.
+    vi.useFakeTimers();
     vi.stubEnv("SITE_URL", SITE_ORIGIN);
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
     vi.unstubAllEnvs();
   });
 
@@ -213,5 +221,25 @@ describe("HTTP surface", () => {
     expect(stranger.headers.get("access-control-allow-origin")).not.toBe(
       "https://elsewhere.example"
     );
+  });
+
+  it("allows the production site origin even when SITE_URL is not an origin", async () => {
+    // Production sets SITE_URL to the deployment's HTTP base
+    // (`https://api.ansyar-world.top/http`) so mail can build absolute links.
+    // Building the CORS allowlist from it silently blocked the live forms:
+    // the site origin matched nothing and the browser refused the response.
+    vi.stubEnv("SITE_URL", "https://api.ansyar-world.top/http");
+    const t = convexTest(schema, modules);
+
+    const response = await t.fetch("/contact", {
+      method: "OPTIONS",
+      headers: {
+        origin: "https://ansyar-world.top",
+        "access-control-request-method": "POST",
+      },
+    });
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("access-control-allow-origin")).toBe("https://ansyar-world.top");
   });
 });

@@ -7,21 +7,42 @@
  * `Access-Control-Allow-Origin`, which the browser turns into a blocked request.
  */
 
-const DEFAULT_SITE_ORIGIN = "https://ansyar-world.top";
+/**
+ * The canonical public origin is always allowed. It must not be derived from
+ * `SITE_URL`: that variable holds the deployment's HTTP base so mail can build
+ * absolute links, and production sets it to `https://api.ansyar-world.top/http`.
+ * Deriving the allowlist from it matched no browser origin and silently blocked
+ * both live forms — a config value that is not an origin cannot protect one.
+ */
+const CANONICAL_SITE_ORIGIN = "https://ansyar-world.top";
 
 const LOOPBACK_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"];
 
-const siteOrigin = (): string => {
+/**
+ * `SITE_URL` is still honoured when it really is an origin (staging, previews),
+ * because those deployments legitimately serve from a different host. A value
+ * that cannot be parsed as a URL contributes nothing rather than an empty entry.
+ */
+const configuredOrigin = (): string | null => {
   const configured = process.env.SITE_URL?.trim();
-  // An empty value is not an origin; treat it as unset rather than allowing "".
-  return (configured || DEFAULT_SITE_ORIGIN).replace(/\/+$/, "");
+  if (!configured) return null;
+
+  try {
+    return new URL(configured).origin;
+  } catch {
+    return null;
+  }
 };
 
 export const allowedOrigins = (): string[] => {
-  const origins = [siteOrigin()];
+  const origins = [CANONICAL_SITE_ORIGIN];
+  const configured = configuredOrigin();
+  if (configured) origins.push(configured);
+
   for (const loopback of LOOPBACK_ORIGINS) {
     if (!origins.includes(loopback)) origins.push(loopback);
   }
+
   return origins;
 };
 
