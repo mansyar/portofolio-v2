@@ -1,7 +1,6 @@
 // @vitest-environment edge-runtime
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { convexTest } from "convex-test";
-import { api } from "../_generated/api";
+import { convexTest, type TestConvex } from "convex-test";
 import schema from "../schema";
 
 // `convex-test` loads a function's module out of this map, so every Convex
@@ -10,7 +9,42 @@ import schema from "../schema";
 // mistaken for Convex modules.
 const modules = import.meta.glob(["../**/*.ts", "!../__tests__/**"]);
 
-const subscribers = (t: ReturnType<typeof convexTest>) =>
+const SITE_ORIGIN = "https://preview.example.test";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const parseSubscribeResult = (value: unknown): { success: boolean; alreadySubscribed: boolean } => {
+  if (
+    !isRecord(value) ||
+    typeof value.success !== "boolean" ||
+    typeof value.alreadySubscribed !== "boolean"
+  ) {
+    throw new Error("Unexpected newsletter response shape");
+  }
+  return { success: value.success, alreadySubscribed: value.alreadySubscribed };
+};
+
+const subscribe = async (
+  doFetch: (path: string, init?: RequestInit) => Promise<Response>,
+  email: string,
+  clientIp: string
+): Promise<{ success: boolean; alreadySubscribed: boolean }> => {
+  const response = await doFetch("/newsletter/subscribe", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      origin: SITE_ORIGIN,
+      "x-forwarded-for": clientIp,
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  expect(response.status).toBe(200);
+  return parseSubscribeResult(await response.json());
+};
+
+const subscribers = (t: TestConvex<typeof schema>) =>
   t.run(async (ctx) => ctx.db.query("newsletterSubscribers").collect());
 
 describe("newsletter.subscribe identity", () => {
@@ -19,6 +53,7 @@ describe("newsletter.subscribe identity", () => {
     // transaction, and drop the provider key so nothing reaches the network.
     vi.useFakeTimers();
     vi.stubEnv("RESEND_API_KEY", "");
+    vi.stubEnv("SITE_URL", SITE_ORIGIN);
   });
 
   afterEach(() => {
@@ -29,14 +64,8 @@ describe("newsletter.subscribe identity", () => {
   it("keeps one subscriber when one address arrives with different casing and spacing", async () => {
     const t = convexTest(schema, modules);
 
-    const first = await t.mutation(api.newsletter.subscribe, {
-      email: "  Ana@Example.com ",
-      clientIp: "203.0.113.1",
-    });
-    const second = await t.mutation(api.newsletter.subscribe, {
-      email: "ana@example.com",
-      clientIp: "203.0.113.2",
-    });
+    const first = await subscribe(t.fetch, "  Ana@Example.com ", "203.0.113.1");
+    const second = await subscribe(t.fetch, "ana@example.com", "203.0.113.2");
 
     const rows = await subscribers(t);
 
@@ -49,14 +78,8 @@ describe("newsletter.subscribe identity", () => {
   it("gives every subscriber a distinct, non-empty token", async () => {
     const t = convexTest(schema, modules);
 
-    await t.mutation(api.newsletter.subscribe, {
-      email: "one@example.com",
-      clientIp: "203.0.113.3",
-    });
-    await t.mutation(api.newsletter.subscribe, {
-      email: "two@example.com",
-      clientIp: "203.0.113.4",
-    });
+    await subscribe(t.fetch, "one@example.com", "203.0.113.3");
+    await subscribe(t.fetch, "two@example.com", "203.0.113.4");
 
     const rows = await subscribers(t);
     const tokens = rows.map((row) => row.unsubscribeToken);
@@ -69,20 +92,14 @@ describe("newsletter.subscribe identity", () => {
   it("refreshes the token and reactivates an address that returns after unsubscribing", async () => {
     const t = convexTest(schema, modules);
 
-    await t.mutation(api.newsletter.subscribe, {
-      email: "returning@example.com",
-      clientIp: "203.0.113.5",
-    });
+    await subscribe(t.fetch, "returning@example.com", "203.0.113.5");
 
     const before = (await subscribers(t))[0];
     await t.run(async (ctx) => {
       await ctx.db.patch(before._id, { status: "unsubscribed" });
     });
 
-    await t.mutation(api.newsletter.subscribe, {
-      email: "Returning@Example.com",
-      clientIp: "203.0.113.6",
-    });
+    await subscribe(t.fetch, "Returning@Example.com", "203.0.113.6");
 
     const after = (await subscribers(t))[0];
 
