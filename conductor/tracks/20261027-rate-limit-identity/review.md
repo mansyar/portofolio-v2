@@ -3,9 +3,9 @@
 - **Track:** `20261027-rate-limit-identity`
 - **Type:** `bug`
 - **Branch:** `fix/20261027-rate-limit-identity`
-- **Range:** `60012bdf2e99e8c9b09a9ce2e6eb32ebda41ac58..be3a121`
+- **Range:** `60012bdf2e99e8c9b09a9ce2e6eb32ebda41ac58..b11b6fd`
 - **Date:** 2026-10-27
-- **Verdict:** `PASS WITH FINDINGS`
+- **Verdict:** `PASS`
 
 ## Summary
 
@@ -20,10 +20,11 @@ Volume strategy: **large** (15 non-Conductor files, +984/−253). Reviewed per p
 checkpoint (`69b847f`, `fdb6e5d`, `f20dc44`) plus a cross-phase pass over
 `convex/http.ts` ↔ `convex/lib/*` ↔ both forms.
 
-Three findings, all fixable: the new client transport module has no tests, IPv4
-normalization does not canonicalize zero-padded octets, and the CORS allowlist
-special-cases a loopback `SITE_URL` in a way that silently drops the other loopback
-origin.
+Three findings were raised and all three are fixed in `75494f7`, verified in
+`verification/phase-R1.md`. Round 2 read the fix delta: the client transport now
+has six tests, `classifyEntry` returns canonical octets, and the allowlist is a
+deduplicating append rather than a branch on the site origin. No new finding was
+introduced by the fixes, and the full gate is green at the fix checkpoint.
 
 ## Verification
 
@@ -73,7 +74,7 @@ origin.
 
 ### Medium
 
-- **F1 — The new client transport is untested**
+- **F1 — The new client transport is untested** — **Status: fixed** in `75494f7`
   - **File:** `src/lib/convex/http.ts:26`
   - **What:** `postToConvex` and `responseError` carry every public write, and
     neither has a test. Their branches — missing `VITE_CONVEX_URL`, a non-JSON
@@ -92,7 +93,7 @@ origin.
 
 ### Low
 
-- **F2 — IPv4 normalization does not canonicalize zero-padded octets**
+- **F2 — IPv4 normalization does not canonicalize zero-padded octets** — **Status: fixed** in `75494f7`
   - **File:** `convex/lib/clientIdentity.ts:105`
   - **What:** `parseIpv4` validates octets but `classifyEntry` returns the raw
     string, so `203.000.113.7` and `203.0.113.7` resolve to different strings.
@@ -102,7 +103,7 @@ origin.
   - **Requirement:** FR-12
   - **Test gap:** one resolver case.
 
-- **F3 — The CORS allowlist special-cases a loopback `SITE_URL`**
+- **F3 — The CORS allowlist special-cases a loopback `SITE_URL`** — **Status: fixed** in `75494f7`
   - **File:** `convex/lib/http.ts:24`
   - **What:** when `SITE_URL` equals `http://localhost:3000`, the allowlist
     returns only that origin and drops `http://127.0.0.1:3000`, so the two
@@ -148,7 +149,12 @@ this track removes.
 | Round | Verdict | Critical | High | Medium | Low | Fixed |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | PASS WITH FINDINGS | 0 | 0 | 1 | 2 | 0 |
+| 2 | PASS | 0 | 0 | 0 | 0 | 3 |
 
 ## Doc sync
 
-`pending` — post-review sync follows the fix round.
+`updated` — the track recorded one new assumption in `spec.md` (the unresolved
+identity has no global volume bound, and why that is unreachable behind the
+proxy), and Phase 3 had already synced `tech-stack.md`, `workflow.md`, and the
+`docs/PRD.md` paragraph. `product.md` and `product-guidelines.md` did not
+change, so no product approval was needed.

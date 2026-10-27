@@ -210,6 +210,13 @@ protected by a number the sender controls.
   production observation, recorded as a limitation if it cannot be confirmed.
 - **Assumption:** `auth.addHttpRoutes` uses `/api/auth/*`, so `/contact` and
   `/newsletter/subscribe` do not collide.
+- **Assumption:** An unresolved newsletter identity is bounded only by the address
+  key — there is no global volume limit for it. In the deployed topology the reverse
+  proxy always appends `x-forwarded-for`, so a remote caller cannot reach the endpoint
+  without an identity; the state therefore exists only behind a misconfigured proxy or
+  in local development, where contact already fails closed. If the deployment ever
+  allows requests to arrive without proxy headers, a bounded global breaker should be
+  added. Recorded in `review.md` Debt.
 - **Question:** Should contact also be keyed per sender address? Deferred — it
   buys little against spam, which rarely reuses an address.
 - **Question:** Should the two endpoints share one JSON error envelope with the
