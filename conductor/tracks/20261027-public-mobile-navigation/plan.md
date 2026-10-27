@@ -50,30 +50,27 @@
 - **Covers:** FR-1 through FR-6, AC-1 through AC-6, NFR-3
 - **Touches:** `src/components/layout/MobileNav.tsx`, `src/components/Header.tsx`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P2.T1: One destination list** — covers: FR-3
-  - [ ] **P2.T1.1: The seven destinations gain a single definition, consumed by both the desktop row and the mobile panel** — no second hardcoded array, so order can never drift
-- [ ] **P2.T2: The trigger** — covers: FR-1, FR-2, AC-1, AC-2
-  - [ ] **P2.T2.1: An icon-only button with `aria-expanded`, `aria-controls`, a state-dependent accessible name, and a ≥44×44 px target**
-  - [ ] **P2.T2.2: Mounted in the header's mobile cluster beside the logo and theme toggle; the desktop row at ≥768 px is left byte-for-byte in behaviour**
-- [ ] **P2.T3: The panel** — covers: FR-3, AC-3
-  - [ ] **P2.T3.1: A dropdown under the sticky header using existing tokens, no fixed widths, and closed in the SSR markup (NFR-3)**
-  - [ ] **P2.T3.2: Links navigate through the router, so a tap is an SPA transition with a real URL — no full reload**
-- [ ] **P2.T4: Dismissal and focus** — covers: FR-4, FR-5, FR-6, AC-4, AC-5, AC-6
-  - [ ] **P2.T4.1: Escape closes and focus is left on the trigger; no focus trap is introduced**
-  - [ ] **P2.T4.2: Outside pointer interaction closes; inside does not**
-  - [ ] **P2.T4.3: A route change closes the panel, including navigating to the current route, without a duplicate history entry**
-- [ ] **P2.T5: Green the Phase 1 suite** — covers: AC-1 through AC-6
-  - [ ] **P2.T5.1: Run the Phase 1 file and account for every recorded failure**
-  - [ ] **P2.T5.2: Confirm the first render is closed with no hydration-mismatch warning in the test output**
+- [x] **P2.T1: One destination list** — covers: FR-3
+  - [x] **P2.T1.1: The seven destinations gain a single definition, consumed by both the desktop row and the mobile panel** — no second hardcoded array, so order can never drift
+- [x] **P2.T2: The trigger** — covers: FR-1, FR-2, AC-1, AC-2
+  - [x] **P2.T2.1: An icon-only button with `aria-expanded`, `aria-controls`, a state-dependent accessible name, and a ≥44×44 px target**
+  - [x] **P2.T2.2: Mounted in the header's mobile cluster beside the logo and theme toggle; the desktop row at ≥768 px is left byte-for-byte in behaviour**
+- [x] **P2.T3: The panel** — covers: FR-3, AC-3
+  - [x] **P2.T3.1: A dropdown under the sticky header using existing tokens, no fixed widths, and closed in the SSR markup (NFR-3)**
+  - [x] **P2.T3.2: Links navigate through the router, so a tap is an SPA transition with a real URL — no full reload**
+- [x] **P2.T4: Dismissal and focus** — covers: FR-4, FR-5, FR-6, AC-4, AC-5, AC-6
+  - [x] **P2.T4.1: Escape closes and focus is left on the trigger; no focus trap is introduced**
+  - [x] **P2.T4.2: Outside pointer interaction closes; inside does not**
+  - [x] **P2.T4.3: A route change closes the panel, including navigating to the current route, without a duplicate history entry**
+- [x] **P2.T5: Green the Phase 1 suite** — covers: AC-1 through AC-6
+  - [x] **P2.T5.1: Run the Phase 1 file and account for every recorded failure**
+  - [x] **P2.T5.2: Confirm the first render is closed with no hydration-mismatch warning in the test output**
 
-<!--
-The primary appends after acceptance:
-**Result:** verified
-**Checkpoint:** <short-sha>
+**Result:** verified (all eight Phase 1 cases green; gate clean on the checkpoint)
+**Checkpoint:** `f372340`
 **Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-2.md
--->
 
 ## Phase 3: Active destination, exposure, and motion preference
 
