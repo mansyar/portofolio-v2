@@ -21,7 +21,7 @@
 - **Covers:** FR-1 through FR-6, AC-1 through AC-6, NFR-5
 - **Touches:** `src/components/layout/__tests__/mobile-nav.test.tsx`
 - **Verification:** `pnpm test src/components/layout/__tests__/mobile-nav.test.tsx` — expected to FAIL at this stage; the failure set is the evidence.
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P1.T1: Trigger contract tests** — covers: FR-1, FR-2, AC-1, AC-2
   - [ ] **P1.T1.1: A trigger exists in the mobile cluster and its accessible name states the open action**
