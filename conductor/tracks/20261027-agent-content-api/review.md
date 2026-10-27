@@ -5,18 +5,18 @@
 - **Branch:** `feat/20261027-agent-content-api`
 - **Range:** `259d2ea4b9952ce0a8c6f7bc114e0f97f6852530..f5435f5`
 - **Date:** `2026-10-27`
-- **Verdict:** `BLOCK`
+- **Verdict:** `PASS`
 
 ## Summary
 
 The transport, conversion, and mutation layers hold up: every configured check passes
-(250 tests, coverage above the raised gate, build green), all 16 acceptance criteria map
+(255 tests, coverage above the raised gate, build green), all 16 acceptance criteria map
 to a test, and the security posture is sound — token digests only, constant-time compare,
-no CORS, internal-only writes, drafts invisible to every public surface. One High finding
-blocks: an explicitly supplied slug is stored without validation, so a caller can create
-a post whose URL cannot be routed, or two posts that differ only by case. Two smaller
-findings concern an ambiguous error message and three untested validation branches. All
-three are local and fixed in Phase R1.
+no CORS, internal-only writes, drafts invisible to every public surface. Round 1 raised
+one High finding (an unvalidated explicit slug could create an unroutable or case-twin
+post), one Medium (five untested validation branches), and one Low (a blank PATCH body
+reported as a missing field). All three were fixed in Phase R1 with tests that fail
+without the fix; nothing was deferred.
 
 **Reviewer:** the `conductor-reviewer` subagent is not available in this environment, so
 the primary agent performed this review read-only before writing this file. Independence
@@ -26,8 +26,8 @@ is weaker than the process assumes and is recorded here rather than glossed over
 
 | Layer | Command | Result | Evidence |
 | --- | --- | --- | --- |
-| test | `pnpm test` | pass — 250/250 in 57 files | `verification/integrated.md` |
-| coverage | `pnpm test:coverage` | pass — 40.97% lines / 30.21% functions against 40 / 30 | `verification/phase-5.md` |
+| test | `pnpm test` | pass — 255/255 in 57 files (after the R1 fixes) | `verification/phase-R1.md` |
+| coverage | `pnpm test:coverage` | pass — 41.13% lines / 30.31% functions against 40 / 30 | `verification/phase-R1.md` |
 | lint | `pnpm lint` | pass | recorded below |
 | format | `pnpm format:check` | pass | recorded below |
 | typecheck | `pnpm type-check` | pass | recorded below |
@@ -66,7 +66,7 @@ is weaker than the process assumes and is recorded here rather than glossed over
 
 ### High
 
-- **F1 — An explicit slug is stored without validation**
+- **F1 — An explicit slug is stored without validation** — **Resolved in R1** (`1a40b3e`)
   - **File:** `convex/contentApi.ts:142`
   - **What:** `const slug = args.slug ?? slugify(title)` honours a caller-supplied slug
     verbatim. Nothing checks it against the shape URLs require. `slug: "My Post/Part 1"`
@@ -86,7 +86,7 @@ is weaker than the process assumes and is recorded here rather than glossed over
 
 ### Medium
 
-- **F2 — Three input-validation branches have no test**
+- **F2 — Three input-validation branches have no test** — **Resolved in R1** (`1a40b3e`)
   - **File:** `convex/http.ts:266`, `convex/http.ts:356`, `convex/http.ts:464`
   - **What:** `readOptionalBoolean` rejects a non-boolean `publish`, `readStringList`
     rejects a non-array or non-string `tags`, and `contentApi.list` clamps `limit` to
@@ -101,7 +101,7 @@ is weaker than the process assumes and is recorded here rather than glossed over
 
 ### Low
 
-- **F3 — A blank body in PATCH reports the wrong problem**
+- **F3 — A blank body in PATCH reports the wrong problem** — **Resolved in R1** (`1a40b3e`)
   - **File:** `convex/http.ts:480`
   - **What:** `bodyMarkdown: "   "` trims to `undefined`, so the handler decides no field
     was sent and answers "no fields to update". The caller did send a body; it was empty.
@@ -139,7 +139,8 @@ duplicates merged.
 
 ## Debt
 
-- none deferred; strict mode is on and all findings are fixed in Phase R1.
+- none deferred; strict mode is on and all findings were fixed in Phase R1. No issues
+  were filed because nothing remained unresolved.
 
 ## Doc sync
 
@@ -149,4 +150,5 @@ duplicates merged.
 
 | Round | Verdict | Critical | High | Medium | Low | Fixed |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | BLOCK | 0 | 1 | 1 | 1 | 3 |
+| 1 | BLOCK | 0 | 1 | 1 | 1 | 0 |
+| 2 | PASS | 0 | 0 | 0 | 0 | 3 |
