@@ -11,4 +11,4 @@
 
 - [x] **Track: SEO Head Ownership** — [20261026-seo-head-ownership](./archive/20261026-seo-head-ownership/index.md) — bug — high
 
-- [ ] **Track: Rate Limit Identity** — [20261027-rate-limit-identity](./tracks/20261027-rate-limit-identity/index.md) — bug — high
+- [~] **Track: Rate Limit Identity** — [20261027-rate-limit-identity](./tracks/20261027-rate-limit-identity/index.md) — bug — high
