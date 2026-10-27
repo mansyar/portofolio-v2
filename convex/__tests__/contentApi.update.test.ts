@@ -127,6 +127,8 @@ describe("PATCH /content/blog/:slug", () => {
     const response = await patchPost(t.fetch, "editing-safely", { bodyMarkdown: "   " });
 
     expect(response.status).toBe(400);
+    // A blank body is named as an empty body, not as a missing field.
+    expect(await response.json()).toMatchObject({ error: "body must not be empty" });
     const after = await storedPost(t, "editing-safely");
     expect(after?.content).toBe(before?.content);
   });

@@ -23,6 +23,15 @@ const MAX_LIST_LIMIT = 50;
 const MAX_SLUG_LENGTH = 80;
 
 /**
+ * What a slug may contain when a caller supplies one instead of deriving it.
+ *
+ * A derived slug satisfies this by construction, but an explicit one is caller
+ * input: a space or slash produces a URL that does not route, and upper case
+ * produces a second post that differs only by case.
+ */
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9._-]*$/;
+
+/**
  * Signals a client error with the status the HTTP action should answer. A plain
  * `Error` would become a 500 and hide a fixable mistake from the caller.
  *
@@ -142,6 +151,12 @@ export const create = internalMutation({
     const slug = args.slug ?? slugify(title);
     if (slug === "") {
       reject(400, "slug required: the title has no characters a slug can use");
+    }
+    if (!SLUG_PATTERN.test(slug)) {
+      reject(
+        400,
+        "slug must use lowercase letters, digits, dots, hyphens, or underscores, and start with a letter or digit"
+      );
     }
 
     const collision = await ctx.db

@@ -135,6 +135,52 @@ describe("POST /content/blog", () => {
     expect(await posts(t)).toHaveLength(0);
   });
 
+  it("rejects an explicit slug a URL cannot carry", async () => {
+    const t = convexTest(schema, modules);
+
+    // A trailing space is trimmed by the transport, so it is not a rejection case.
+    const cases = ["My Post/Part 1", "Guide", "-leading"];
+    for (const slug of cases) {
+      const response = await createPost(t.fetch, draftBody({ slug }));
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({
+        error: expect.stringMatching(/slug must use lowercase/),
+      });
+    }
+
+    expect(await posts(t)).toHaveLength(0);
+  });
+
+  it("honours an explicit slug that is URL-safe", async () => {
+    const t = convexTest(schema, modules);
+
+    const response = await createPost(t.fetch, draftBody({ slug: "convex.guide-v2" }));
+
+    expect(response.status).toBe(201);
+    expect(await response.json()).toMatchObject({ slug: "convex.guide-v2" });
+    expect(await getPost(t.fetch, "convex.guide-v2")).toMatchObject({ status: 200 });
+  });
+
+  it("rejects a publish flag that is not a boolean", async () => {
+    const t = convexTest(schema, modules);
+
+    const response = await createPost(t.fetch, draftBody({ publish: "true" }));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "publish must be a boolean" });
+  });
+
+  it("rejects tags that are not an array of strings", async () => {
+    const t = convexTest(schema, modules);
+
+    const notAList = await createPost(t.fetch, draftBody({ tags: "convex" }));
+    const notStrings = await createPost(t.fetch, draftBody({ tags: [1] }));
+
+    expect(notAList.status).toBe(400);
+    expect(notStrings.status).toBe(400);
+    expect(await notAList.json()).toMatchObject({ error: "tags must be an array of slugs" });
+  });
+
   it("rejects an unknown category without writing", async () => {
     const t = convexTest(schema, modules);
 
@@ -296,6 +342,28 @@ describe("GET /content/blog", () => {
 
     const invalid = await t.fetch("/content/blog?status=archived", { headers: AUTH });
     expect(invalid.status).toBe(400);
+  });
+
+  it("clamps the limit at both ends", async () => {
+    const t = convexTest(schema, modules);
+    await t.run(async (ctx) => {
+      for (let index = 0; index < 51; index += 1) {
+        await ctx.db.insert("blogPosts", {
+          slug: `seeded-${index}`,
+          title: `Seeded ${index}`,
+          content: "<p>body</p>",
+          tagIds: [],
+          status: "published",
+          readingTime: 1,
+        });
+      }
+    });
+
+    const floor = await t.fetch("/content/blog?limit=0", { headers: AUTH });
+    expect((await floor.json()).posts).toHaveLength(1);
+
+    const ceiling = await t.fetch("/content/blog?limit=999", { headers: AUTH });
+    expect((await ceiling.json()).posts).toHaveLength(50);
   });
 
   it("requires the token for reads too", async () => {

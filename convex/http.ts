@@ -249,6 +249,22 @@ const readOptionalString = (
   return { ok: true, value: trimmed === "" ? undefined : trimmed };
 };
 
+/**
+ * Reads a string without collapsing a blank value into "absent".
+ *
+ * Used where an empty value is itself the mistake and should be named: a PATCH
+ * that sends `bodyMarkdown: "  "` has an empty body, not a missing field.
+ */
+const readOptionalText = (
+  body: Record<string, unknown>,
+  key: string
+): Field<string | undefined> => {
+  const value = body[key];
+  if (value === undefined || value === null) return { ok: true, value: undefined };
+
+  return typeof value === "string" ? { ok: true, value } : { ok: false };
+};
+
 const readOptionalBoolean = (
   body: Record<string, unknown>,
   key: string
@@ -460,7 +476,7 @@ http.route({
     const excerpt = readOptionalString(payload, "excerpt");
     const coverImageUrl = readOptionalString(payload, "coverImageUrl");
     const categorySlug = readOptionalString(payload, "categorySlug");
-    const markdown = readOptionalString(payload, "bodyMarkdown");
+    const markdown = readOptionalText(payload, "bodyMarkdown");
     const tags = readStringList(payload, "tags");
 
     if (!title.ok) return contentJsonResponse({ error: "title must be a string" }, 400);
