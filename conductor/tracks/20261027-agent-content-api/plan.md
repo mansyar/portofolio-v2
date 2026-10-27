@@ -120,12 +120,16 @@
 - **Covers:** NFR-5, NFR-6
 - **Touches:** `conductor/tech-stack.md`, `README.md`, `vite.config.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm build`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P5.T1: Record the architecture exception** — covers: NFR-5
-  - [ ] **P5.T1.1:** Document the token-authenticated internal mutation beside the existing public-write exception
-  - [ ] **P5.T1.2:** Record `marked` and the two token variables in the stack document
-- [ ] **P5.T2: Document the API for humans** — covers: FR-10
-  - [ ] **P5.T2.1:** Add routes, auth, and token setup to `README.md`
-- [ ] **P5.T3: Raise the coverage floor** — covers: NFR-6
-  - [ ] **P5.T3.1:** Measure the new baseline and raise the `vite.config.ts` thresholds to it, never lowering them
+- [x] **P5.T1: Record the architecture exception** — covers: NFR-5
+  - [x] **P5.T1.1:** Document the token-authenticated internal mutation beside the existing public-write exception
+  - [x] **P5.T1.2:** Record `marked` and the two token variables in the stack document
+- [x] **P5.T2: Document the API for humans** — covers: FR-10
+  - [x] **P5.T2.1:** Add routes, auth, and token setup to `README.md`
+- [x] **P5.T3: Raise the coverage floor** — covers: NFR-6
+  - [x] **P5.T3.1:** Measure the new baseline and raise the `vite.config.ts` thresholds to it, never lowering them
+
+**Result:** verified
+**Checkpoint:** 3673973
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-5.md
