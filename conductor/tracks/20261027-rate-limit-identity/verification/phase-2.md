@@ -71,3 +71,17 @@ the caller sent.
   two expected `type-check` errors naming the removed members and nothing else.
 - The `type-check` failure is the planned intermediate state, not an accepted
   defect: Phase 3 replaces both callers.
+
+## Primary verification
+
+Re-run by the primary after the phase commit:
+
+| Command | Exit | Result |
+| --- | --- | --- |
+| `pnpm test convex` | 0 | 17 files, 67 tests passed — every Phase 1 red case is green without a test edit |
+| `pnpm lint` | 0 | 21 warnings (no new warning; one `useOptionalChain` finding was fixed rather than suppressed) |
+| `pnpm format:check` | 0 | clean |
+| `pnpm type-check` | 1 | only the two Phase 3 callers |
+
+`git diff --name-only ff7c42a..HEAD` lists exactly the five backend files plus this
+evidence file — no test file and nothing outside `Touches`.
