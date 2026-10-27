@@ -64,7 +64,7 @@
   `convex/lib/http.ts`, `convex/contact.ts`, `convex/newsletter.ts`,
   `convex/_generated/**`
 - **Verification:** `pnpm test convex`
-- **Status:** pending
+- **Status:** in_progress
 
 - [ ] **P2.T1: Client identity resolver** — covers: FR-1, FR-12
   - [ ] **P2.T1.1: Parse `x-forwarded-for`, split on commas, trim, validate as an address; fall back to `x-real-ip`**
