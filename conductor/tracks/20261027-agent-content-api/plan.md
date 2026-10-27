@@ -141,8 +141,12 @@
 - **Covers:** F1, F2, F3
 - **Touches:** `convex/contentApi.ts`, `convex/http.ts`, `convex/__tests__/contentApi.create.test.ts`, `convex/__tests__/contentApi.update.test.ts`
 - **Verification:** `pnpm type-check && pnpm lint && pnpm format:check && pnpm test`
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **R1.T1: Resolve F1** — covers: F1
-- [ ] **R1.T2: Resolve F2** — covers: F2
-- [ ] **R1.T3: Resolve F3** — covers: F3
+- [x] **R1.T1: Resolve F1** — covers: F1
+- [x] **R1.T2: Resolve F2** — covers: F2
+- [x] **R1.T3: Resolve F3** — covers: F3
+
+**Result:** verified
+**Checkpoint:** 1a40b3e
+**Evidence:** conductor/tracks/20261027-agent-content-api/verification/phase-R1.md
