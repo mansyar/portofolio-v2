@@ -21,28 +21,25 @@
 - **Covers:** FR-1 through FR-6, AC-1 through AC-6, NFR-5
 - **Touches:** `src/components/layout/__tests__/mobile-nav.test.tsx`
 - **Verification:** `pnpm test src/components/layout/__tests__/mobile-nav.test.tsx` — expected to FAIL at this stage; the failure set is the evidence.
-- **Status:** in_progress
+- **Status:** verified
 
-- [ ] **P1.T1: Trigger contract tests** — covers: FR-1, FR-2, AC-1, AC-2
-  - [ ] **P1.T1.1: A trigger exists in the mobile cluster and its accessible name states the open action**
-  - [ ] **P1.T1.2: Activating it flips `aria-expanded` false → true → false and `aria-controls` resolves to the exposed panel**
-- [ ] **P1.T2: Panel content tests** — covers: FR-3, AC-3
-  - [ ] **P1.T2.1: The exposed panel lists the seven destinations in PRD §5 order, each as an in-app link**
-  - [ ] **P1.T2.2: Nothing extra appears — the panel is exactly those seven links, not the admin or theme controls**
-- [ ] **P1.T3: Dismissal and focus tests** — covers: FR-4, FR-5, FR-6, AC-4, AC-5, AC-6
-  - [ ] **P1.T3.1: Escape closes the panel and leaves focus on the trigger**
-  - [ ] **P1.T3.2: A pointer interaction outside closes it; one inside does not**
-  - [ ] **P1.T3.3: Navigating to a listed destination closes it**
-- [ ] **P1.T4: Record the red run** — covers: NFR-5
-  - [ ] **P1.T4.1: Run the targeted file and capture which cases fail and why** — a missing control, not an unresolved module or a bad import
-  - [ ] **P1.T4.2: Confirm no existing test was modified or deleted to make room; the header, a11y and route-surface suites still pass unchanged**
+- [x] **P1.T1: Trigger contract tests** — covers: FR-1, FR-2, AC-1, AC-2
+  - [x] **P1.T1.1: A trigger exists in the mobile cluster and its accessible name states the open action**
+  - [x] **P1.T1.2: Activating it flips `aria-expanded` false → true → false and `aria-controls` resolves to the exposed panel**
+- [x] **P1.T2: Panel content tests** — covers: FR-3, AC-3
+  - [x] **P1.T2.1: The exposed panel lists the seven destinations in PRD §5 order, each as an in-app link**
+  - [x] **P1.T2.2: Nothing extra appears — the panel is exactly those seven links, not the admin or theme controls**
+- [x] **P1.T3: Dismissal and focus tests** — covers: FR-4, FR-5, FR-6, AC-4, AC-5, AC-6
+  - [x] **P1.T3.1: Escape closes the panel and leaves focus on the trigger**
+  - [x] **P1.T3.2: A pointer interaction outside closes it; one inside does not**
+  - [x] **P1.T3.3: Navigating to a listed destination closes it**
+- [x] **P1.T4: Record the red run** — covers: NFR-5
+  - [x] **P1.T4.1: Run the targeted file and capture which cases fail and why** — a missing control, not an unresolved module or a bad import
+  - [x] **P1.T4.2: Confirm no existing test was modified or deleted to make room; the header, a11y and route-surface suites still pass unchanged**
 
-<!--
-The primary appends after acceptance:
-**Result:** verified
-**Checkpoint:** <short-sha>
+**Result:** verified (red by contract — the failing tests are the deliverable)
+**Checkpoint:** `7068af5`
 **Evidence:** conductor/tracks/20261027-public-mobile-navigation/verification/phase-1.md
--->
 
 ## Phase 2: Trigger, panel, and the dismissal contract
 
